@@ -9,10 +9,28 @@
 namespace Hgabka\KunstmaanEmailBundle\EventListener;
 
 use Hgabka\KunstmaanEmailBundle\Event\MailerEvent;
+use Hgabka\KunstmaanEmailBundle\Logger\EmailLogger;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class MailerSubscriber implements EventSubscriberInterface
 {
+    /** @var  EmailLogger */
+    protected $logger;
+
+    /** @var  string */
+    protected $strategy;
+
+    /**
+     * MailerSubscriber constructor.
+     * @param EmailLogger $logger
+     * @param string $strategy
+     */
+    public function __construct(EmailLogger $logger, string $strategy)
+    {
+        $this->logger = $logger;
+        $this->strategy = $strategy;
+    }
+
     public static function getSubscribedEvents()
     {
         return [
@@ -21,4 +39,23 @@ class MailerSubscriber implements EventSubscriberInterface
         ];
     }
 
+    /**
+     * @param MailerEvent $event
+     */
+    public function onSendCalled(MailerEvent $event)
+    {
+        if ($this->strategy == 'mailer_send') {
+            $this->logger->logMessage($event);
+        }
+    }
+
+    /**
+     * @param MailerEvent $event
+     */
+    public function onMailSent(MailerEvent $event)
+    {
+        if ($this->strategy != 'mailer_send') {
+            $this->logger->logMessage($event);
+        }
+    }
 }

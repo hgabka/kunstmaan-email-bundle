@@ -21,6 +21,7 @@ class Configuration implements ConfigurationInterface
     {
         $this->container = $container;
     }
+    
     /**
      * {@inheritdoc}
      */

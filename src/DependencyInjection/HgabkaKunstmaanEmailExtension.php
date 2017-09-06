@@ -36,5 +36,11 @@ class HgabkaKunstmaanEmailExtension extends Extension
 
         $substituterDefinition = $container->getDefinition( 'hgabka_kunstmaan_email.param_substituter');
         $substituterDefinition->replaceArgument(2, $config['template_var_chars']);
+
+        $mailerSubscriberDefinition = $container->getDefinition( 'hgabka_kunstmaan_email.mailer_subscriber');
+        $mailerSubscriberDefinition->replaceArgument(1, $config['email_logging_strategy']);
+
+        $redirectPluginDefinition = $container->getDefinition( 'hgabka_kunstmaan_email.mail_builder');
+        $redirectPluginDefinition->addMethodCall('setRedirectConfig', [$config['redirect']]);
     }
 }
