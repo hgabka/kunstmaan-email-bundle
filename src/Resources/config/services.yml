@@ -16,10 +16,6 @@ services:
         class: '%hgabka_kunstmaan_email.message_logger.class%'
         arguments: ["@logger", '']
 
-    hgabka_kunstmaan_email.email_logger:
-        class: 'Hgabka\KunstmaanEmailBundle\Logger\EmailLogger'
-        arguments: ["@doctrine"]
-
     hgabka_kunstmaan_email.queue_manager:
         class: 'Hgabka\KunstmaanEmailBundle\Helper\QueueManager'
         arguments: ["@doctrine", "@mailer", '', '']
@@ -35,13 +31,11 @@ services:
 
     hgabka_kunstmaan_email.mailer_subscriber:
         class: Hgabka\KunstmaanEmailBundle\EventListener\MailerSubscriber
-        arguments: ["@hgabka_kunstmaan_email.email_logger", '']
         tags:
             - { name: kernel.event_subscriber }
 
     hgabka_kunstmaan_email.mail_logger_plugin:
         class: Hgabka\KunstmaanEmailBundle\Mailer\MessageLoggerPlugin
-        arguments: ['']
         tags:
             - { name: "swiftmailer.default.plugin" }
 

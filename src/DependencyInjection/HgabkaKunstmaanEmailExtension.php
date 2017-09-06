@@ -36,11 +36,5 @@ class HgabkaKunstmaanEmailExtension extends Extension
 
         $substituterDefinition = $container->getDefinition( 'hgabka_kunstmaan_email.param_substituter');
         $substituterDefinition->replaceArgument(2, $config['template_var_chars']);
-
-        $subscriberDefinition = $container->getDefinition( 'hgabka_kunstmaan_email.mailer_subscriber');
-        $subscriberDefinition->replaceArgument(1, $config['email_logging_strategy']);
-
-        $loggerPluginDefinition = $container->getDefinition( 'hgabka_kunstmaan_email.mail_logger_plugin');
-        $loggerPluginDefinition->replaceArgument(0, $config['use_email_logging']);
     }
 }
