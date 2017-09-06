@@ -1,0 +1,140 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: User
+ * Date: 2017.09.04.
+ * Time: 8:22
+ */
+
+namespace Hgabka\KunstmaanEmailBundle\DependencyInjection;
+
+use Symfony\Component\Config\Definition\Builder\TreeBuilder;
+use Symfony\Component\Config\Definition\ConfigurationInterface;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+
+class Configuration implements ConfigurationInterface
+{
+    /** @var  ContainerBuilderI */
+    private $container;
+
+    public function __construct(ContainerBulder $container)
+    {
+        $this->container = $container;
+    }
+    /**
+     * {@inheritdoc}
+     */
+    public function getConfigTreeBuilder()
+    {
+        $treeBuilder = new TreeBuilder();
+        $rootNode = $treeBuilder->root('hgabka_kunstmaan_email');
+
+        $rootNode
+            ->children()
+                ->arrayNode('default_sender')
+                    ->addDefaultsIfNotSet()
+                    ->canBeUnset()
+                    ->children()
+                        ->scalarNode('email')->isRequired()->cannotBeEmpty()->defaultValue('info@example.com')->end()
+                        ->scalarNode('name')->isRequired()->cannotBeEmpty()->defaultValue('Acme Company')->end()
+                ->end()
+
+                ->arrayNode('default_recipient')
+                    ->addDefaultsIfNotSet()
+                    ->canBeUnset()
+                    ->children()
+                        ->scalarNode('email')->isRequired()->cannotBeEmpty()->defaultValue('info@acme.com')->end()
+                        ->scalarNode('name')->isRequired()->cannotBeEmpty()->defaultValue('Acme Subcompany')->end()
+                ->end()
+                ->scalarNode('default_name')->defaultValue('email_default_name')->end()
+                ->booleanNode('force_queueing')->defaultFalse()->end()
+                ->scalarNode('template_var_chars')->defaultValue('%%')->end()
+                ->arrayNode('mail_template_params')
+                    ->children()
+                        ->useAttributeAsKey('name')
+                        ->prototype('array')
+                            ->children()
+                                ->useAttributeAsKey('name')
+                                ->prototype('scalar')->end()
+                        ->end()
+                    ->end()
+                ->end()
+                ->scalarNode('layout_file')->defaultValue($this->container->getParameter('kernel.project_dir').'/var/layout/%locale%/email_layout.html')->end()
+                ->arrayNode('message_extra_parameters')
+                    ->children()
+                    ->useAttributeAsKey('name')
+                    ->prototype('scalar')->end()
+                ->end()
+                ->arrayNode('pre_defined_message_recipients')
+                    ->children()
+                    ->useAttributeAsKey('name')
+                    ->prototype('array')
+                        ->children()
+                            ->useAttributeAsKey('name')
+                            ->prototype('array')->end()
+                        ->end()
+                    ->end()
+                ->end()
+                ->booleanNode('message_with_cc')->defaultTrue()->end()
+                ->booleanNode('message_with_bcc')->defaultTrue()->end()
+                ->booleanNode('editable_lists')->defaultFalse()->end()
+                ->booleanNode('auto_append_unsubscribe_link')->defaultFalse()->end()
+                ->scalarNode('return_path')->defaultValue('sfhungary@gmail.com')->end()
+                ->arrayNode('add_headers')
+                    ->children()
+                    ->useAttributeAsKey('name')
+                    ->prototype('scalar')->end()
+                ->end()
+                ->integerNode('send_limit')->defaultValue(50)->end()
+                ->integerNode('max_retries')->defaultValue(20)->end()
+                ->booleanNode('message_logging')->defaultTrue()->end()
+                ->scalarNode('log_path')->defaultValue($this->container->getParameter('kernel.log_dir').'/message')->end()
+                ->booleanNode('use_email_logging')->defaultTrue()->end()
+                ->enumNode('email_logging_strategy')->values(['real_send', 'mailer_send'])->defaultValue('mailer_send')->end()
+                ->integerNode('delete_sent_messages_after')->defaultValue(2)->end()
+                ->arrayNode('redirect')
+                    ->children()
+                    ->booleanNode('enable')->defaultTrue()->end()
+                    ->arrayNode('recipients')
+                       ->children()
+                        ->prototype('array')->end()
+                    ->end()
+                    ->arrayNode('hosts')
+                       ->children()
+                        ->prototype('array')->end()
+                    ->end()
+                    ->booleanNode('subject_append')->defaultTrue()->end()
+                ->end()
+
+                ->arrayNode('add_recipients')
+                  ->children()
+                  ->arrayNode('cc')
+                    ->children()
+                    ->prototype('array')->end()
+                  ->end()
+                  ->arrayNode('bcc')
+                    ->children()
+                    ->prototype('array')->end()
+                  ->end()
+                ->end()
+
+                ->arrayNode('bounce_checking')
+                    ->children()
+                        ->enumNode('after_process')->values(['delete', 'leave_as_is', 'mark_as_read'])->defaultValue('delete')->end()
+                        ->arrayNode('account')
+                        ->children()
+                            ->scalarNode('host')->end()
+                            ->scalarNode('port')->end()
+                            ->scalarNode('type')->end()
+                            ->scalarNode('address')->end()
+                            ->scalarNode('user')->end()
+                            ->scalarNode('pass')->end()
+                        ->end()
+                ->end()
+            ->end()
+        ;
+
+        return $treeBuilder;
+    }
+
+}

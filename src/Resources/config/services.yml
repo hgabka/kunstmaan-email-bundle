@@ -1,0 +1,4 @@
+parameters:
+    hgabka_kunstmaan_email.mail_builder.class: 'Hgabka\KunstmaanSettingsBundle\Helper\MailBuilder'
+
+services:
