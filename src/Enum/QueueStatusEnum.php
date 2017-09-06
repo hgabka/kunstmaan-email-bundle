@@ -10,30 +10,32 @@ namespace Hgabka\KunstmaanEmailBundle\Enum;
 
 abstract class QueueStatusEnum
 {
-    const TYPE_INIT = "init";
-    const TYPE_ELKULDVE = "elkuldve";
-    const TYPE_HIBA = "hiba";
-    const TYPE_SIKERTELEN = "sikertelen";
+    const STATUS_INIT = "init";
+    const STATUS_ELKULDVE = "elkuldve";
+    const STATUS_HIBA = "hiba";
+    const STATUS_SIKERTELEN = "sikertelen";
+    const STATUS_BOUNCED = 'visszapattant';
 
     /** @var array user friendly named type */
-    protected static $typeName = [
-        self::TYPE_INIT    => 'Létrehozva',
-        self::TYPE_ELKULDVE => 'Elküldve',
-        self::TYPE_HIBA => 'Hiba',
-        self::TYPE_SIKERTELEN  => 'Sikertelen',
+    protected static $statusName = [
+        self::STATUS_INIT    => 'Létrehozva',
+        self::STATUS_ELKULDVE => 'Elküldve',
+        self::STATUS_HIBA => 'Hiba',
+        self::STATUS_SIKERTELEN  => 'Sikertelen',
+        self::STATUS_VISSZAPATTANT  => 'Sikertelen',
     ];
 
     /**
-     * @param  string $typeShortName
+     * @param  string $statusShortName
      * @return string
      */
-    public static function getStatusName($typeShortName)
+    public static function getStatusName($statusShortName)
     {
-        if (!isset(static::$typeName[$typeShortName])) {
-            return "Unknown type ($typeShortName)";
+        if (!isset(static::$statusName[$statusShortName])) {
+            return "Unknown type ($statusShortName)";
         }
 
-        return static::$typeName[$typeShortName];
+        return static::$statusName[$statusShortName];
     }
 
     /**
@@ -42,10 +44,11 @@ abstract class QueueStatusEnum
     public static function getAvailableStatuses()
     {
         return [
-            self::TYPE_INIT,
-            self::TYPE_ELKULDVE,
-            self::TYPE_HIBA,
-            self::TYPE_SIKERTELEN
+            self::STATUS_INIT,
+            self::STATUS_ELKULDVE,
+            self::STATUS_HIBA,
+            self::STATUS_SIKERTELEN,
+            self::STATUS_BOUNCED,
         ];
     }
 }

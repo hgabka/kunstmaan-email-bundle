@@ -79,7 +79,7 @@ class Message extends AbstractEntity implements TranslatableInterface
      * @var string
      * @ORM\Column(name="status", type="string", length=20)
      */
-    private $status = MessageStatusEnum::TYPE_INIT;
+    private $status = MessageStatusEnum::STATUS_INIT;
 
     /**
      * @var EmailLayout
