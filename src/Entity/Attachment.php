@@ -57,6 +57,27 @@ class Attachment
     private $locale;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="filename", type="string", length=512, nullable = true)
+     */
+    private $filename;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="content", type="text", nullable = true)
+     */
+    private $content;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="string", name="content_type")
+     */
+    protected $contentType;
+
+    /**
      * @return string
      */
     public function getType()
@@ -128,6 +149,63 @@ class Attachment
     public function setLocale($locale)
     {
         $this->locale = $locale;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFilename(): string
+    {
+        return $this->filename;
+    }
+
+    /**
+     * @param string $filename
+     * @return Attachment
+     */
+    public function setFilename($filename)
+    {
+        $this->filename = $filename;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getContent(): string
+    {
+        return $this->content;
+    }
+
+    /**
+     * @param string $content
+     * @return Attachment
+     */
+    public function setContent($content)
+    {
+        $this->content = $content;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getContentType(): string
+    {
+        return $this->contentType;
+    }
+
+    /**
+     * @param string $contentType
+     * @return Attachment
+     */
+    public function setContentType($contentType)
+    {
+        $this->contentType = $contentType;
 
         return $this;
     }

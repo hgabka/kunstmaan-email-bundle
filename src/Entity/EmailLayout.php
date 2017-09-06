@@ -212,6 +212,42 @@ class EmailLayout extends AbstractEntity implements TranslatableInterface
         $this->messages->removeElement($message);
     }
 
+    public function __toString()
+    {
+        return $this->getName();
+    }
+
+    public function getDecoratedHtml($culture, $subject = '', $layoutFile = false)
+    {
+        if ($layoutFile === false)
+        {
+            $layoutFile = null;
+        }
+        elseif (empty($layoutFile))
+        {
+            $layoutFile = sfConfig::get('sf_plugins_dir').'/hgEmailPlugin/data/layout.html';
+        }
+
+        if (!empty($layoutFile))
+        {
+            $layoutFile = strtr($layoutFile, array('%culture%' => $culture));
+            $html = @file_get_contents($layoutFile);
+        }
+        else
+        {
+            $html = null;
+        }
+        $content = $this->translate($culture)->getContentHtml();
+        if (empty($html))
+        {
+            return $content;
+        }
+
+        $styles = $this->getStyles();
+
+        return strtr($html, array('%%styles%%' => $styles, '%%title%%' => $subject, '%%content%%' => $content));
+    }
+
     /**
      * @return string
      */
