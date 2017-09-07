@@ -15,7 +15,7 @@ use Prezent\Doctrine\Translatable\Entity\TranslationTrait;
 use Prezent\Doctrine\Translatable\TranslationInterface;
 
 /**
- * @ORM\Table(name="hgabka_kunstmaanemailbundle_email_layout_translation")
+ * @ORM\Table(name="hg_kuma_emailbundle_email_layout_translation")
  * @ORM\Entity
  */
 class EmailLayoutTranslation extends AbstractEntity implements TranslationInterface

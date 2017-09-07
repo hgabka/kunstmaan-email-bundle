@@ -10,14 +10,13 @@ namespace Hgabka\KunstmaanEmailBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
-use Gedmo\Timestampable\Traits\TimestampableEntity;
+use Hgabka\KunstmaanExtensionBundle\Traits\TimestampableEntity;
 use Hgabka\KunstmaanEmailBundle\Enum\QueueStatusEnum;
 use Kunstmaan\AdminBundle\Entity\AbstractEntity;
 
 class AbstractQueue extends AbstractEntity
 {
     use TimestampableEntity;
-
 
     /**
      * @var integer

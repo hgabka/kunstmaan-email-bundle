@@ -5,7 +5,7 @@ namespace Hgabka\KunstmaanEmailBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Hgabka\KunstmaanExtensionBundle\Entity\TranslatableTrait;
-use Gedmo\Timestampable\Traits\TimestampableEntity;
+use Hgabka\KunstmaanExtensionBundle\Traits\TimestampableEntity;
 use Kunstmaan\AdminBundle\Entity\AbstractEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
@@ -16,7 +16,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 /**
  * Email layout
  *
- * @ORM\Table(name="hgabka_kunstmaanemailbundle_email_template")
+ * @ORM\Table(name="hg_kuma_emailbundle_email_template")
  * @ORM\Entity(repositoryClass="Hgabka\KunstmaanEmailBundle\Repository\EmailTemplateRepository")
  */
 class EmailTemplate extends AbstractEntity implements TranslatableInterface

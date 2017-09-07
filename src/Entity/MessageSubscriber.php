@@ -12,7 +12,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Hgabka\KunstmaanEmailBundle\Enum\MessageStatusEnum;
 use Hgabka\KunstmaanExtensionBundle\Entity\TranslatableTrait;
-use Gedmo\Timestampable\Traits\TimestampableEntity;
+use Hgabka\KunstmaanExtensionBundle\Traits\TimestampableEntity;
 use Kunstmaan\AdminBundle\Entity\AbstractEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -20,7 +20,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 /**
  * Subscriber
  *
- * @ORM\Table(name="hgabka_kunstmaanemailbundle_message_subscriber")
+ * @ORM\Table(name="hg_kuma_emailbundle_message_subscriber")
  * @ORM\Entity(repositoryClass="Hgabka\KunstmaanEmailBundle\Repository\MessageSubscriberRepository")
  */
 class MessageSubscriber extends AbstractEntity

@@ -10,7 +10,7 @@ namespace Hgabka\KunstmaanEmailBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
-use Gedmo\Timestampable\Traits\TimestampableEntity;
+use Hgabka\KunstmaanExtensionBundle\Traits\TimestampableEntity;
 use Kunstmaan\AdminBundle\Entity\AbstractEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -19,10 +19,10 @@ use Kunstmaan\MediaBundle\Entity\Media;
 /**
  * Attachment
  *
- * @ORM\Table(name="hgabka_kunstmaanemailbundle_attachment")
+ * @ORM\Table(name="hg_kuma_emailbundle_attachment")
  * @ORM\Entity(repositoryClass="Hgabka\KunstmaanEmailBundle\Repository\AttachmentRepository")
  */
-class Attachment
+class Attachment extends AbstractEntity
 {
     use TimestampableEntity;
 

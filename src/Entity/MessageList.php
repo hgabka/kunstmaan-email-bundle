@@ -5,7 +5,7 @@ namespace Hgabka\KunstmaanEmailBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Hgabka\KunstmaanExtensionBundle\Entity\TranslatableTrait;
-use Gedmo\Timestampable\Traits\TimestampableEntity;
+use Hgabka\KunstmaanExtensionBundle\Traits\TimestampableEntity;
 use Kunstmaan\AdminBundle\Entity\AbstractEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -13,7 +13,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 /**
  * MessageList
  *
- * @ORM\Table(name="hgabka_kunstmaanemailbundle_message_list")
+ * @ORM\Table(name="hg_kuma_emailbundle_message_list")
  * @ORM\Entity(repositoryClass="Hgabka\KunstmaanEmailBundle\Repository\MessageListRepository")
  */
 class MessageList extends AbstractEntity

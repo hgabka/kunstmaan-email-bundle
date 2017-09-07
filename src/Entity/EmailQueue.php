@@ -3,15 +3,18 @@
 namespace Hgabka\KunstmaanEmailBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Hgabka\KunstmaanExtensionBundle\Traits\TimestampableEntity;
 
 /**
  * Email log
  *
- * @ORM\Table(name="hgabka_kunstmaanemailbundle_email_queue")
+ * @ORM\Table(name="hg_kuma_emailbundle_email_queue")
  * @ORM\Entity(repositoryClass="Hgabka\KunstmaanEmailBundle\Repository\EmailQueueRepository")
  */
 class EmailQueue extends AbstractQueue
 {
+    use TimestampableEntity;
+
     /**
      * @var string
      *

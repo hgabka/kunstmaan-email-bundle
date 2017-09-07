@@ -4,14 +4,14 @@ namespace Hgabka\KunstmaanEmailBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
-use Gedmo\Timestampable\Traits\TimestampableEntity;
+use Hgabka\KunstmaanExtensionBundle\Traits\TimestampableEntity;
 use Kunstmaan\AdminBundle\Entity\AbstractEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Email layout
  *
- * @ORM\Table(name="hgabka_kunstmaanemailbundle_email_campaign_message")
+ * @ORM\Table(name="hg_kuma_emailbundle_email_campaign_message")
  * @ORM\Entity(repositoryClass="Hgabka\KunstmaanEmailBundle\Repository\EmailCampaignMessageRepository")
  */
 class EmailCampaignMessage extends AbstractEntity
