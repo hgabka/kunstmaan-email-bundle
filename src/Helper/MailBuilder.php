@@ -12,6 +12,7 @@ use Doctrine\Bundle\DoctrineBundle\Registry;
 use Hgabka\KunstmaanEmailBundle\Entity\Attachment;
 use Hgabka\KunstmaanEmailBundle\Logger\MessageLogger;
 use Hgabka\KunstmaanEmailBundle\Entity\EmailTemplate;
+use Hgabka\KunstmaanExtensionBundle\Helper\KumaUtils;
 use Kunstmaan\MediaBundle\Entity\Media;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Config\FileLocator;
@@ -40,6 +41,9 @@ class MailBuilder
     /** @var  QueueManager */
     protected $queueManager;
 
+    /** @var  KumaUtils */
+    protected $kumaUtils;
+
     /**
      * MailBuilder constructor.
      * @param Registry $doctrine
@@ -49,7 +53,7 @@ class MailBuilder
      * @param ParamSubstituter $paramSubstituter
      * @param Translator $translator
      */
-    public function __construct(Registry $doctrine, \Swift_Mailer $mailer, RequestStack $requestStack, QueueManager $queueManager, ParamSubstituter $paramSubstituter, Translator $translator)
+    public function __construct(Registry $doctrine, \Swift_Mailer $mailer, RequestStack $requestStack, QueueManager $queueManager, ParamSubstituter $paramSubstituter, Translator $translator, KumaUtils $kumaUtils)
     {
         $this->doctrine = $doctrine;
         $this->requestStack = $requestStack;
@@ -57,6 +61,7 @@ class MailBuilder
         $this->mailer = $mailer;
         $this->translator = $translator;
         $this->queueManager = $queueManager;
+        $this->kumaUtils = $kumaUtils;
     }
 
     /**
@@ -143,7 +148,7 @@ class MailBuilder
 
         $request = $this->requestStack->getCurrentRequest();
         if (empty($culture)) {
-            $culture = $request->getLocale();
+            $culture = $this->kumaUtils->getCurrentLocale();
         }
 
         $subject = $this->paramSubstituter->substituteParams($template->translate($culture)->getSubject(), $params, true);

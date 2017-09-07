@@ -6,11 +6,11 @@ parameters:
 services:
     hgabka_kunstmaan_email.mail_builder:
         class: '%hgabka_kunstmaan_email.mail_builder.class%'
-        arguments: ["@doctrine", "@mailer", "@request_stack", "@hgabka_kunstmaan_email.queue_manager", "@hgabka_kunstmaan_email.param_substituter", "@translator"]
+        arguments: ["@doctrine", "@mailer", "@request_stack", "@hgabka_kunstmaan_email.queue_manager", "@hgabka_kunstmaan_email.param_substituter", "@translator", "@hgabka_kunstmaan_extension.kuma_utils"]
 
     hgabka_kunstmaan_email.message_sender:
         class: '%hgabka_kunstmaan_email.message_sender.class%'
-        arguments: ["@doctrine", "@mailer", "@request_stack", "@hgabka_kunstmaan_email.queue_manager", "@hgabka_kunstmaan_email.param_substituter", "@translator"]
+        arguments: ["@doctrine", "@mailer", "@request_stack", "@hgabka_kunstmaan_email.queue_manager", "@hgabka_kunstmaan_email.param_substituter", "@translator", "@hgabka_kunstmaan_extension.kuma_utils"]
 
     hgabka_kunstmaan_email.message_logger:
         class: '%hgabka_kunstmaan_email.message_logger.class%'
