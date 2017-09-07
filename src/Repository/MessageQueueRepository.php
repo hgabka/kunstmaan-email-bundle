@@ -47,4 +47,35 @@ class MessageQueueRepository extends EntityRepository
 
         return $q->getQuery()->execute();
     }
+
+    public function getSendDataForMessage(Message $message)
+    {
+        $data = $this->createQueryBuilder('q')
+                     ->select(['q.status AS status', 'COUNT(q.id) AS num'])
+                     ->where('q.message = :message')
+                     ->groupBy('q.status')
+                     ->setParameter('message', $message)
+                     ->getQuery()
+                     ->getArrayResult()
+        ;
+
+        $sum = 0;
+        $res = array(
+            QueueStatusEnum::STATUS_INIT => 0,
+            QueueStatusEnum::STATUS_ELKULDVE => 0,
+            QueueStatusEnum::STATUS_HIBA => 0,
+            QueueStatusEnum::STATUS_SIKERTELEN =>  0,
+            QueueStatusEnum::STATUS_VISSZAPATTANT =>  0
+        );
+
+        foreach ($data as $row)
+        {
+            $res[$row['status']] = $row['num'];
+            $sum+= $row['num'];
+        }
+
+        $res['sum'] = $sum;
+
+        return $res;
+    }
 }

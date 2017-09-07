@@ -4,6 +4,7 @@ namespace Hgabka\KunstmaanEmailBundle\Helper;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\Config\FileLocator;
 
 class ParamSubstituter
 {
@@ -238,5 +239,15 @@ class ParamSubstituter
         }
 
         return $res;
+    }
+
+    /**
+     * @return array|string
+     */
+    public function getDefaultLayoutPath()
+    {
+        $locator = new FileLocator(__DIR__ . '/../../Resources/layout');
+
+        return $locator->locate('layout.html');
     }
 }

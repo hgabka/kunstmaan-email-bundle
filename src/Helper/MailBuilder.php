@@ -15,8 +15,10 @@ use Hgabka\KunstmaanEmailBundle\Entity\EmailTemplate;
 use Hgabka\KunstmaanExtensionBundle\Helper\KumaUtils;
 use Kunstmaan\MediaBundle\Entity\Media;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Translation\Translator;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Routing\Router;
+use Hgabka\KunstmaanEmailBundle\Entity\Message
 
 class MailBuilder
 {
@@ -32,42 +34,43 @@ class MailBuilder
     /** @var  ParamSubstituter */
     protected $paramSubstituter;
 
-    /** @var  \Swift_Mailer */
-    protected $mailer;
-
     /** @var Translator */
     protected $translator;
-
-    /** @var  QueueManager */
-    protected $queueManager;
 
     /** @var  KumaUtils */
     protected $kumaUtils;
 
+    /** @var  Router */
+    protected $router;
     /**
      * MailBuilder constructor.
      * @param Registry $doctrine
      * @param \Swift_Mailer $mailer
      * @param RequestStack $requestStack
-     * @param QueueManager $queueManager
      * @param ParamSubstituter $paramSubstituter
      * @param Translator $translator
+     * @param KumaUtils $kumaUtils
      */
-    public function __construct(Registry $doctrine, \Swift_Mailer $mailer, RequestStack $requestStack, QueueManager $queueManager, ParamSubstituter $paramSubstituter, Translator $translator, KumaUtils $kumaUtils)
-    {
+    public function __construct(
+        Registry $doctrine,
+        RequestStack $requestStack,
+        ParamSubstituter $paramSubstituter,
+        Translator $translator,
+        KumaUtils $kumaUtils,
+        Router $router
+    ) {
         $this->doctrine = $doctrine;
         $this->requestStack = $requestStack;
         $this->paramSubstituter = $paramSubstituter;
-        $this->mailer = $mailer;
         $this->translator = $translator;
-        $this->queueManager = $queueManager;
         $this->kumaUtils = $kumaUtils;
+        $this->router = $router;
     }
 
     /**
      * @return array
      */
-    public function getConfig() : array
+    public function getConfig(): array
     {
         return $this->config;
     }
@@ -78,15 +81,6 @@ class MailBuilder
     public function setConfig(array $config)
     {
         $this->config = $config;
-    }
-
-    /**
-     * @param int|null $limit
-     * @return array
-     */
-    public function sendQueue(?int $limit = null)
-    {
-        return $this->queueManager->sendEmails($limit);
     }
 
     /**
@@ -146,10 +140,7 @@ class MailBuilder
             $params['email'] = $email;
         }
 
-        $request = $this->requestStack->getCurrentRequest();
-        if (empty($culture)) {
-            $culture = $this->kumaUtils->getCurrentLocale();
-        }
+        $culture = $this->kumaUtils->getCurrentLocale($culture);
 
         $subject = $this->paramSubstituter->substituteParams($template->translate($culture)->getSubject(), $params, true);
 
@@ -162,26 +153,23 @@ class MailBuilder
 
         if ($layout && strlen($bodyHtml) > 0) {
             $layoutFile = $this->config['layout_file'];
-            if ($layoutFile === false)
-            {
+            if ($layoutFile === false) {
                 $layoutFile = null;
-            }
-            elseif (empty($layoutFile))
-            {
-                $layoutFile = $this->getDefaultLayoutPath();
+            } elseif (empty($layoutFile)) {
+                $layoutFile = $this->paramSubstituter->getDefaultLayoutPath();
             }
 
             $bodyHtml = strtr($layout->getDecoratedHtml($culture, $subject, $layoutFile), [
                 '%%tartalom%%' => $bodyHtml,
                 '%%nev%%'      => $name,
                 '%%email%%'    => $email,
-                '%%host%%'     => $this->requestStack->getCurrentRequest()->getHost(),
+                '%%host%%'     => $this->requestStack->getMasterRequest()->getSchemeAndHttpHost(),
             ]);
         } elseif (strlen($bodyHtml) > 0 && (false !== $this->config['layout_file'] || !empty($parameters['layout_file']))) {
             $layoutFile = !empty($parameters['layout_file']) || (isset($parameters['layout_file']) && false === $parameters['layout_file']) ? $parameters['layout_file'] : $this->config['layout_file'];
 
             if (false !== $layoutFile && !is_file($layoutFile)) {
-                $layoutFile = $this->getDefaultLayoutPath();
+                $layoutFile = $this->paramSubstituter->getDefaultLayoutPath();
             }
 
             if (!empty($layoutFile)) {
@@ -269,59 +257,6 @@ class MailBuilder
     }
 
     /**
-     * @return array|string
-     */
-    protected function getDefaultLayoutPath()
-    {
-        $locator = new FileLocator(__DIR__ . '/../../Resources/layout');
-
-        return $locator->locate('layout.html');
-    }
-
-    /**
-     * @param EmailTemplate $template
-     * @param array $params
-     * @param null $culture
-     * @param null $sendAt
-     * @param bool $campaign
-     * @return bool|mixed
-     */
-    public function enqueueTemplateMessage(EmailTemplate $template, $params = [], $culture = null, $sendAt = null, $campaign = false)
-    {
-        if (empty($culture)) {
-            $culture = $this->requestStack->getCurrentRequest()->getLocale();
-        }
-        $message = $this->createTemplateMessage($template, $params, $culture);
-        if (!$message) {
-            return false;
-        }
-        $attachments = $this->doctrine->getRepository('HgabkaKunstmaanEmailBundle:Attachment')->getByTemplate($template, $culture);
-
-        return $this->queueManager->addEmailMessageToQueue($message, $attachments, $sendAt, $campaign);
-    }
-
-    /**
-     * @param EmailTemplate $template
-     * @param array $params
-     * @param null $culture
-     * @return bool|int|mixed
-     */
-    public function sendTemplateMessage(EmailTemplate $template, $params = [], $culture = null)
-    {
-        if ($this->config['force_queueing']) {
-            return $this->enqueueTemplateMessage($template, $params, $culture, null);
-        }
-
-        $message = $this->createTemplateMessage($template, $params, $culture);
-
-        if (!$message) {
-            return false;
-        }
-
-        return $this->mailer->send($message);
-    }
-
-    /**
      * @param $layout
      * @param $subject
      * @param $bodyHtml
@@ -350,10 +285,9 @@ class MailBuilder
      * @param string $name
      * @return EmailTemplate|null
      */
-    public function getTemplateByName(string $name) : ?EmailTemplate
+    public function getTemplateByName(string $name): ?EmailTemplate
     {
-        if (empty($name))
-        {
+        if (empty($name)) {
             return null;
         }
 
@@ -364,29 +298,139 @@ class MailBuilder
      * @param $slug
      * @return null|EmailTemplate
      */
-    public function getTemplateBySlug(string $slug) : ?EmailTemplate
+    public function getTemplateBySlug(string $slug): ?EmailTemplate
     {
-        if (empty($slug))
-        {
+        if (empty($slug)) {
             return null;
         }
 
         return $this->doctrine->getRepository('HgabkaKunstmaanEmailBundle:EmailTemplate')->findOneBy(['slug' => $slug]);
     }
 
-    public function sendTemplateMail($name, $params = array(), $culture = null)
+    public function sendTemplateMail($name, $params = [], $culture = null)
     {
         $template = $this->getTemplateBySlug($name);
-        if (!$template)
-        {
+        if (!$template) {
             $template = $this->getTemplateByName($name);
         }
 
-        if (!$template)
-        {
+        if (!$template) {
             return false;
         }
 
         return $this->sendTemplateMessage($template, $params, $culture);
+    }
+
+    public function createMessageMail(Message $message, $to, $culture = null, $addCcs = true, $parameters = [])
+    {
+        $culture = $this->kumaUtils->getCurrentLocale($culture);
+
+        $params = is_array($to) ? ['nev' => current($to), 'email' => key($to)] : ['email' => $to];
+        $params['webversion'] = $this->router->generate('hgabka_kunstmaan_email_message_webversion', ['id' =>  $message->getId(), 'culture' => $culture], UrlGeneratorInterface::ABSOLUTE_URL);
+
+        $subscriber = $this->getSubscriberRepository()->findOneBy(['email' => $params['email']]);
+
+        $unsubscribeUrl = $subscriber ? $this->router->generate('hgabka_kunstmaan_email_message_unsubscribe', ['token' => $subscriber->getToken()], UrlGeneratorInterface::ABSOLUTE_URL) : '';
+        $unsubscribeLink = $subscriber ? '<a href="' . $unsubscribeUrl . '">' . $this->translator->trans('hgabka_kunstmaan_email.message_unsubscribe_default_text') . '</a>' : '';
+        $params['unsubscribe'] = $unsubscribeUrl;
+        $params['unsubscribe_link'] = $unsubscribeLink;
+
+        foreach ($parameters as $key => $value) {
+            if (!in_array($key, ['to', 'name', 'email', 'webversion', 'unsubscribe', 'unsubscribe_link']) && is_string($value)) {
+                $params[$key] = $value;
+            }
+        }
+
+        $subject = $this->paramSubstituter->substituteParams($message->translate($culture)->getSubject(), $params);
+        $mail = new \Swift_Message($subject);
+
+        $bodyText = $this->paramSubstituter->substituteParams($message->translate($culture)->getTextBody(), $params);
+        $bodyHtml = $this->paramSubstituter->substituteParams($this->paramSubstituter->embedImages($message->translate($culture)->getHtmlBody(), $mail), $params);
+
+        if ($this->config['auto_append_unsubscribe_link'] && !empty($unsubscribeLink)) {
+            $bodyHtml .= '<br /><br />' . $unsubscribeLink;
+        }
+
+        $layout = $message->getLayout();
+
+        if ($layout && strlen($bodyHtml) > 0) {
+            $bodyHtml = strtr($layout->getDecoratedHtml($culture, $subject), [
+                '%%tartalom%%' => $bodyHtml,
+                '%%nev%%'      => isset($params['nev']) ? $params['nev'] : '',
+                '%%email%%'    => isset($params['email']) ? $params['email'] : '',
+                '%%host%%'     => $this->requestStack->getMasterRequest()->getSchemeAndHttpHost(),
+            ]);
+        }
+
+        if (strlen($bodyText) > 0) {
+            $mail->addPart($bodyText, 'text/plain');
+        }
+
+        if (strlen($bodyHtml) > 0) {
+            $mail->addPart($bodyHtml, 'text/html');
+        }
+
+        $attachments = $this->doctrine->getRepository('HgabkaKunstmaanEmailBundle:Attachment')->getByMessage($message, $culture);
+
+        foreach ($attachments as $attachment) {
+            $media = $attachment->getMedia();
+
+            if ($media) {
+                $mail->attach(
+                    \Swift_Attachment::newInstance($media->getContent(), $media->getOriginalFilename(), $media->getContentType())
+                );
+            }
+        }
+
+        $mail
+            ->setSubject($subject)
+            ->setTo($to)
+        ;
+
+        $name = $message->getFromName();
+        $from = empty($name) ? $message->getFromEmail() : [$message->getFromEmail() => $name];
+        $mail->setFrom($from);
+
+        if ($addCcs) {
+            $cc = $message->getCc();
+
+            if (!empty($cc)) {
+                foreach ($this->getTos($cc) as $oneCcData) {
+                    if (!isset($oneCcData['to'])) {
+                        continue;
+                    }
+                    $oneCc = $oneCcData['to'];
+
+                    if (is_array($oneCc)) {
+                        $mail->addCc(key($oneCc), current($oneCc));
+                    } else {
+                        $mail->addCc($oneCc);
+                    }
+                }
+            }
+
+            $bcc = $message->getBcc();
+
+            if (!empty($bcc)) {
+                foreach ($this->getTos($bcc) as $oneBccData) {
+                    if (!isset($oneBccData['to'])) {
+                        continue;
+                    }
+                    $oneBcc = $oneBccData['to'];
+                    if (is_array($oneBcc)) {
+                        $mail->addCc(key($oneBcc), current($oneBcc));
+                    } else {
+                        $mail->addCc($oneBcc);
+                    }
+                }
+            }
+        }
+
+        return $mail;
+    }
+
+    protected function getSubscriberRepository()
+    {
+        return $this->doctrine->getRepository('HgabkaKunstmaanEmailBundle:MessageSubscriber');
     }
 }

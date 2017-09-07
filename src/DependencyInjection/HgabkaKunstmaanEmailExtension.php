@@ -31,11 +31,11 @@ class HgabkaKunstmaanEmailExtension extends Extension
         $loggerDefinition->replaceArgument(1, $config['log_path']);
 
         $queueDefinition = $container->getDefinition( 'hgabka_kunstmaan_email.queue_manager');
-        $queueDefinition->replaceArgument(3, $config['bounce_checking']);
-        $queueDefinition->replaceArgument(4, $config['max_retries']);
-        $queueDefinition->replaceArgument(5, $config['send_limit']);
-        $queueDefinition->replaceArgument(6, $config['message_logging']);
-        $queueDefinition->replaceArgument(7, $config['delete_sent_messages_after']);
+        $queueDefinition->replaceArgument(4, $config['bounce_checking']);
+        $queueDefinition->replaceArgument(5, $config['max_retries']);
+        $queueDefinition->replaceArgument(6, $config['send_limit']);
+        $queueDefinition->replaceArgument(7, $config['message_logging']);
+        $queueDefinition->replaceArgument(8, $config['delete_sent_messages_after']);
 
         $substituterDefinition = $container->getDefinition( 'hgabka_kunstmaan_email.param_substituter');
         $substituterDefinition->replaceArgument(2, $config['template_var_chars']);
@@ -54,5 +54,16 @@ class HgabkaKunstmaanEmailExtension extends Extension
 
         $addReturnPathPluginDefinition = $container->getDefinition( 'hgabka_kunstmaan_email.add_return_path_plugin');
         $addReturnPathPluginDefinition->addMethodCall('setConfig', [$config['return_path']]);
+
+        $mailReaderDefinition = $container->getDefinition( 'hgabka_kunstmaan_email.mailbox_reader');
+        $bcConfig = $config['bounce_checking'];
+        $mailReaderDefinition->replaceArgument(1, $bcConfig['host'] ?? null);
+        $mailReaderDefinition->replaceArgument(2, $bcConfig['port'] ?? null);
+        $mailReaderDefinition->replaceArgument(3, $bcConfig['user'] ?? null);
+        $mailReaderDefinition->replaceArgument(4, $bcConfig['pass'] ?? null);
+        $mailReaderDefinition->replaceArgument(6, $bcConfig['type'] ?? null);
+
+        $bounceCheckerDefinition = $container->getDefinition( 'hgabka_kunstmaan_email.bounce_checker');
+        $bounceCheckerDefinition->addMethodCall('setConfig', [$bcConfig]);
     }
 }

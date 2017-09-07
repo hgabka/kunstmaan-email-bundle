@@ -219,15 +219,6 @@ class EmailLayout extends AbstractEntity implements TranslatableInterface
 
     public function getDecoratedHtml($culture, $subject = '', $layoutFile = false)
     {
-        if ($layoutFile === false)
-        {
-            $layoutFile = null;
-        }
-        elseif (empty($layoutFile))
-        {
-            $layoutFile = sfConfig::get('sf_plugins_dir').'/hgEmailPlugin/data/layout.html';
-        }
-
         if (!empty($layoutFile))
         {
             $layoutFile = strtr($layoutFile, array('%culture%' => $culture));

@@ -9,7 +9,13 @@
 namespace Hgabka\KunstmaanEmailBundle\Helper;
 
 use Doctrine\Bundle\DoctrineBundle\Registry;
+use Hgabka\KunstmaanEmailBundle\Entity\Message;
+use Hgabka\KunstmaanEmailBundle\Entity\EmailTemplate;
+use Hgabka\KunstmaanEmailBundle\Entity\MessageSendList;
+use Hgabka\KunstmaanEmailBundle\Enum\MessageStatusEnum;
+use Hgabka\KunstmaanEmailBundle\Enum\QueueStatusEnum;
 use Hgabka\KunstmaanEmailBundle\Logger\MessageLogger;
+use Hgabka\KunstmaanExtensionBundle\Helper\KumaUtils;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Translation\Translator;
 
@@ -21,12 +27,6 @@ class MessageSender
     /** @var  array */
     protected $config;
 
-    /** @var  RequestStack */
-    protected $requestStack;
-
-    /** @var  ParamSubstituter */
-    protected $paramSubstituter;
-
     /** @var  \Swift_Mailer */
     protected $mailer;
 
@@ -36,26 +36,39 @@ class MessageSender
     /** @var  QueueManager */
     protected $queueManager;
 
-    /** @var bool  */
+    /** @var bool */
     protected $forceLog = false;
+
+    /** @var  KumaUtils */
+    protected $kumaUtils;
+
+    /** @var  MailBuilder */
+    protected $mailBuilder;
 
     /**
      * MailBuilder constructor.
      * @param Registry $doctrine
      * @param \Swift_Mailer $mailer
-     * @param RequestStack $requestStack
      * @param QueueManager $queueManager
      * @param ParamSubstituter $paramSubstituter
      * @param Translator $translator
+     * @param KumaUtils $kumaUtils,
+     * @param MailBuilder $mailBuilder
      */
-    public function __construct(Registry $doctrine, \Swift_Mailer $mailer, RequestStack $requestStack, QueueManager $queueManager, ParamSubstituter $paramSubstituter, Translator $translator)
-    {
+    public function __construct(
+        Registry $doctrine,
+        \Swift_Mailer $mailer,
+        QueueManager $queueManager,
+        Translator $translator,
+        KumaUtils $kumaUtils,
+        MailBuilder $mailBuilder
+    ) {
         $this->doctrine = $doctrine;
-        $this->requestStack = $requestStack;
-        $this->paramSubstituter = $paramSubstituter;
         $this->mailer = $mailer;
         $this->translator = $translator;
         $this->queueManager = $queueManager;
+        $this->kumaUtils = $kumaUtils;
+        $this->mailBuilder = $mailBuilder;
     }
 
     /**
@@ -80,7 +93,7 @@ class MessageSender
     /**
      * @return array
      */
-    public function getConfig() : array
+    public function getConfig(): array
     {
         return $this->config;
     }
@@ -93,10 +106,12 @@ class MessageSender
         $this->config = $config;
     }
 
+    /**
+     * @param $message
+     */
     public function deleteMessageFromQueue($message)
     {
-        if (!$message)
-        {
+        if (!$message) {
             return;
         }
 
@@ -105,78 +120,61 @@ class MessageSender
 
     public function addMessageToQueue($message)
     {
-        if (!$message)
-        {
+        if (!$message) {
             return;
         }
 
         $this->queueManager->addMessageToQueue($message, $this->getRecipientsForMessage($message));
-        $message->setStatus(hgMessageTable::MESSAGE_STATUS_ENQUEUED);
+        $message->setStatus(MessageStatusEnum::STATUS_KULDENDO);
         $this->updateMessageSendData($message);
     }
-
 
     public function getDefinedListRecipients($lists)
     {
         $lists = $this->getDefinedRecipientLists($lists);
 
-        if (empty($lists))
-        {
-            return array();
+        if (empty($lists)) {
+            return [];
         }
 
-        $recs = array();
-        $recipientsConfig = sfConfig::get('app_hgEmailPlugin_pre_defined_message_recipients', null);
+        $recs = [];
+        $recipientsConfig = $this->config['pre_defined_message_recipients'];
 
-        foreach ($lists as $list)
-        {
+        foreach ($lists as $list) {
             $config = $recipientsConfig[$list];
 
-            if (!isset($config['data']) || !is_callable($config['data']))
-            {
+            if (!isset($config['data']) || !is_callable($config['data'])) {
                 continue;
             }
 
             $data = call_user_func($config['data']);
 
-            if (!is_array($data))
-            {
+            if (!is_array($data)) {
                 continue;
             }
-            $realData = array();
-            foreach ($data as $row)
-            {
-                $oneRow = array();
-                if (isset($row['to']))
-                {
+            $realData = [];
+            foreach ($data as $row) {
+                $oneRow = [];
+                if (isset($row['to'])) {
                     $oneRow['to'] = $row['to'];
-                }
-                elseif (isset($row['email']))
-                {
-                    if (isset($row['name']))
-                    {
-                        $oneRow['to'] = array($row['email'] => $row['name']);
-                    }
-                    else
-                    {
+                } elseif (isset($row['email'])) {
+                    if (isset($row['name'])) {
+                        $oneRow['to'] = [$row['email'] => $row['name']];
+                    } else {
                         $oneRow['to'] = $row['email'];
                     }
                 }
 
-                if (!isset($oneRow['to']))
-                {
+                if (!isset($oneRow['to'])) {
                     continue;
                 }
 
-                if (!isset($oneRow['culture']))
-                {
-                    $oneRow['culture'] = sfConfig::get('sf_default_culture');
+                if (!isset($oneRow['culture'])) {
+                    $oneRow['culture'] = $this->kumaUtils->getDefaultLocale();
                 }
 
-                foreach (array_keys($row) as $other)
-                {
-                    if (!in_array($other, array('to', 'culture', 'email', 'name')))
-                    {
+                foreach (array_keys($row) as $other) {
+                    if (!in_array($other, ['to', 'culture', 'email', 'name'])) {
                         $oneRow[$other] = $row[$other];
                     }
                 }
@@ -190,33 +188,26 @@ class MessageSender
         return $recs;
     }
 
-
     public function getRecipientsForMessage($message)
     {
-        $recs = array();
-        foreach (sfConfig::get('sf_enabled_cultures') as $culture)
-        {
+        $recs = [];
+        foreach ($this->kumaUtils->getAvailableLocales() as $culture) {
             $tos = $this->getTos($message->getTo(), $culture);
-            foreach ($tos as $to)
-            {
+            foreach ($tos as $to) {
                 $recs[] = $to;
             }
         }
 
         $definedListRecipients = $this->getDefinedListRecipients($message->getToType());
-        if (!empty($definedListRecipients))
-        {
-            foreach ($definedListRecipients as $listRec)
-            {
+        if (!empty($definedListRecipients)) {
+            foreach ($definedListRecipients as $listRec) {
                 $recs[] = $listRec;
             }
         }
 
         $listRecipients = $this->getListRecipientsForMessage($message);
-        if (!empty($listRecipients))
-        {
-            foreach ($listRecipients as $listRec)
-            {
+        if (!empty($listRecipients)) {
+            foreach ($listRecipients as $listRec) {
                 $recs[] = $listRec;
             }
         }
@@ -226,37 +217,33 @@ class MessageSender
 
     public function getListsForMessage($message)
     {
-        $lists = array();
+        $lists = [];
         $sendLists = $message->getSendLists();
-        foreach ($sendLists as $sendList)
-        {
+        foreach ($sendLists as $sendList) {
             $lists[] = $sendList->getList()->getName();
         }
 
         return $lists;
     }
 
-    public function getListRecipientsForMessage($message)
+    public function getListRecipientsForMessage(Message $message)
     {
-        $recs = array();
+        $recs = [];
 
         $sendLists = $message->getSendLists();
-        $emails = array();
-        foreach ($sendLists as $sendList)
-        {
-            foreach ($sendList->getList()->getListSubscriptions() as $listSubscription)
-            {
+        $emails = [];
+        foreach ($sendLists as $sendList) {
+            /** @var MessageSendList $sendList */
+            foreach ($sendList->getList()->getListSubscriptions() as $listSubscription) {
                 $subscriber = $listSubscription->getSubscriber();
-                if (!$subscriber->exists())
-                {
+                if ($subscriber) {
                     $listSubscription->delete();
                     continue;
                 }
 
-                if (!in_array($subscriber->getEmail(), $emails))
-                {
-                    $ar = $subscriber->toArray();
-                    $recs[] = array_merge($ar, array('to' => array($subscriber->getEmail() => $subscriber->getName()), 'culture' => $subscriber->getCulture()));
+                if (!in_array($subscriber->getEmail(), $emails)) {
+                    $ar = get_object_vars($subscriber);
+                    $recs[] = array_merge($ar, ['to' => [$subscriber->getEmail() => $subscriber->getName()], 'culture' => $subscriber->getCulture()]);
                     $emails[] = $subscriber->getEmail();
                 }
             }
@@ -265,59 +252,51 @@ class MessageSender
         return $recs;
     }
 
-    public function sendMessage(hgMessage $message, $forceSend = false)
+    public function sendMessage(Message $message, $forceSend = false)
     {
         $sendAt = $message->getSendAt();
         $sentAt = $message->getSentAt();
         $sent = 0;
         $fail = 0;
 
-        if (((!is_null($sendAt) && $sendAt > date('Y-m-d H:i:s')) || !empty($sentAt)) && !$forceSend)
-        {
+        if (((!is_null($sendAt) && $sendAt > date('Y-m-d H:i:s')) || !empty($sentAt)) && !$forceSend) {
             return;
         }
 
-        $mailer = $this->getContext()->getMailer();
+        $mailer = $this->mailer;
         $recs = $this->getRecipientsForMessage($message);
 
-        foreach ($recs as $rec)
-        {
-            if (!isset($rec['to']))
-            {
+        foreach ($recs as $rec) {
+            if (!isset($rec['to'])) {
                 continue;
             }
             $to = $rec['to'];
-            $culture = isset($rec['culture']) ? $rec['culture'] : sfConfig::get('sf_default_culture');
+            $culture = isset($rec['culture']) ? $rec['culture'] : $this->kumaUtils->getDefaultLocale();
 
             $email = is_array($to) ? key($to) : $to;
 
-            try
-            {
+            try {
                 $mail = $this->createMessageMail($message, $to, $culture, true, $rec);
-                if ($mailer->send($mail))
-                {
-                    $this->log('Email kuldese sikeres. Email: '.$email);
+                if ($mailer->send($mail)) {
+                    $this->log('Email kuldese sikeres. Email: ' . $email);
 
                     $message->setSentAt(date('Y-m-d H:i:s'));
                     $sent++;
-                }
-                else
-                {
-                    $this->log('Email kuldes sikertelen. Email: '. $email);
+                } else {
+                    $this->log('Email kuldes sikertelen. Email: ' . $email);
                     $fail++;
                 }
-            }
-            catch (Exception $e)
-            {
-                $this->log('Email kuldes sikertelen. Email: '. $email . ' Hiba: '.$e->getMessage());
+            } catch (Exception $e) {
+                $this->log('Email kuldes sikertelen. Email: ' . $email . ' Hiba: ' . $e->getMessage());
 
                 $fail++;
             }
         }
 
-        $message->save();
+        $em = $this->doctrine->getManager();
+        $em->flush();
 
-        return array('sent' => $sent, 'fail' => $fail, 'total' => $sent+$fail);
+        return ['sent' => $sent, 'fail' => $fail, 'total' => $sent + $fail];
     }
 
     public function log($message)
@@ -325,201 +304,77 @@ class MessageSender
         $this->queueManager->log($message, $this->forceLog);
     }
 
-    public function createMessageMail(hgMessage $message, $to, $culture = null, $addCcs = true, $parameters = array())
-    {
-        $builder = hgMailBuilder::getInstance();
-
-        $culture = hgUtils::getCurrentCulture($culture);
-
-        $params = is_array($to) ? array('nev' => current($to), 'email' => key($to)) : array('email' => $to);
-        $params['webversion'] = $this->getContext()->getController()->genUrl('@hg_message_webversion?id='.$message->getId().'&culture='.$culture, true);
-
-        $subscriber = hgMessageSubscriberTable::getInstance()->findOneByEmail($params['email']);
-
-        $unsubscribeUrl = $subscriber ? $this->getContext()->getController()->genUrl('@hg_message_unsubscribe?token='.$subscriber->getToken(), true) : '';
-        $unsubscribeLink = $subscriber ? '<a href="'.$unsubscribeUrl.'">'.$this->getContext()->getI18N()->__('hg_message_unsubscribe_default_text').'</a>' : '';
-        $params['unsubscribe'] = $unsubscribeUrl;
-        $params['unsubscribe_link'] = $unsubscribeLink;
-
-        foreach ($parameters as $key => $value)
-        {
-            if (!in_array($key, array('to', 'name', 'email', 'webversion', 'unsubscribe', 'unsubscribe_link')) && is_string($value))
-            {
-                $params[$key] = $value;
-            }
-        }
-        $mailer = $this->getContext()->getMailer();
-        $mail = $mailer->compose();
-
-
-        $subject = $builder->substituteParams($message->Translation[$culture]->Subject, $params);
-        $bodyText = $builder->substituteParams($message->Translation[$culture]->TextBody, $params);
-        $bodyHtml = $builder->substituteParams($builder->embedImages($message->Translation[$culture]->HtmlBody, $mail), $params);
-
-        if (sfConfig::get('app_hgEmailPlugin_auto_append_unsubscribe_link') && !empty($unsubscribeLink))
-        {
-            $bodyHtml.='<br /><br />'.$unsubscribeLink;
-        }
-
-        $layout = $message->getLayout();
-
-        if ($layout && $layout->exists() && strlen($bodyHtml) > 0)
-        {
-            $bodyHtml = strtr($layout->getDecoratedHtml($culture), array(
-                '%%tartalom%%' => $bodyHtml,
-                '%%nev%%' => isset($params['nev']) ? $params['nev'] : '',
-                '%%email%%' => isset($params['email']) ? $params['email'] : '',
-                '%%host%%' => $this->getContext()->getRequest()->getHost()));
-        }
-
-
-        if (strlen($bodyText) > 0)
-        {
-            $mail->addPart($bodyText, 'text/plain');
-        }
-
-        if (strlen($bodyHtml) > 0)
-        {
-            $mail->addPart($bodyHtml, 'text/html');
-        }
-
-        $attachments = $message->getAttachments($culture);
-
-        foreach ($attachments as $attachment)
-        {
-            $repoFile = hgabkaFileTable::getInstance()->findOneById($attachment->getFileId());
-
-            if ($repoFile)
-            {
-                $mail->attach(
-                    Swift_Attachment::fromPath(hgabkaFileRepository::getInstance()->getFilePath($repoFile))->setFilename($repoFile->getOriginalFilename())
-                );
-            }
-        }
-
-        $mail
-            ->setSubject($subject)
-            ->setTo($to);
-
-        $name = $message->getFromName();
-        $from = empty($name) ? $message->getFromEmail() : array($message->getFromEmail() => $name);
-        $mail->setFrom($from);
-
-        if ($addCcs)
-        {
-            $cc = $message->getCc();
-
-            if (!empty($cc))
-            {
-                foreach ($this->getTos($cc) as $oneCcData)
-                {
-                    if (!isset($oneCcData['to']))
-                    {
-                        continue;
-                    }
-                    $oneCc = $oneCcData['to'];
-
-                    if (is_array($oneCc))
-                    {
-                        $mail->addCc(key($oneCc), current($oneCc));
-                    }
-                    else
-                    {
-                        $mail->addCc($oneCc);
-                    }
-                }
-            }
-
-            $bcc = $message->getBcc();
-
-            if (!empty($bcc))
-            {
-                foreach ($this->getTos($bcc) as $oneBccData)
-                {
-                    if (!isset($oneBccData['to']))
-                    {
-                        continue;
-                    }
-                    $oneBcc = $oneBccData['to'];
-                    if (is_array($oneBcc))
-                    {
-                        $mail->addCc(key($oneBcc), current($oneBcc));
-                    }
-                    else
-                    {
-                        $mail->addCc($oneBcc);
-                    }
-                }
-            }
-        }
-
-
-        return $mail;
-    }
 
     public function prepareMessage($message)
     {
         $sendAt = $message->getSendAt();
-        $message->setStatus(hgMessageTable::MESSAGE_STATUS_PREPARED);
+        $message->setStatus(MessageStatusEnum::STATUS_KULDENDO);
 
-        if (empty($sendAt) || $sendAt < date('Y-m-d H:i:s'))
-        {
+        if (empty($sendAt) || $sendAt < date('Y-m-d H:i:s')) {
             $this->addMessageToQueue($message);
-        }
-        else
-        {
-            $message->save();
+        } else {
+            $this->doctrine->getManager()->flush();
         }
     }
 
     public function updateMessageSendData($message)
     {
-        if (!$message || $message->getStatus() != hgMessageTable::MESSAGE_STATUS_ENQUEUED)
-        {
+        if (!$message || $message->getStatus() != MessageStatusEnum::STATUS_FOLYAMATBAN) {
             return;
         }
 
-        $sendData = hgMessageQueueTable::getInstance()->getSendDataForMessage($message->getId());
+        $sendData = $this->getQueueRepository()->getSendDataForMessage($message);
 
-        $message->setSentMail($sendData['sum']);
-        $message->setSentSuccess($sendData[hgMessageQueueTable::QUEUE_STATUS_SENT]);
-        $message->setSentFail($sendData[hgMessageQueueTable::QUEUE_STATUS_FAIL]);
+        $message
+            ->setSentMail($sendData['sum'])
+            ->setSentSuccess($sendData[QueueStatusEnum::STATUS_ELKULDVE])
+            ->setSentFail($sendData[QueueStatusEnum::STATUS_SIKERTELEN]);
 
-        if ($sendData['sum'] == $sendData[hgMessageQueueTable::QUEUE_STATUS_SENT] +  $sendData[hgMessageQueueTable::QUEUE_STATUS_FAIL] +  $sendData[hgMessageQueueTable::QUEUE_STATUS_BOUNCED])
-        {
-            $message->setStatus(hgMessageTable::MESSAGE_STATUS_SENT);
-            $days = sfConfig::get('app_hgEmailPlugin_delete_sent_messages_after', null);
+        if ($sendData['sum'] == $sendData[QueueStatusEnum::STATUS_ELKULDVE] + $sendData[QueueStatusEnum::STATUS_SIKERTELEN] + $sendData[QueueStatusEnum::STATUS_VISSZAPATTANT]) {
+            $message->setStatus(MessageStatusEnum::STATUS_ELKULDVE);
+            $days = $this->config['delete_sent_messages_after'];
 
-            if (empty($days))
-            {
+            if (empty($days)) {
                 $this->deleteMessageFromQueue($message);
             }
         }
 
-        $message->save();
+        $em = $this->doctrine->getManager();
+        $em->flush();
     }
 
     public function prepareMessages()
     {
-        $messages = hgMessageTable::getInstance()->getMessagesToQueue();
+        $messages = $this->getMessageRepository()->getMessagesToQueue();
 
-        foreach ($messages as $message)
-        {
+        foreach ($messages as $message) {
             $this->prepareMessage($message);
         }
     }
 
     public function updateMessages()
     {
-        $messages = hgMessageTable::getInstance()->getMessagesToUpdate();
+        $messages = $this->getMessageRepository()->getMessagesToUpdate();
 
-        foreach ($messages as $message)
-        {
+        foreach ($messages as $message) {
             $this->updateMessageSendData($message);
         }
     }
 
-    public function sendQueue(?int $limit = null)
+    /**
+     * @param int|null $limit
+     * @return array
+     */
+    public function sendEmailQueue(?int $limit = null)
+    {
+        return $this->queueManager->sendEmails($limit);
+    }
+
+    /**
+     * @param int|null $limit
+     * @return array
+     */
+    public function sendMessageQueue(?int $limit = null)
     {
         $this->prepareMessages();
 
@@ -532,45 +387,42 @@ class MessageSender
 
     public function unPrepareMessage($message)
     {
-        if (!$message)
-        {
+        if (!$message) {
             return;
         }
 
         $this->deleteMessageFromQueue($message);
-        $message->setSentMail(0);
-        $message->setSentSuccess(0);
-        $message->setSentFail(0);
-        $message->setStatus(hgMessageTable::MESSAGE_STATUS_INIT);
+        $message
+            ->setSentMail(0)
+            ->setSentSuccess(0)
+            ->setSentFail(0)
+            ->setStatus(MessageStatusEnum::STATUS_INIT)
+        ;
 
-        $message->save();
+        $em = $this->doctrine->getManager();
+        $em->flush();
     }
 
     public function getTos($tos, $culture = null)
     {
         $toArray = explode("\r\n", trim($tos, "\r\n"));
 
-        $recs = array();
-        $culture = hgUtils::getCurrentCulture($culture);
+        $recs = [];
+        $culture = $this->kumaUtils->getCurrentLocale($culture);
 
-        foreach ($toArray as $oneTo)
-        {
+        foreach ($toArray as $oneTo) {
             $oneTo = trim($oneTo, "\r\n");
 
-            if (false !== strpos($oneTo, ':'))
-            {
+            if (false !== strpos($oneTo, ':')) {
                 $parts = explode(':', $oneTo);
                 $email = trim($parts[1]);
-                $to = array($email => trim($parts[0]));
-            }
-            else
-            {
+                $to = [$email => trim($parts[0])];
+            } else {
                 $to = trim($oneTo);
             }
 
-            if (!empty($to))
-            {
-                $recs[] = array('to' => $to, 'culture' => $culture);
+            if (!empty($to)) {
+                $recs[] = ['to' => $to, 'culture' => $culture];
             }
         }
 
@@ -582,46 +434,99 @@ class MessageSender
         $recipientsConfig = $this->config['pre_defined_message_recipients'];
         $lists = explode("\r\n", $lists);
 
-        if (empty($recipientsConfig) || !is_array($recipientsConfig) || empty($lists))
-        {
-            return array();
+        if (empty($recipientsConfig) || !is_array($recipientsConfig) || empty($lists)) {
+            return [];
         }
 
         return array_intersect(array_keys($recipientsConfig), $lists);
-
     }
 
     public function sendMessages(?int $limit = null)
     {
-        if (empty($limit))
-        {
+        if (empty($limit)) {
             $limit = $this->config['send_limit'];
         }
 
-        $this->log('Uzenetek kuldese (limit: '.$limit.')');
+        $this->log('Uzenetek kuldese (limit: ' . $limit . ')');
         $messages = $this->getMessageRepository()->getMessagesToSend();
 
         $sent = 0;
         $fail = 0;
 
-        foreach ($messages as $message)
-        {
+        foreach ($messages as $message) {
             $result = $this->sendMessage($message);
 
-            $sent+= $result['sent'];
-            $fail+= $result['fail'];
+            $sent += $result['sent'];
+            $fail += $result['fail'];
 
-            if ($sent >= $limit)
-            {
+            if ($sent >= $limit) {
                 $this->log('Limit elerve, kuldes vege');
 
-                return array('sent' => $sent, 'fail' => $fail, 'total' => $sent+$fail);
+                return ['sent' => $sent, 'fail' => $fail, 'total' => $sent + $fail];
             }
         }
 
         $this->log('Nincs tobb kuldendo email, kuldes vege');
 
-        return array('sent' => $sent, 'fail' => $fail, 'total' => $sent+$fail);
+        return ['sent' => $sent, 'fail' => $fail, 'total' => $sent + $fail];
+    }
+
+    public function getDefinedRecipientListChoices()
+    {
+        $recipientsConfig = $this->config['pre_defined_message_recipients'];
+
+        if (empty($recipientsConfig) || !is_array($recipientsConfig)) {
+            return [];
+        }
+
+        $choices = [];
+        foreach ($recipientsConfig as $key => $config) {
+            $choices[$key] = isset($config['label']) ? $this->translator->trans($config['label']) : $key;
+        }
+
+        return $choices;
+    }
+
+    /**
+     * @param EmailTemplate $template
+     * @param array $params
+     * @param null $culture
+     * @param null $sendAt
+     * @param bool $campaign
+     * @return bool|mixed
+     */
+    public function enqueueTemplateMessage(EmailTemplate $template, $params = [], $culture = null, $sendAt = null, $campaign = false)
+    {
+        $culture = $this->kumaUtils->getCurrentLocale($culture);
+
+        $message = $this->createTemplateMessage($template, $params, $culture);
+        if (!$message) {
+            return false;
+        }
+        $attachments = $this->doctrine->getRepository('HgabkaKunstmaanEmailBundle:Attachment')->getByTemplate($template, $culture);
+
+        return $this->queueManager->addEmailMessageToQueue($message, $attachments, $sendAt, $campaign);
+    }
+
+    /**
+     * @param EmailTemplate $template
+     * @param array $params
+     * @param null $culture
+     * @return bool|int|mixed
+     */
+    public function sendTemplateMessage(EmailTemplate $template, $params = [], $culture = null)
+    {
+        if ($this->config['force_queueing']) {
+            return $this->enqueueTemplateMessage($template, $params, $culture, null);
+        }
+
+        $message = $this->createTemplateMessage($template, $params, $culture);
+
+        if (!$message) {
+            return false;
+        }
+
+        return $this->mailer->send($message);
     }
 
     protected function getQueueRepository()

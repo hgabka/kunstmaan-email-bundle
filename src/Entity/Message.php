@@ -76,6 +76,12 @@ class Message extends AbstractEntity implements TranslatableInterface
     private $sendAt;
 
     /**
+     * @var \DateTime
+     * @ORM\Column(name="sent_at", type="datetime", nullable=true)
+     */
+    private $sentAt;
+
+    /**
      * @var string
      * @ORM\Column(name="status", type="string", length=20)
      */
@@ -428,7 +434,7 @@ class Message extends AbstractEntity implements TranslatableInterface
     /**
      * @return MessageSendList[]
      */
-    public function getMessageSendLists()
+    public function getSendLists()
     {
         return $this->sendLists;
     }
@@ -476,5 +482,24 @@ class Message extends AbstractEntity implements TranslatableInterface
     public static function getTranslationEntityClass()
     {
         return MessageTranslation::class;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getSentAt(): \DateTime
+    {
+        return $this->sentAt;
+    }
+
+    /**
+     * @param \DateTime $sentAt
+     * @return Message
+     */
+    public function setSentAt($sentAt)
+    {
+        $this->sentAt = $sentAt;
+
+        return $this;
     }
 }

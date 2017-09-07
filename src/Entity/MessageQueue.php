@@ -66,4 +66,80 @@ class MessageQueue extends AbstractQueue
 
         return $this;
     }
+
+    /**
+     * @return string
+     */
+    public function getToName(): string
+    {
+        return $this->toName;
+    }
+
+    /**
+     * @param string $toName
+     * @return MessageQueue
+     */
+    public function setToName($toName)
+    {
+        $this->toName = $toName;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getToEmail(): string
+    {
+        return $this->toEmail;
+    }
+
+    /**
+     * @param string $toEmail
+     * @return MessageQueue
+     */
+    public function setToEmail($toEmail)
+    {
+        $this->toEmail = $toEmail;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLocale(): string
+    {
+        return $this->locale;
+    }
+
+    /**
+     * @param string $locale
+     * @return MessageQueue
+     */
+    public function setLocale($locale)
+    {
+        $this->locale = $locale;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getParameters(): string
+    {
+        return $this->parameters;
+    }
+
+    /**
+     * @param string $parameters
+     * @return MessageQueue
+     */
+    public function setParameters($parameters)
+    {
+        $this->parameters = $parameters;
+
+        return $this;
+    }
 }

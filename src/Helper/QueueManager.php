@@ -11,6 +11,7 @@ namespace Hgabka\KunstmaanEmailBundle\Helper;
 use Hgabka\KunstmaanEmailBundle\Entity\AbstractQueue;
 use Doctrine\Bundle\DoctrineBundle\Registry;
 use Hgabka\KunstmaanEmailBundle\Entity\Attachment;
+use Hgabka\KunstmaanEmailBundle\Entity\MessageQueue;
 use Hgabka\KunstmaanEmailBundle\Enum\QueueStatusEnum;
 use Kunstmaan\MediaBundle\Entity\Media;
 
@@ -43,7 +44,10 @@ class QueueManager
     protected $sendLimit;
 
     /** @var  int */
-    protected $deleteSentMessagesAfter
+    protected $deleteSentMessagesAfter;
+
+    /** @var  MailBuilder */
+    protected $mailBuilder;
 
     public function __construct(Registry $doctrine, \Swift_Mailer $mailer, MessageLogger $logger, array $bounceConfig, int $maxRetries, int $sendLimit, bool $loggingEnabled, int $deleteSentMessagesAfter)
     {
@@ -55,6 +59,17 @@ class QueueManager
         $this->logger = $logger;
         $this->loggingEnabled = $loggingEnabled;
         $this->deleteSentMessagesAfter = $deleteSentMessagesAfter;
+    }
+
+    /**
+     * @param MailBuilder $mailBulder
+     * @return QueueManager
+     */
+    public function setMailBuilder($mailBuilder)
+    {
+        $this->mailBuilder = $mailBuilder;
+
+        return $this;
     }
 
     /**
@@ -82,14 +97,14 @@ class QueueManager
      * @param bool $forceLog
      * @return MailBuilder
      */
-    public function setForceLog($forceLog) : MailBuilder
+    public function setForceLog($forceLog): MailBuilder
     {
         $this->forceLog = $forceLog;
 
         return $this;
     }
 
-    public function send(AbstractQueue $queue)
+    public function sendEmailQueue(EmailQueue $queue)
     {
         $to = unserialize($queue->getTo());
         $from = unserialize($queue->getFrom());
@@ -139,7 +154,7 @@ class QueueManager
             }
 
             $headers = $message->getHeaders();
-            $headers->addTextHeader('hgabka-kunstmaan-email-id', $queue->getId());
+            $headers->addTextHeader('Hg-Email-Id', $queue->getId());
 
             if (isset($this->bounceConfig['account']['address'])) {
                 $message->setReturnPath($this->bounceConfig['account']['address']);
@@ -158,6 +173,61 @@ class QueueManager
             }
         } catch (\Exception $e) {
             $this->setError($e->getMessage(), $queue);
+            $this->doctrine->getManager()->flush();
+
+            return false;
+        }
+    }
+
+    public function sendMessageQueue(MessageQueue $queue)
+    {
+        $mailer = $this->mailer;
+        $message = $queue->getMessage();
+
+        if (!$message) {
+            $queue->setStatus(QueueStatusEnum::STATUS_SIKERTELEN);
+            $this->doctrine->getManager()->flush();
+            $this->lastError = 'Hianyzo uzenet';
+        }
+
+        if (in_array($queue->getStatus(), [QueueStatusEnum::STATUS_SIKERTELEN, QueueStatusEnum::STATUS_VISSZAPATTANT])) {
+            return false;
+        }
+
+        $toName = $queue->getToName();
+        $toEmail = $queue->getToEmail();
+
+        $to = empty($toName) ? $toEmail : [$toEmail => $toName];
+
+        $fromName = $message->getFromName();
+        $fromEmail = $message->getFromEmail();
+
+        $from = empty($fromName) ? $fromEmail : [$fromEmail => $fromName];
+
+        try {
+            $params = $queue->getParameters();
+            $message = $this->mailBuilder->createMessageMail($message, $to, $queue->getLocale(), true, unserialize($params));
+            $headers = $message->getHeaders();
+            $headers->addTextHeader('Hg-Message-Id', $message->getId());
+
+            $bounceConfig = $this->config['bounce_checking'];
+            if (isset($bounceConfig['account']['address'])) {
+                $message->setReturnPath($bounceConfig['account']['address']);
+            }
+
+            if ($mailer->send($message) < 1) {
+                $queue->setError('Sikertelen kuldes');
+                $this->doctrine->getManager()->flush();
+
+                return false;
+            } else {
+                $queue->setStatus(QueueStatusEnum::STATUS_ELKULDVE);
+                $this->doctrine->getManager()->flush();
+
+                return true;
+            }
+        } catch (Exception $e) {
+            $queue->setError($e->getMessage());
             $this->doctrine->getManager()->flush();
 
             return false;
@@ -189,15 +259,12 @@ class QueueManager
     {
         $this->deleteMessageFromQueue($message);
 
-        if (!$message)
-        {
+        if (!$message) {
             return false;
         }
 
-        foreach ($recipients as $recipient)
-        {
-            if (!isset($recipient['to']))
-            {
+        foreach ($recipients as $recipient) {
+            if (!isset($recipient['to'])) {
                 continue;
             }
 
@@ -206,13 +273,10 @@ class QueueManager
 
             $queue = new hgMessageQueue();
             $queue->setSmgId($message_id);
-            if (is_array($to))
-            {
+            if (is_array($to)) {
                 $queue->setToEmail(key($to));
                 $queue->setToName(current($to));
-            }
-            else
-            {
+            } else {
                 $queue->setToEmail($to);
             }
 
@@ -227,8 +291,7 @@ class QueueManager
 
     public function addEmailMessageToQueue($message, $attachments, $sendAt = null, $campaign = false)
     {
-        if (!$message)
-        {
+        if (!$message) {
             return;
         }
 
@@ -241,26 +304,21 @@ class QueueManager
         $queue->setSubject($message->getSubject());
         $queue->setContentText($message->getBody());
 
-        if ($campaign instanceof EmailCampaign)
-        {
+        if ($campaign instanceof EmailCampaign) {
             $queue->setCampaign($campaign);
         }
 
         $children = $message->getChildren();
-        foreach ($children as $child)
-        {
-            if ($child->getContentType() == 'text/html')
-            {
+        foreach ($children as $child) {
+            if ($child->getContentType() == 'text/html') {
                 $queue->setContentHtml($child->getBody());
             }
-
         }
 
         $em = $this->doctrine->getManager();
         $em->persist($queue);
 
-        foreach ($attachments as $attachment)
-        {
+        foreach ($attachments as $attachment) {
             $newAttachment = new Attachment();
             $newAttachment->setType(get_class($queue));
             $newAttachment->setOwnerId($queue->getId());
@@ -291,7 +349,7 @@ class QueueManager
      * @param int|null $limit
      * @return array
      */
-    public function sendEmails(?int $limit = null) : array
+    public function sendEmails(?int $limit = null): array
     {
         if (empty($limit)) {
             $limit = $this->sendLimit;
@@ -310,7 +368,7 @@ class QueueManager
 
             $email = is_array($to) ? key($to) : $to;
 
-            if ($this->send($queue)) {
+            if ($this->sendEmailQueue($queue)) {
                 $this->log('Sikertelen kuldes ujra. Email kuldese sikeres. Email: ' . $email);
                 $this->doctrine->getManager()->remove($queue);
                 $sent++;
@@ -357,78 +415,68 @@ class QueueManager
         return ['total' => $count, 'sent' => $sent, 'fail' => $fail];
     }
 
-    public function sendMessages($limit = null)
+    /**
+     * @param int|null $limit
+     * @return array
+     */
+    public function sendMessages(?int $limit = null) : array
     {
-        if (empty($limit))
-        {
-            $limit = sfConfig::get('app_hgEmailPlugin_send_limit', 20);
+        if (empty($limit)) {
+            $limit = $this->sendLimit;
         }
 
-        $this->log('Uzenetek kuldese (limit: '.$limit.')');
+        $this->log('Uzenetek kuldese (limit: ' . $limit . ')');
 
         $count = $sent = $fail = 0;
 
-        $errorQueues = hgMessageQueueTable::getInstance()->getErrorQueuesForSend($limit);
+        $queueRepo = $this->doctrine->getRepository('HgabkaKunstmaanEmailBundle:MessageQueue');
+        $errorQueues = $queueRepo->getErrorQueuesForSend($limit);
 
-        foreach ($errorQueues as $queue)
-        {
+        foreach ($errorQueues as $queue) {
             $count++;
             $email = $queue->getToEmail();
 
-            if ($queue->send())
-            {
-                $this->log('Sikertelen kuldes ujra. Email kuldese sikeres. Email: '.$email);
+            if ($this->sendMessageQueue($queue)) {
+                $this->log('Sikertelen kuldes ujra. Email kuldese sikeres. Email: ' . $email);
                 $sent++;
-            }
-            else
-            {
-                $this->log('Sikertelen kuldes ujra. Email kuldes sikertelen. Email: '. $email . ' Hiba: '.$queue->getLastError());
+            } else {
+                $this->log('Sikertelen kuldes ujra. Email kuldes sikertelen. Email: ' . $email . ' Hiba: ' . $queue->getLastError());
                 $fail++;
             }
         }
 
-        if ($sent >= $limit)
-        {
+        if ($sent >= $limit) {
             $this->log('Limit elerve, kuldes vege');
 
-            return array('total' => $count, 'sent' => $sent, 'fail' => $fail);
+            return ['total' => $count, 'sent' => $sent, 'fail' => $fail];
         }
 
-        $queues = hgMessageQueueTable::getInstance()->getNotSentQueuesForSend($limit - $sent);
+        $queues = $queueRepo->getNotSentQueuesForSend($limit - $sent);
 
-        foreach ($queues as $queue)
-        {
+        foreach ($queues as $queue) {
             $count++;
             $email = $queue->getToEmail();
-            if ($queue->send())
-            {
-                $this->log('Email kuldese sikeres. Email: '.$email);
+            if ($queue->send()) {
+                $this->log('Email kuldese sikeres. Email: ' . $email);
                 $sent++;
-            }
-            else
-            {
-                $this->log('Email kuldes sikertelen. Email: '. $email . ' Hiba: '.$queue->getLastError());
+            } else {
+                $this->log('Email kuldes sikertelen. Email: ' . $email . ' Hiba: ' . $queue->getLastError());
                 $fail++;
             }
         }
 
-        if ($count >= $limit)
-        {
+        if ($count >= $limit) {
             $this->log('Limit elerve, kuldes vege');
-        }
-        else
-        {
+        } else {
             $this->log('Nincs tobb kuldendo email, kuldes vege');
         }
 
-        return array('total' => $count, 'sent' => $sent, 'fail' => $fail);
+        return ['total' => $count, 'sent' => $sent, 'fail' => $fail];
     }
-
 
     public function deleteMessageFromQueue($message)
     {
-        if (!$message)
-        {
+        if (!$message) {
             return;
         }
 
