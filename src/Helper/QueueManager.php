@@ -24,18 +24,69 @@ class QueueManager
     /** @var \Swift_Mailer */
     protected $mailer;
 
+    /** @var  MessageLogger */
+    protected $logger;
+
+    /** @var bool */
+    protected $forceLog = false;
+
+    /** @var bool */
+    protected $loggingEnabled = false;
+
     /** @var  array */
     protected $bounceConfig;
 
     /** @var int */
     protected $maxRetries;
 
-    public function __construct(Registry $doctrine, \Swift_Mailer $mailer, array $bounceConfig, int $maxRetries)
+    /** @var int */
+    protected $sendLimit;
+
+    /** @var  int */
+    protected $deleteSentMessagesAfter
+
+    public function __construct(Registry $doctrine, \Swift_Mailer $mailer, MessageLogger $logger, array $bounceConfig, int $maxRetries, int $sendLimit, bool $loggingEnabled, int $deleteSentMessagesAfter)
     {
         $this->doctrine = $doctrine;
         $this->mailer = $mailer;
         $this->bounceConfig = $bounceConfig;
         $this->maxRetries = $maxRetries;
+        $this->sendLimit = $sendLimit;
+        $this->logger = $logger;
+        $this->loggingEnabled = $loggingEnabled;
+        $this->deleteSentMessagesAfter = $deleteSentMessagesAfter;
+    }
+
+    /**
+     * @param $message
+     * @return bool
+     */
+    public function log($message, $force = false)
+    {
+        if (!$this->forceLog && !$this->loggingEnabled && !$force) {
+            return false;
+        }
+
+        $this->logger->getLogger()->info($message);
+    }
+
+    /**
+     * @return bool
+     */
+    public function isForceLog(): bool
+    {
+        return $this->forceLog;
+    }
+
+    /**
+     * @param bool $forceLog
+     * @return MailBuilder
+     */
+    public function setForceLog($forceLog) : MailBuilder
+    {
+        $this->forceLog = $forceLog;
+
+        return $this;
     }
 
     public function send(AbstractQueue $queue)
@@ -128,13 +179,53 @@ class QueueManager
 
         if (++$retries > $this->maxRetries) {
             $queue->setStatus(QueueStatusEnum::STATUS_SIKERTELEN);
-            $this->lastError .= "\n$maxRetries probalkozas elerve, sikertelen statusz beallitva";
+            $this->lastError .= "\n{$this->maxRetries} probalkozas elerve, sikertelen statusz beallitva";
         } else {
             $queue->setRetries($retries)->setStatus(QueueStatusEnum::STATUS_HIBA);
         }
     }
 
-    public function addMessageToQueue($message, $attachments, $sendAt = null, $campaign = false)
+    public function addMessageToQueue($message, $recipients)
+    {
+        $this->deleteMessageFromQueue($message);
+
+        if (!$message)
+        {
+            return false;
+        }
+
+        foreach ($recipients as $recipient)
+        {
+            if (!isset($recipient['to']))
+            {
+                continue;
+            }
+
+            $to = $recipient['to'];
+            $culture = isset($recipient['culture']) ? $recipient['culture'] : sfConfig::get('sf_default_culture');
+
+            $queue = new hgMessageQueue();
+            $queue->setSmgId($message_id);
+            if (is_array($to))
+            {
+                $queue->setToEmail(key($to));
+                $queue->setToName(current($to));
+            }
+            else
+            {
+                $queue->setToEmail($to);
+            }
+
+            $queue->setCulture($culture);
+            $queue->setParameters(serialize($recipient));
+            $queue->setRetries(0);
+            $queue->setStatus(self::QUEUE_STATUS_INIT);
+
+            $queue->save();
+        }
+    }
+
+    public function addEmailMessageToQueue($message, $attachments, $sendAt = null, $campaign = false)
     {
         if (!$message)
         {
@@ -194,5 +285,163 @@ class QueueManager
     public function getLastError()
     {
         return $this->lastError;
+    }
+
+    /**
+     * @param int|null $limit
+     * @return array
+     */
+    public function sendEmails(?int $limit = null) : array
+    {
+        if (empty($limit)) {
+            $limit = $this->sendLimit;
+        }
+
+        $this->log('Uzenetek kuldese (limit: ' . $limit . ')');
+
+        $count = $sent = $fail = 0;
+
+        $queueRepo = $this->doctrine->getRepository('HgabkaKunstmaanEmailBundle:EmailQueue');
+        $errorQueues = $queueRepo->getErrorQueuesForSend($limit);
+
+        foreach ($errorQueues as $queue) {
+            $count++;
+            $to = unserialize($queue->getTo());
+
+            $email = is_array($to) ? key($to) : $to;
+
+            if ($this->send($queue)) {
+                $this->log('Sikertelen kuldes ujra. Email kuldese sikeres. Email: ' . $email);
+                $this->doctrine->getManager()->remove($queue);
+                $sent++;
+            } else {
+                $this->log('Sikertelen kuldes ujra. Email kuldes sikertelen. Email: ' . $email . ' Hiba: ' . $queue->getLastError());
+                $fail++;
+            }
+        }
+
+        if ($sent >= $limit) {
+            $this->log('Limit elerve, kuldes vege');
+
+            return ['total' => $count, 'sent' => $sent, 'fail' => $fail];
+        }
+
+        $queues = $queueRepo->getNotSentQueuesForSend($limit - $sent);
+
+        foreach ($queues as $queue) {
+            $count++;
+            $to = unserialize($queue->getTo());
+
+            $email = is_array($to) ? key($to) : $to;
+            if ($this->send($queue)) {
+                $this->log('Email kuldese sikeres. Email: ' . $email);
+
+                $days = $this->config['delete_sent_messages_after'];
+
+                if (empty($days)) {
+                    $queue->delete();
+                }
+                $sent++;
+            } else {
+                $this->log('Email kuldes sikertelen. Email: ' . $email . ' Hiba: ' . $queue->getLastError());
+                $fail++;
+            }
+        }
+
+        if ($count >= $limit) {
+            $this->log('Limit elerve, kuldes vege');
+        } else {
+            $this->log('Nincs tobb kuldendo email, kuldes vege');
+        }
+
+        return ['total' => $count, 'sent' => $sent, 'fail' => $fail];
+    }
+
+    public function sendMessages($limit = null)
+    {
+        if (empty($limit))
+        {
+            $limit = sfConfig::get('app_hgEmailPlugin_send_limit', 20);
+        }
+
+        $this->log('Uzenetek kuldese (limit: '.$limit.')');
+
+        $count = $sent = $fail = 0;
+
+        $errorQueues = hgMessageQueueTable::getInstance()->getErrorQueuesForSend($limit);
+
+        foreach ($errorQueues as $queue)
+        {
+            $count++;
+            $email = $queue->getToEmail();
+
+            if ($queue->send())
+            {
+                $this->log('Sikertelen kuldes ujra. Email kuldese sikeres. Email: '.$email);
+                $sent++;
+            }
+            else
+            {
+                $this->log('Sikertelen kuldes ujra. Email kuldes sikertelen. Email: '. $email . ' Hiba: '.$queue->getLastError());
+                $fail++;
+            }
+        }
+
+        if ($sent >= $limit)
+        {
+            $this->log('Limit elerve, kuldes vege');
+
+            return array('total' => $count, 'sent' => $sent, 'fail' => $fail);
+        }
+
+        $queues = hgMessageQueueTable::getInstance()->getNotSentQueuesForSend($limit - $sent);
+
+        foreach ($queues as $queue)
+        {
+            $count++;
+            $email = $queue->getToEmail();
+            if ($queue->send())
+            {
+                $this->log('Email kuldese sikeres. Email: '.$email);
+                $sent++;
+            }
+            else
+            {
+                $this->log('Email kuldes sikertelen. Email: '. $email . ' Hiba: '.$queue->getLastError());
+                $fail++;
+            }
+        }
+
+        if ($count >= $limit)
+        {
+            $this->log('Limit elerve, kuldes vege');
+        }
+        else
+        {
+            $this->log('Nincs tobb kuldendo email, kuldes vege');
+        }
+
+        return array('total' => $count, 'sent' => $sent, 'fail' => $fail);
+    }
+
+
+    public function deleteMessageFromQueue($message)
+    {
+        if (!$message)
+        {
+            return;
+        }
+
+        $this->doctrine->getRepository('HgabkaKunstmaanEmailBundle:MessageQueue')->deleteMessageFromQueue($message);
+    }
+
+    public function deleteEmailFromQueue($email)
+    {
+        $this->doctrine->getRepository('HgabkaKunstmaanEmailBundle:MessageQueue')->deleteEmailFromQueue($email);
+    }
+
+    public function clearMessageQueue()
+    {
+        return $this->doctrine->getRepository('HgabkaKunstmaanEmailBundle:MessageQueue')->clearQueue($this->deleteSentMessagesAfter);
     }
 }

@@ -35,7 +35,8 @@ class MailerSubscriber implements EventSubscriberInterface
     {
         return [
             MailerEvent::EVENT_SEND_CALLED => 'onSendCalled',
-            MailerEvent::EVENT_MAIL_SENT => 'onMailSent'
+            MailerEvent::EVENT_MAIL_SENT => 'onMailSent',
+            MailerEvent::EVENT_ADD_HEADERS => 'onAddHeaders',
         ];
     }
 
@@ -57,5 +58,13 @@ class MailerSubscriber implements EventSubscriberInterface
         if ($this->strategy != 'mailer_send') {
             $this->logger->logMessage($event);
         }
+    }
+
+    /**
+     * @param MailerEvent $event
+     */
+    public function onAddHeaders(MailerEvent $event)
+    {
+        $event->setReturnValue($event->getParameter('configHeaders'));
     }
 }

@@ -18,54 +18,6 @@ class AbstractQueue extends AbstractEntity
 {
     use TimestampableEntity;
 
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="from", type="text", nullable=true)
-     */
-    private $from;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="to", type="text", nullable=true)
-     */
-    private $to;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="cc", type="text", nullable=true)
-     */
-    private $cc;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="bcc", type="text", nullable=true)
-     */
-    private $bcc;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="subject", type="string", length=255, nullable=true)
-     */
-    private $subject;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="content_text", type="text", nullable=true)
-     */
-    private $contentText;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="content_html", type="text", nullable=true)
-     */
-    private $contentHtml;
 
     /**
      * @var integer
@@ -80,13 +32,6 @@ class AbstractQueue extends AbstractEntity
      * @ORM\Column(name="status", type="string", length=20)
      */
     private $status = QueueStatusEnum::STATUS_INIT;
-
-    /**
-     * @var \DateTime
-     *
-     * @ORM\Column(name="send_at", type="datetime", nullable=true)
-     */
-    private $sendAt;
 
     /**
      * @return mixed

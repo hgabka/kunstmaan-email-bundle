@@ -31,8 +31,11 @@ class HgabkaKunstmaanEmailExtension extends Extension
         $loggerDefinition->replaceArgument(1, $config['log_path']);
 
         $queueDefinition = $container->getDefinition( 'hgabka_kunstmaan_email.queue_manager');
-        $queueDefinition->replaceArgument(2, $config['bounce_checking']);
-        $queueDefinition->replaceArgument(3, $config['max_retries']);
+        $queueDefinition->replaceArgument(3, $config['bounce_checking']);
+        $queueDefinition->replaceArgument(4, $config['max_retries']);
+        $queueDefinition->replaceArgument(5, $config['send_limit']);
+        $queueDefinition->replaceArgument(6, $config['message_logging']);
+        $queueDefinition->replaceArgument(7, $config['delete_sent_messages_after']);
 
         $substituterDefinition = $container->getDefinition( 'hgabka_kunstmaan_email.param_substituter');
         $substituterDefinition->replaceArgument(2, $config['template_var_chars']);
@@ -40,7 +43,16 @@ class HgabkaKunstmaanEmailExtension extends Extension
         $mailerSubscriberDefinition = $container->getDefinition( 'hgabka_kunstmaan_email.mailer_subscriber');
         $mailerSubscriberDefinition->replaceArgument(1, $config['email_logging_strategy']);
 
-        $redirectPluginDefinition = $container->getDefinition( 'hgabka_kunstmaan_email.mail_builder');
+        $redirectPluginDefinition = $container->getDefinition( 'hgabka_kunstmaan_email.redirect_plugin');
         $redirectPluginDefinition->addMethodCall('setRedirectConfig', [$config['redirect']]);
+
+        $addHeadersPluginDefinition = $container->getDefinition( 'hgabka_kunstmaan_email.add_headers_plugin');
+        $addHeadersPluginDefinition->addMethodCall('setConfig', [$config['add_headers']]);
+
+        $addHeadersPluginDefinition = $container->getDefinition( 'hgabka_kunstmaan_email.add_recipients_plugin');
+        $addHeadersPluginDefinition->addMethodCall('setConfig', [$config['add_recipients']]);
+
+        $addReturnPathPluginDefinition = $container->getDefinition( 'hgabka_kunstmaan_email.add_return_path_plugin');
+        $addReturnPathPluginDefinition->addMethodCall('setConfig', [$config['return_path']]);
     }
 }

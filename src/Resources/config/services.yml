@@ -6,11 +6,11 @@ parameters:
 services:
     hgabka_kunstmaan_email.mail_builder:
         class: '%hgabka_kunstmaan_email.mail_builder.class%'
-        arguments: ["@doctrine", "@mailer", "@request_stack", "@hgabka_kunstmaan_email.queue_manager", "@hgabka_kunstmaan_email.param_substituter", "@translator", "@hgabka_kunstmaan_email.message_logger"]
+        arguments: ["@doctrine", "@mailer", "@request_stack", "@hgabka_kunstmaan_email.queue_manager", "@hgabka_kunstmaan_email.param_substituter", "@translator"]
 
     hgabka_kunstmaan_email.message_sender:
         class: '%hgabka_kunstmaan_email.message_sender.class%'
-        arguments: ["@doctrine", "@mailer", "@request_stack", "@hgabka_kunstmaan_email.queue_manager", "@hgabka_kunstmaan_email.param_substituter", "@translator", "@hgabka_kunstmaan_email.message_logger"]
+        arguments: ["@doctrine", "@mailer", "@request_stack", "@hgabka_kunstmaan_email.queue_manager", "@hgabka_kunstmaan_email.param_substituter", "@translator"]
 
     hgabka_kunstmaan_email.message_logger:
         class: '%hgabka_kunstmaan_email.message_logger.class%'
@@ -22,7 +22,7 @@ services:
 
     hgabka_kunstmaan_email.queue_manager:
         class: 'Hgabka\KunstmaanEmailBundle\Helper\QueueManager'
-        arguments: ["@doctrine", "@mailer", '', '']
+        arguments: ["@doctrine", "@mailer", "@hgabka_kunstmaan_email.message_logger", '', '', '', '', '']
 
     hgabka_kunstmaan_email.param_substituter:
         class: 'Hgabka\KunstmaanEmailBundle\Helper\ParamSubstituter'
@@ -55,6 +55,23 @@ services:
             - method: setDebug
               arguments:
                   - "%kernel.debug%"
+        tags:
+            - { name: "swiftmailer.default.plugin" }
+
+
+    hgabka_kunstmaan_email.add_headers_plugin:
+        class: Hgabka\KunstmaanEmailBundle\Mailer\AddHeadersPlugin
+        arguments: ["@event_dispatcher"]
+        tags:
+            - { name: "swiftmailer.default.plugin" }
+
+    hgabka_kunstmaan_email.add_recipients_plugin:
+        class: Hgabka\KunstmaanEmailBundle\Mailer\AddRecipientsPlugin
+        tags:
+            - { name: "swiftmailer.default.plugin" }
+
+    hgabka_kunstmaan_email.add_return_path_plugin:
+        class: Hgabka\KunstmaanEmailBundle\Mailer\AddReturnPathPlugin
         tags:
             - { name: "swiftmailer.default.plugin" }
 

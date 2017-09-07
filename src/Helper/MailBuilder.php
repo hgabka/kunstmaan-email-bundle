@@ -22,14 +22,8 @@ class MailBuilder
     /** @var Registry */
     protected $doctrine;
 
-    /** @var  MessageLogger */
-    protected $logger;
-
     /** @var  array */
     protected $config;
-
-    /** @var bool */
-    protected $forceLog = false;
 
     /** @var  RequestStack */
     protected $requestStack;
@@ -54,12 +48,10 @@ class MailBuilder
      * @param QueueManager $queueManager
      * @param ParamSubstituter $paramSubstituter
      * @param Translator $translator
-     * @param MessageLogger $logger
      */
-    public function __construct(Registry $doctrine, \Swift_Mailer $mailer, RequestStack $requestStack, QueueManager $queueManager, ParamSubstituter $paramSubstituter, Translator $translator, MessageLogger $logger)
+    public function __construct(Registry $doctrine, \Swift_Mailer $mailer, RequestStack $requestStack, QueueManager $queueManager, ParamSubstituter $paramSubstituter, Translator $translator)
     {
         $this->doctrine = $doctrine;
-        $this->logger = $logger;
         $this->requestStack = $requestStack;
         $this->paramSubstituter = $paramSubstituter;
         $this->mailer = $mailer;
@@ -84,114 +76,12 @@ class MailBuilder
     }
 
     /**
-     * @param $message
-     * @return bool
-     */
-    public function log($message)
-    {
-        if (!$this->forceLog && !$this->config['message_logging']) {
-            return false;
-        }
-
-        $this->logger->getLogger()->info($message);
-    }
-
-    /**
-     * @return bool
-     */
-    public function isForceLog(): bool
-    {
-        return $this->forceLog;
-    }
-
-    /**
-     * @param bool $forceLog
-     * @return MailBuilder
-     */
-    public function setForceLog($forceLog) : MailBuilder
-    {
-        $this->forceLog = $forceLog;
-
-        return $this;
-    }
-
-    /**
      * @param int|null $limit
      * @return array
      */
     public function sendQueue(?int $limit = null)
     {
-        return $this->sendEmails($limit);
-    }
-
-    /**
-     * @param int|null $limit
-     * @return array
-     */
-    protected function sendEmails(?int $limit = null) : array
-    {
-        if (empty($limit)) {
-            $limit = $this->config['send_limit'];
-        }
-
-        $this->log('Uzenetek kuldese (limit: ' . $limit . ')');
-
-        $count = $sent = $fail = 0;
-
-        $queueRepo = $this->doctrine->getRepository('HgabkaKunstmaanEmailBundle:EmailQueue');
-        $errorQueues = $queueRepo->getErrorQueuesForSend($limit);
-
-        foreach ($errorQueues as $queue) {
-            $count++;
-            $to = unserialize($queue->getTo());
-
-            $email = is_array($to) ? key($to) : $to;
-
-            if ($queue->send()) {
-                $this->log('Sikertelen kuldes ujra. Email kuldese sikeres. Email: ' . $email);
-                $this->doctrine->getManager()->remove($clear);
-                $sent++;
-            } else {
-                $this->log('Sikertelen kuldes ujra. Email kuldes sikertelen. Email: ' . $email . ' Hiba: ' . $queue->getLastError());
-                $fail++;
-            }
-        }
-
-        if ($sent >= $limit) {
-            $this->log('Limit elerve, kuldes vege');
-
-            return ['total' => $count, 'sent' => $sent, 'fail' => $fail];
-        }
-
-        $queues = $queueRepo->getNotSentQueuesForSend($limit - $sent);
-
-        foreach ($queues as $queue) {
-            $count++;
-            $to = unserialize($queue->getTo());
-
-            $email = is_array($to) ? key($to) : $to;
-            if ($queue->send()) {
-                $this->log('Email kuldese sikeres. Email: ' . $email);
-
-                $days = $this->config['delete_sent_messages_after'];
-
-                if (empty($days)) {
-                    $queue->delete();
-                }
-                $sent++;
-            } else {
-                $this->log('Email kuldes sikertelen. Email: ' . $email . ' Hiba: ' . $queue->getLastError());
-                $fail++;
-            }
-        }
-
-        if ($count >= $limit) {
-            $this->log('Limit elerve, kuldes vege');
-        } else {
-            $this->log('Nincs tobb kuldendo email, kuldes vege');
-        }
-
-        return ['total' => $count, 'sent' => $sent, 'fail' => $fail];
+        return $this->queueManager->sendEmails($limit);
     }
 
     /**
@@ -402,7 +292,7 @@ class MailBuilder
         }
         $attachments = $this->doctrine->getRepository('HgabkaKunstmaanEmailBundle:Attachment')->getByTemplate($template, $culture);
 
-        return $this->queueManager->addMessageToQueue($message, $attachments, $sendAt, $campaign);
+        return $this->queueManager->addEmailMessageToQueue($message, $attachments, $sendAt, $campaign);
     }
 
     /**
