@@ -71,9 +71,8 @@ class EmailTemplateAdminType extends AbstractType
                     'label' => 'hgabka_kuma_email.labels.content_text',
                 ],
                 'contentHtml' => [
-                    'field_type' => TextareaType::class,
+                    'field_type' => WysiwygType::class,
                     'label' => 'hgabka_kuma_email.labels.content_html',
-                    'attr' => ['class' => 'js-rich-editor']
                 ],
             ]
             ]);

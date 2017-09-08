@@ -72,17 +72,17 @@ class EmailMenuAdaptor implements MenuAdaptorInterface
 
         } elseif ('email' == $parent->getUniqueId()) {
 
-            $menuItem = new TopMenuItem($menu);
+            $menuItem = new MenuItem($menu);
             $menuItem
                 ->setRoute('hgabkakunstmaanemailbundle_admin_emailtemplate')
-                ->setUniqueId('email-template')
+                ->setUniqueId('email_template')
                 ->setLabel('Email sablonok')
                 ->setParent($parent);
             if (stripos($request->attributes->get('_route'), $menuItem->getRoute()) === 0) {
                 $menuItem->setActive(true);
                 $parent->setActive(true);
             }
-			
+
             $children[] = $menuItem;
         }
     }
