@@ -16,7 +16,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 /**
  * Email layout
  *
- * @ORM\Table(name="hg_kuma_emailbundle_email_template")
+ * @ORM\Table(name="hg_kuma_email_email_template")
  * @ORM\Entity(repositoryClass="Hgabka\KunstmaanEmailBundle\Repository\EmailTemplateRepository")
  */
 class EmailTemplate extends AbstractEntity implements TranslatableInterface

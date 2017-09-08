@@ -11,7 +11,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * Email layout
  *
- * @ORM\Table(name="hg_kuma_emailbundle_email_campaign_message")
+ * @ORM\Table(name="hg_kuma_email_email_campaign_message")
  * @ORM\Entity(repositoryClass="Hgabka\KunstmaanEmailBundle\Repository\EmailCampaignMessageRepository")
  */
 class EmailCampaignMessage extends AbstractEntity

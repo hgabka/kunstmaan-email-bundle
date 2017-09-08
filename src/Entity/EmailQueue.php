@@ -8,7 +8,7 @@ use Hgabka\KunstmaanExtensionBundle\Traits\TimestampableEntity;
 /**
  * Email log
  *
- * @ORM\Table(name="hg_kuma_emailbundle_email_queue")
+ * @ORM\Table(name="hg_kuma_email_email_queue")
  * @ORM\Entity(repositoryClass="Hgabka\KunstmaanEmailBundle\Repository\EmailQueueRepository")
  */
 class EmailQueue extends AbstractQueue
@@ -18,28 +18,28 @@ class EmailQueue extends AbstractQueue
     /**
      * @var string
      *
-     * @ORM\Column(name="from", type="text", nullable=true)
+     * @ORM\Column(name="mail_from", type="text", nullable=true)
      */
     private $from;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="to", type="text", nullable=true)
+     * @ORM\Column(name="mail_to", type="text", nullable=true)
      */
     private $to;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="cc", type="text", nullable=true)
+     * @ORM\Column(name="mail_cc", type="text", nullable=true)
      */
     private $cc;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="bcc", type="text", nullable=true)
+     * @ORM\Column(name="mail_bcc", type="text", nullable=true)
      */
     private $bcc;
 

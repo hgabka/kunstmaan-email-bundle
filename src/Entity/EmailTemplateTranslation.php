@@ -9,7 +9,7 @@ use Prezent\Doctrine\Translatable\Entity\TranslationTrait;
 use Prezent\Doctrine\Translatable\TranslationInterface;
 
 /**
- * @ORM\Table(name="hg_kuma_emailbundle_email_template_translation")
+ * @ORM\Table(name="hg_kuma_email_email_template_translation")
  * @ORM\Entity
  */
 class EmailTemplateTranslation extends AbstractEntity implements TranslationInterface

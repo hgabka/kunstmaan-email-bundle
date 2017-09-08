@@ -11,16 +11,19 @@ class ParamSubstituter
     /** @var  RequestStack */
     protected $requestStack;
 
-    /** @var  string */
     protected $varChars;
 
     /** @var  string */
     protected $cacheDir;
 
-    public function __construct(RequestStack $requestStack, string $cacheDir, string $varChars)
+    /** @var  string */
+    protected $projectDir;
+
+    public function __construct(RequestStack $requestStack, string $cacheDir, string $projectDir, $varChars)
     {
         $this->requestStack = $requestStack;
         $this->cacheDir = $cacheDir;
+        $this->projectDir = $projectDir;
         $this->varChars = $varChars;
     }
 
@@ -87,7 +90,7 @@ class ParamSubstituter
     protected function embedImage($url, $email)
     {
         if (strpos($url, 'http://') !== 0 && strpos($url, 'https://') !== 0) {
-            $file = sfConfig::get('sf_web_dir') . $url;
+            $file = $this->projectDir.'/web/' . $url;
             if (!is_file($file)) {
                 return $url;
             }
@@ -132,15 +135,15 @@ class ParamSubstituter
 
     public function getVarChars()
     {
-        $params = sfConfig::get('app_hgEmailPlugin_mail_template_params');
-        if (empty($params['var_chars'])) {
+        $varChars = $this->varChars;
+        if (empty($varChars)) {
             return ['prefix' => '%%', 'postfix' => '%%'];
         }
-        if (is_string($params['var_chars'])) {
-            return ['prefix' => $params['var_chars'], 'postfix' => $params['var_chars']];
+        if (is_string($varChars)) {
+            return ['prefix' => $varChars, 'postfix' => $varChars];
         }
 
-        return ['prefix' => isset($params['var_chars']['prefix']) ? $params['var_chars']['prefix'] : '', 'postfix' => isset($params['var_chars']['postfix']) ? $params['var_chars']['postfix'] : ''];
+        return ['prefix' => isset($varChars['prefix']) ? $varChars['prefix'] : '', 'postfix' => isset($varChars['postfix']) ? $varChars['postfix'] : ''];
     }
 
     public function normalizeParams($params)
@@ -246,7 +249,7 @@ class ParamSubstituter
      */
     public function getDefaultLayoutPath()
     {
-        $locator = new FileLocator(__DIR__ . '/../../Resources/layout');
+        $locator = new FileLocator(__DIR__ . '/../Resources/layout');
 
         return $locator->locate('layout.html');
     }

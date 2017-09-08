@@ -18,7 +18,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * MessageListSubscription
  *
- * @ORM\Table(name="hg_kuma_emailbundle_message_list_subscription")
+ * @ORM\Table(name="hg_kuma_email_message_list_subscription")
  * @ORM\Entity(repositoryClass="Hgabka\KunstmaanEmailBundle\Repository\MessageListSubscriptionRepository")
  */
 class MessageListSubscription extends AbstractEntity

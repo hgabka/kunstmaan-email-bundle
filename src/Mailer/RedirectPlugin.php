@@ -22,6 +22,52 @@ class RedirectPlugin extends \Swift_Plugins_RedirectingPlugin
     protected $debug;
 
     /**
+     * The recipient who will receive all messages.
+     *
+     * @var mixed
+     */
+    private $_recipient;
+
+    /**
+     * List of regular expression for recipient whitelisting.
+     *
+     * @var array
+     */
+    private $_whitelist = array();
+
+    /**
+     * Create a new RedirectingPlugin.
+     *
+     * @param mixed $recipient
+     * @param array $whitelist
+     */
+    public function __construct($recipient, array $whitelist = array())
+    {
+        $this->_recipient = $recipient;
+        $this->_whitelist = $whitelist;
+    }
+
+    /**
+     * Set the recipient of all messages.
+     *
+     * @param mixed $recipient
+     */
+    public function setRecipient($recipient)
+    {
+        $this->_recipient = $recipient;
+    }
+
+    /**
+     * Get the recipient of all messages.
+     *
+     * @return mixed
+     */
+    public function getRecipient()
+    {
+        return $this->_recipient;
+    }
+
+    /**
      * @return RequestStack
      */
     public function getRequestStack(): RequestStack
@@ -115,13 +161,26 @@ class RedirectPlugin extends \Swift_Plugins_RedirectingPlugin
     public function beforeSendPerformed(\Swift_Events_SendEvent $evt)
     {
         if (!$this->isEnabled()) {
-            return parent::beforeSendPerformed($evt);
+            return;
         }
 
         $message = $evt->getMessage();
         $headers = $message->getHeaders();
+        $this->_parentRestoreMessage($message);
 
-        $headers->addTextHeader('X-Swift-Subject', $message->getSubject());
+        if ($headers->has('to')) {
+            $headers->addMailboxHeader('Hg-Swift-To', $message->getTo());
+        }
+
+        if ($headers->has('cc')) {
+            $headers->addMailboxHeader('Hg-Swift-Cc', $message->getCc());
+        }
+
+        if ($headers->has('bcc')) {
+            $headers->addMailboxHeader('Hg-Swift-Bcc', $message->getBcc());
+        }
+
+        $headers->addTextHeader('Hg-Swift-Subject', $message->getSubject());
 
         // Appending original recipient data to subject
         $redirectConfig = $this->redirectConfig;
@@ -134,12 +193,33 @@ class RedirectPlugin extends \Swift_Plugins_RedirectingPlugin
             );
         }
 
-        parent::beforeSendPerformed($evt);
+        // Add each hard coded recipient
+        $to = $message->setTo($this->_recipient);
     }
 
     public function sendPerformed(\Swift_Events_SendEvent $evt)
     {
-        $this->_restoreMessage($evt->getMessage());
+        if ($this->isEnabled()) {
+          //  $this->_restoreMessage($evt->getMessage());
+        }
+    }
+
+    private function _parentRestoreMessage(\Swift_Mime_Message $message)
+    {
+        // restore original headers
+        $headers = $message->getHeaders();
+
+        if ($headers->has('X-Swift-To')) {
+            $message->setTo($headers->get('X-Swift-To')->getNameAddresses());
+        }
+
+        if ($headers->has('X-Swift-Cc')) {
+            $message->setCc($headers->get('X-Swift-Cc')->getNameAddresses());
+        }
+
+        if ($headers->has('X-Swift-Bcc')) {
+            $message->setBcc($headers->get('X-Swift-Bcc')->getNameAddresses());
+        }
     }
 
     /**
@@ -152,24 +232,24 @@ class RedirectPlugin extends \Swift_Plugins_RedirectingPlugin
         // restore original headers
         $headers = $message->getHeaders();
 
-        if ($headers->has('X-Swift-To')) {
-            $message->setTo($headers->get('X-Swift-To')->getNameAddresses());
-            $headers->removeAll('X-Swift-To');
+        if ($headers->has('Hg-Swift-To')) {
+            $message->setTo($headers->get('Hg-Swift-To')->getNameAddresses());
+            $headers->removeAll('Hg-Swift-To');
         }
 
-        if ($headers->has('X-Swift-Cc')) {
-            $message->setCc($headers->get('X-Swift-Cc')->getNameAddresses());
-            $headers->removeAll('X-Swift-Cc');
+        if ($headers->has('Hg-Swift-Cc')) {
+            $message->setCc($headers->get('Hg-Swift-Cc')->getNameAddresses());
+            $headers->removeAll('Hg-Swift-Cc');
         }
 
-        if ($headers->has('X-Swift-Bcc')) {
-            $message->setBcc($headers->get('X-Swift-Bcc')->getNameAddresses());
-            $headers->removeAll('X-Swift-Bcc');
+        if ($headers->has('Hg-Swift-Bcc')) {
+            $message->setBcc($headers->get('Hg-Swift-Bcc')->getNameAddresses());
+            $headers->removeAll('Hg-Swift-Bcc');
         }
 
-        if ($headers->has('X-Swift-Subject')) {
-            $message->setSubject($headers->get('X-Swift-Subject')->getValue());
-            $headers->removeAll('X-Swift-Subject');
+        if ($headers->has('Hg-Swift-Subject')) {
+            $message->setSubject($headers->get('Hg-Swift-Subject')->getValue());
+            $headers->removeAll('Hg-Swift-Subject');
         }
     }
 

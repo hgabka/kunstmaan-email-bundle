@@ -22,7 +22,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 /**
  * Email layout
  *
- * @ORM\Table(name="hg_kuma_emailbundle_email_layout")
+ * @ORM\Table(name="hg_kuma_email_email_layout")
  * @ORM\Entity(repositoryClass="Hgabka\KunstmaanEmailBundle\Repository\EmailLayoutRepository")
  */
 class EmailLayout extends AbstractEntity implements TranslatableInterface

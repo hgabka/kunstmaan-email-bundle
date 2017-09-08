@@ -20,7 +20,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 /**
  * Subscriber
  *
- * @ORM\Table(name="hg_kuma_emailbundle_message_subscriber")
+ * @ORM\Table(name="hg_kuma_email_message_subscriber")
  * @ORM\Entity(repositoryClass="Hgabka\KunstmaanEmailBundle\Repository\MessageSubscriberRepository")
  */
 class MessageSubscriber extends AbstractEntity

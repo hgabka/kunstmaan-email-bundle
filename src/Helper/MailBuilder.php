@@ -15,10 +15,10 @@ use Hgabka\KunstmaanEmailBundle\Entity\EmailTemplate;
 use Hgabka\KunstmaanExtensionBundle\Helper\KumaUtils;
 use Kunstmaan\MediaBundle\Entity\Media;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\Translation\Translator;
+use Symfony\Component\Translation\TranslatorInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Symfony\Component\Routing\Router;
-use Hgabka\KunstmaanEmailBundle\Entity\Message
+use Symfony\Component\Routing\RouterInterface;
+use Hgabka\KunstmaanEmailBundle\Entity\Message;
 
 class MailBuilder
 {
@@ -34,13 +34,13 @@ class MailBuilder
     /** @var  ParamSubstituter */
     protected $paramSubstituter;
 
-    /** @var Translator */
+    /** @var TranslatorInterface */
     protected $translator;
 
     /** @var  KumaUtils */
     protected $kumaUtils;
 
-    /** @var  Router */
+    /** @var  RouterInterface */
     protected $router;
     /**
      * MailBuilder constructor.
@@ -55,9 +55,9 @@ class MailBuilder
         Registry $doctrine,
         RequestStack $requestStack,
         ParamSubstituter $paramSubstituter,
-        Translator $translator,
+        TranslatorInterface $translator,
         KumaUtils $kumaUtils,
-        Router $router
+        RouterInterface $router
     ) {
         $this->doctrine = $doctrine;
         $this->requestStack = $requestStack;
@@ -285,7 +285,7 @@ class MailBuilder
      * @param string $name
      * @return EmailTemplate|null
      */
-    public function getTemplateByName(string $name): ?EmailTemplate
+    public function getTemplateByName(string $name)
     {
         if (empty($name)) {
             return null;
@@ -298,7 +298,7 @@ class MailBuilder
      * @param $slug
      * @return null|EmailTemplate
      */
-    public function getTemplateBySlug(string $slug): ?EmailTemplate
+    public function getTemplateBySlug($slug)
     {
         if (empty($slug)) {
             return null;
@@ -307,18 +307,14 @@ class MailBuilder
         return $this->doctrine->getRepository('HgabkaKunstmaanEmailBundle:EmailTemplate')->findOneBy(['slug' => $slug]);
     }
 
-    public function sendTemplateMail($name, $params = [], $culture = null)
+    public function getTemplate($name)
     {
         $template = $this->getTemplateBySlug($name);
         if (!$template) {
             $template = $this->getTemplateByName($name);
         }
 
-        if (!$template) {
-            return false;
-        }
-
-        return $this->sendTemplateMessage($template, $params, $culture);
+        return $template;
     }
 
     public function createMessageMail(Message $message, $to, $culture = null, $addCcs = true, $parameters = [])

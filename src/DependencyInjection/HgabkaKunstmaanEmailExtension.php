@@ -38,14 +38,14 @@ class HgabkaKunstmaanEmailExtension extends Extension
         $queueDefinition->replaceArgument(8, $config['delete_sent_messages_after']);
 
         $substituterDefinition = $container->getDefinition( 'hgabka_kunstmaan_email.param_substituter');
-        $substituterDefinition->replaceArgument(2, $config['template_var_chars']);
+        $substituterDefinition->replaceArgument(3, $config['template_var_chars']);
 
         $mailerSubscriberDefinition = $container->getDefinition( 'hgabka_kunstmaan_email.mailer_subscriber');
         $mailerSubscriberDefinition->replaceArgument(1, $config['email_logging_strategy']);
 
         $redirectPluginDefinition = $container->getDefinition( 'hgabka_kunstmaan_email.redirect_plugin');
+        $redirectPluginDefinition->replaceArgument(0, $config['redirect']['recipients'] ?? []);
         $redirectPluginDefinition->addMethodCall('setRedirectConfig', [$config['redirect']]);
-
         $addHeadersPluginDefinition = $container->getDefinition( 'hgabka_kunstmaan_email.add_headers_plugin');
         $addHeadersPluginDefinition->addMethodCall('setConfig', [$config['add_headers']]);
 

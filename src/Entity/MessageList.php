@@ -13,7 +13,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 /**
  * MessageList
  *
- * @ORM\Table(name="hg_kuma_emailbundle_message_list")
+ * @ORM\Table(name="hg_kuma_email_message_list")
  * @ORM\Entity(repositoryClass="Hgabka\KunstmaanEmailBundle\Repository\MessageListRepository")
  */
 class MessageList extends AbstractEntity

@@ -19,7 +19,7 @@ use Kunstmaan\MediaBundle\Entity\Media;
 /**
  * Attachment
  *
- * @ORM\Table(name="hg_kuma_emailbundle_attachment")
+ * @ORM\Table(name="hg_kuma_email_attachment")
  * @ORM\Entity(repositoryClass="Hgabka\KunstmaanEmailBundle\Repository\AttachmentRepository")
  */
 class Attachment extends AbstractEntity

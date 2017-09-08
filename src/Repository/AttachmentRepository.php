@@ -44,7 +44,7 @@ class AttachmentRepository extends EntityRepository
         if (!empty($locale)) {
             $qb
                 ->andWhere('a.locale = :locale')
-                ->setParameter('locale' => $locale);
+                ->setParameter('locale', $locale);
         }
 
         return $qb->getQuery()->getResult();

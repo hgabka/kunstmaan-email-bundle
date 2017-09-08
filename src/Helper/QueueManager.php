@@ -14,6 +14,7 @@ use Hgabka\KunstmaanEmailBundle\Entity\Attachment;
 use Hgabka\KunstmaanEmailBundle\Entity\MessageQueue;
 use Hgabka\KunstmaanEmailBundle\Enum\QueueStatusEnum;
 use Kunstmaan\MediaBundle\Entity\Media;
+use Hgabka\KunstmaanEmailBundle\Logger\MessageLogger;
 
 class QueueManager
 {
@@ -49,7 +50,7 @@ class QueueManager
     /** @var  MailBuilder */
     protected $mailBuilder;
 
-    public function __construct(Registry $doctrine, \Swift_Mailer $mailer, MessageLogger $logger, array $bounceConfig, int $maxRetries, int $sendLimit, bool $loggingEnabled, int $deleteSentMessagesAfter)
+    public function __construct(Registry $doctrine, \Swift_Mailer $mailer, MessageLogger $logger, MailBuilder $mailBuilder, array $bounceConfig, int $maxRetries, int $sendLimit, bool $loggingEnabled, int $deleteSentMessagesAfter)
     {
         $this->doctrine = $doctrine;
         $this->mailer = $mailer;
@@ -59,6 +60,7 @@ class QueueManager
         $this->logger = $logger;
         $this->loggingEnabled = $loggingEnabled;
         $this->deleteSentMessagesAfter = $deleteSentMessagesAfter;
+        $this->mailBuilder = $mailBuilder;
     }
 
     /**
@@ -349,7 +351,7 @@ class QueueManager
      * @param int|null $limit
      * @return array
      */
-    public function sendEmails(?int $limit = null): array
+    public function sendEmails($limit = null): array
     {
         if (empty($limit)) {
             $limit = $this->sendLimit;
@@ -419,7 +421,7 @@ class QueueManager
      * @param int|null $limit
      * @return array
      */
-    public function sendMessages(?int $limit = null) : array
+    public function sendMessages($limit = null) : array
     {
         if (empty($limit)) {
             $limit = $this->sendLimit;

@@ -19,7 +19,7 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
 /**
  * Email log
  *
- * @ORM\Table(name="hg_kuma_emailbundle_email_log")
+ * @ORM\Table(name="hg_kuma_email_email_log")
  * @ORM\Entity(repositoryClass="Hgabka\KunstmaanEmailBundle\Repository\EmailLogRepository")
  */
 class EmailLog extends AbstractEntity
@@ -36,28 +36,28 @@ class EmailLog extends AbstractEntity
     /**
      * @var string
      *
-     * @ORM\Column(name="from", type="string", length=255, nullable=true)
+     * @ORM\Column(name="mail_from", type="string", length=255, nullable=true)
      */
     private $from;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="to", type="string", length=255, nullable=true)
+     * @ORM\Column(name="mail_to", type="string", length=255, nullable=true)
      */
     private $to;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="cc", type="string", length=255, nullable=true)
+     * @ORM\Column(name="mail_cc", type="string", length=255, nullable=true)
      */
     private $cc;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="bcc", type="string", length=255, nullable=true)
+     * @ORM\Column(name="mail_bcc", type="string", length=255, nullable=true)
      */
     private $bcc;
 
@@ -78,7 +78,7 @@ class EmailLog extends AbstractEntity
     /**
      * @var string
      *
-     * @ORM\Column(name="sattachment", type="string", length=255, nullable=true)
+     * @ORM\Column(name="attachment", type="string", length=255, nullable=true)
      */
     private $attachment;
 
@@ -258,5 +258,68 @@ class EmailLog extends AbstractEntity
         $this->mime = $mime;
 
         return $this;
+    }
+
+    /**
+     * Populate fields with $message data
+     * @param Swift_Message $message
+     */
+    public function fromMessage(\Swift_Message $message)
+    {
+        $this->setFrom($this->addressToString($message->getFrom()));
+        $this->setTo($this->addressToString($message->getTo()));
+        $this->setSubject($message->getSubject());
+        $this->setTextBody($message->getBody());
+        $this->setCc($this->addressToString($message->getCc()));
+        $this->setBcc($this->addressToString($message->getBcc()));
+
+        $children = $message->getChildren();
+        foreach ($children as $child)
+        {
+            if ($child->getContentType() == 'text/html')
+            {
+                $this->setHtmlBody($child->getBody());
+            }
+            elseif ($child instanceof Swift_Attachment)
+            {
+                $this->setAttachment($child->getFilename());
+            }
+
+        }
+        $this->setMime($message->getContentType());
+    }
+
+    /**
+     * Convert address or addresses to string
+     * @param array $addr
+     * @return string
+     */
+    protected function addressToString($addr)
+    {
+        if (empty($addr))
+        {
+            return '';
+        }
+
+        if (is_string($addr))
+        {
+            return $addr;
+        }
+
+        $str = '';
+        foreach ($addr as $key => $val)
+        {
+            $to = trim($val);
+            if (empty($to))
+            {
+                $str.= ($key.', ');
+            }
+            else
+            {
+                $str .= sprintf('%s <%s>, ', $val, $key);
+            }
+        }
+
+        return trim(substr($str, 0, -2));
     }
 }

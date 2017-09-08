@@ -27,7 +27,7 @@ services:
 
     hgabka_kunstmaan_email.param_substituter:
         class: 'Hgabka\KunstmaanEmailBundle\Helper\ParamSubstituter'
-        arguments: ["@request_stack", "%kernel.cache_dir%", '']
+        arguments: ["@request_stack", "%kernel.cache_dir%", "%kernel.project_dir%", '']
 
     hgabka_kunstmaan_email.email_subscriber:
         class: Hgabka\KunstmaanEmailBundle\EventListener\EmailSubscriber
@@ -48,6 +48,7 @@ services:
 
     hgabka_kunstmaan_email.redirect_plugin:
         class: Hgabka\KunstmaanEmailBundle\Mailer\RedirectPlugin
+        arguments: [""]
         calls:
             - method: setRequestStack
               arguments:

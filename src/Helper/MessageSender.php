@@ -17,7 +17,7 @@ use Hgabka\KunstmaanEmailBundle\Enum\QueueStatusEnum;
 use Hgabka\KunstmaanEmailBundle\Logger\MessageLogger;
 use Hgabka\KunstmaanExtensionBundle\Helper\KumaUtils;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\Translation\Translator;
+use Symfony\Component\Translation\TranslatorInterface;
 
 class MessageSender
 {
@@ -30,7 +30,7 @@ class MessageSender
     /** @var  \Swift_Mailer */
     protected $mailer;
 
-    /** @var Translator */
+    /** @var TranslatorInterface */
     protected $translator;
 
     /** @var  QueueManager */
@@ -51,7 +51,7 @@ class MessageSender
      * @param \Swift_Mailer $mailer
      * @param QueueManager $queueManager
      * @param ParamSubstituter $paramSubstituter
-     * @param Translator $translator
+     * @param TranslatorInterface $translator
      * @param KumaUtils $kumaUtils,
      * @param MailBuilder $mailBuilder
      */
@@ -59,7 +59,7 @@ class MessageSender
         Registry $doctrine,
         \Swift_Mailer $mailer,
         QueueManager $queueManager,
-        Translator $translator,
+        TranslatorInterface $translator,
         KumaUtils $kumaUtils,
         MailBuilder $mailBuilder
     ) {
@@ -365,7 +365,7 @@ class MessageSender
      * @param int|null $limit
      * @return array
      */
-    public function sendEmailQueue(?int $limit = null)
+    public function sendEmailQueue($limit = null)
     {
         return $this->queueManager->sendEmails($limit);
     }
@@ -374,7 +374,7 @@ class MessageSender
      * @param int|null $limit
      * @return array
      */
-    public function sendMessageQueue(?int $limit = null)
+    public function sendMessageQueue($limit = null)
     {
         $this->prepareMessages();
 
@@ -441,7 +441,7 @@ class MessageSender
         return array_intersect(array_keys($recipientsConfig), $lists);
     }
 
-    public function sendMessages(?int $limit = null)
+    public function sendMessages($limit = null)
     {
         if (empty($limit)) {
             $limit = $this->config['send_limit'];
@@ -499,7 +499,7 @@ class MessageSender
     {
         $culture = $this->kumaUtils->getCurrentLocale($culture);
 
-        $message = $this->createTemplateMessage($template, $params, $culture);
+        $message = $this->mailBuilder->createTemplateMessage($template, $params, $culture);
         if (!$message) {
             return false;
         }
@@ -520,13 +520,24 @@ class MessageSender
             return $this->enqueueTemplateMessage($template, $params, $culture, null);
         }
 
-        $message = $this->createTemplateMessage($template, $params, $culture);
+        $message = $this->mailBuilder->createTemplateMessage($template, $params, $culture);
 
         if (!$message) {
             return false;
         }
 
         return $this->mailer->send($message);
+    }
+
+    public function sendTemplateMail($name, $params = [], $culture = null)
+    {
+        $template = $this->mailBuilder->getTemplate($name);
+
+        if (!$template) {
+            return false;
+        }
+
+        return $this->sendTemplateMessage($template, $params, $culture);
     }
 
     protected function getQueueRepository()

@@ -17,7 +17,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 /**
  * Email layout
  *
- * @ORM\Table(name="hg_kuma_emailbundle_message")
+ * @ORM\Table(name="hg_kuma_email_message")
  * @ORM\Entity(repositoryClass="Hgabka\KunstmaanEmailBundle\Repository\MessageRepository")
  */
 class Message extends AbstractEntity implements TranslatableInterface
@@ -55,17 +55,17 @@ class Message extends AbstractEntity implements TranslatableInterface
     private $toType;
 
     /**
-     * @ORM\Column(name="to", type="text", nullable=true)
+     * @ORM\Column(name="mail_to", type="text", nullable=true)
      */
     private $to;
 
     /**
-     * @ORM\Column(name="cc", type="text", nullable=true)
+     * @ORM\Column(name="mail_cc", type="text", nullable=true)
      */
     private $cc;
 
     /**
-     * @ORM\Column(name="bcc", type="text", nullable=true)
+     * @ORM\Column(name="mail_bcc", type="text", nullable=true)
      */
     private $bcc;
 
