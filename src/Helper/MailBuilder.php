@@ -291,6 +291,7 @@ class MailBuilder
             return null;
         }
 
+
         return $this->doctrine->getRepository('HgabkaKunstmaanEmailBundle:EmailTemplate')->findOneBy(['name' => $name]);
     }
 
@@ -298,7 +299,7 @@ class MailBuilder
      * @param $slug
      * @return null|EmailTemplate
      */
-    public function getTemplateBySlug($slug)
+    public function getTemplateBySlug(string $slug)
     {
         if (empty($slug)) {
             return null;
@@ -310,6 +311,7 @@ class MailBuilder
     public function getTemplate($name)
     {
         $template = $this->getTemplateBySlug($name);
+
         if (!$template) {
             $template = $this->getTemplateByName($name);
         }

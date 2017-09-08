@@ -194,13 +194,13 @@ class RedirectPlugin extends \Swift_Plugins_RedirectingPlugin
         }
 
         // Add each hard coded recipient
-        $to = $message->setTo($this->_recipient);
+        $message->setTo($this->_recipient);
     }
 
     public function sendPerformed(\Swift_Events_SendEvent $evt)
     {
         if ($this->isEnabled()) {
-          //  $this->_restoreMessage($evt->getMessage());
+            $this->_restoreMessage($evt->getMessage());
         }
     }
 
