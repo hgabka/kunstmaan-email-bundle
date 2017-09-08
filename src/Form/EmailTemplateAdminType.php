@@ -1,10 +1,12 @@
 <?php
 
-
 namespace Hgabka\KunstmaanEmailBundle\Form;
 
 use A2lix\TranslationFormBundle\Form\Type\TranslationsType;
+use Doctrine\Bundle\DoctrineBundle\Registry;
+use Doctrine\ORM\EntityManager;
 use Hgabka\KunstmaanEmailBundle\Entity\EmailLayout;
+use Hgabka\KunstmaanEmailBundle\Entity\EmailTemplate;
 use Hgabka\KunstmaanSettingsBundle\Choices\SettingTypes;
 use Hgabka\KunstmaanSettingsBundle\Entity\Setting;
 use Hgabka\KunstmaanSettingsBundle\Helper\SettingsManager;
@@ -12,10 +14,7 @@ use Kunstmaan\AdminBundle\Form\WysiwygType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Component\Form\Extension\Core\Type\EmailType;
-use Symfony\Component\Form\Extension\Core\Type\IntegerType;
-use Symfony\Component\Form\Extension\Core\Type\NumberType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
@@ -23,17 +22,21 @@ use Symfony\Component\Form\FormInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
-use Hgabka\KunstmaanExtensionBundle\Form\Type\StaticControlType;
 use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Hgabka\KunstmaanEmailBundle\Form\AttachmentType;
 
 class EmailTemplateAdminType extends AbstractType
 {
-    /** @var AuthorizationChecker  */
+    /** @var  EntityManager */
+    private $manager;
+
+    /** @var AuthorizationChecker */
     private $authChecker;
 
-    public function __construct(AuthorizationChecker $authChecker)
+    public function __construct(EntityManager $manager = null, AuthorizationChecker $authChecker = null)
     {
+        $this->manager = $manager;
         $this->authChecker = $authChecker;
     }
 
@@ -46,36 +49,49 @@ class EmailTemplateAdminType extends AbstractType
      * @see FormTypeExtensionInterface::buildForm()
      *
      * @param FormBuilderInterface $builder The form builder
-     * @param array                $options The options
+     * @param array $options The options
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('name',TextType::class, ['label' => 'hgabka_kuma_email.labels.name', 'required' => true])
-            ->add('comment',TextareaType::class, ['label' => 'hgabka_kuma_email.labels.comment'])
+            ->add('name', TextType::class, ['label' => 'hgabka_kuma_email.labels.name', 'required' => true])
+            ->add('comment', TextareaType::class, ['label' => 'hgabka_kuma_email.labels.comment'])
         ;
         if ($this->authChecker->isGranted('ROLE_SUPER_ADMIN')) {
             $builder->add('slug', TextType::class, ['label' => 'hgabka_kuma_email.labels.slug']);
-            $builder->add('isSystem', CheckboxType::class, ['label' => 'hgabka_kuma_email.labels.is_system']);
+            $builder->add('isSystem', CheckboxType::class, ['label' => 'hgabka_kuma_email.labels.is_system', 'required' => false]);
         }
-        $builder->add('layout', EntityType::class, ['label' => 'hgabka_kuma_settings.labels.layout', 'class' => EmailLayout::class]);
+        $builder->add('layout', EntityType::class, ['label' => 'hgabka_kuma_email.labels.layout', 'class' => EmailLayout::class]);
         $builder->add('translations', TranslationsType::class, [
-            'label' => false,
+            'label'  => false,
             'fields' => [
-                'subject' => [
+                'subject'     => [
                     'field_type' => TextType::class,
-                    'label' => 'hgabka_kuma_email.labels.subject',
+                    'label'      => 'hgabka_kuma_email.labels.subject',
                 ],
                 'contentText' => [
                     'field_type' => TextareaType::class,
-                    'label' => 'hgabka_kuma_email.labels.content_text',
+                    'label'      => 'hgabka_kuma_email.labels.content_text',
                 ],
                 'contentHtml' => [
                     'field_type' => WysiwygType::class,
-                    'label' => 'hgabka_kuma_email.labels.content_html',
+                    'label'      => 'hgabka_kuma_email.labels.content_html',
                 ],
-            ]
-            ]);
+                'attachments' => [
+                    'field_type' => CollectionType::class,
+                    'label'      => 'hgabka_kuma_email.labels.attachments',
+                    'entry_type'   => AttachmentType::class,
+                    'allow_add'    => true,
+                    'allow_delete' => true,
+                    'delete_empty' => true,
+                    'attr' => [
+                        'nested_form'           => true,
+                        'nested_sortable'       => false,
+                    ],
+
+                ],
+            ],
+        ]);
     }
 
     /**

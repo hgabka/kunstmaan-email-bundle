@@ -43,6 +43,7 @@ class EmailTemplate extends AbstractEntity implements TranslatableInterface
 
     /**
      * @ORM\Column(name="comment", type="text")
+     * @Assert\NotBlank()
      */
     private $comment;
 

@@ -84,6 +84,21 @@ class EmailMenuAdaptor implements MenuAdaptorInterface
             }
 
             $children[] = $menuItem;
+
+            $menuItem = new TopMenuItem($menu);
+            $menuItem
+                ->setRoute('hgabkakunstmaanemailbundle_admin_emailtemplate')
+                ->setUniqueId('email_template')
+                ->setLabel('Email sablonok')
+                ->setParent($parent)
+                ->setAppearInNavigation(false);
+            ;
+            if (stripos($request->attributes->get('_route'), $menuItem->getRoute()) === 0) {
+                $menuItem->setActive(true);
+                $parent->setActive(true);
+            }
+            $children[] = $menuItem;
+
         }
     }
 }

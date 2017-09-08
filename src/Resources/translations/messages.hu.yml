@@ -2,6 +2,13 @@ hgabka_kuma_email:
     labels:
         name: Név
         comment: Leírás
+        slug: Slug
+        is_system: Rendszersablon
+        layout: Kerettemplate
+        subject: Tárgy
+        content_text: Szöveges tartalom
+        content_html: HTML tartalom
+        attachments: Csatolmányok
     tabs:
         general: Általános adatok
         content: Tárgy, tartalom

@@ -2,6 +2,7 @@
 
 namespace Hgabka\KunstmaanEmailBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Kunstmaan\AdminBundle\Entity\AbstractEntity;
 use Prezent\Doctrine\Translatable\Annotation as Prezent;
@@ -35,6 +36,17 @@ class EmailTemplateTranslation extends AbstractEntity implements TranslationInte
      * @ORM\Column(name="content_html", type="text")
      */
     private $contentHtml = '';
+
+    /** @var ArrayCollection |Attachment[] */
+    protected $attachments;
+
+    /**
+     * EmailTemplateTranslation constructor.
+     */
+    public function __construct()
+    {
+        $this->attachments = new ArrayCollection();
+    }
 
     /**
      * @return mixed
@@ -91,5 +103,50 @@ class EmailTemplateTranslation extends AbstractEntity implements TranslationInte
         $this->contentHtml = $contentHtml;
 
         return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getAttachments()
+    {
+        return $this->attachments;
+    }
+
+    /**
+     * @param mixed $attachments
+     * @return EmailTemplateTranslation
+     */
+    public function setAttachments($attachments)
+    {
+        $this->attachments = $attachments;
+
+        return $this;
+    }
+
+    public function addAttachment(Attachment $attachment)
+    {
+        if (!$this->attachments) {
+            $this->attachments = new ArrayCollection();
+        }
+        if (!$this->attachments->contains($attachment)) {
+            $this->attachments->add($attachment);
+        }
+    }
+
+    public function removeAttachment(Attachment $attachment)
+    {
+        if (!$this->attachments) {
+            $this->attachments = new ArrayCollection();
+        }
+        $this->attachments->removeElement($attachment);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getTranslatable()
+    {
+        return $this->translatable;
     }
 }

@@ -32,7 +32,7 @@ class AttachmentRepository extends EntityRepository
         ;
     }
 
-    public function getByTypeAndId($type, $id, $locale = null)
+    protected function createQueryBuilderByTypeAndId($type, $id, $locale)
     {
         $qb = $this
             ->createQueryBuilder('a')
@@ -47,7 +47,27 @@ class AttachmentRepository extends EntityRepository
                 ->setParameter('locale', $locale);
         }
 
-        return $qb->getQuery()->getResult();
+        return $qb;
+    }
+
+    public function getByTypeAndId($type, $id, $locale = null)
+    {
+        return
+            $this
+                ->createQueryBuilderByTypeAndId($type, $id, $locale)
+                ->getQuery()
+                ->getResult()
+        ;
+    }
+
+    public function deleteByTypeAndId($type, $id, $locale = null)
+    {
+        $this
+            ->createQueryBuilderByTypeAndId($type, $id, $locale)
+            ->delete()
+            ->getQuery()
+            ->execute()
+        ;
     }
 
     public function getByTemplate(EmailTemplate $template, $locale = null)

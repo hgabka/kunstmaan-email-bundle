@@ -33,19 +33,41 @@ class ParamSubstituter
      * @param string $text
      * @param array $params
      *
+     * @param bool $normalized
      * @return string
      */
     public function substituteParams($text, $params, $normalized = false)
     {
         $params = $normalized ? $params : $this->normalizeParams($params);
 
-        return strtr($text, $this->addVarChars($params));
+        $params = $this->addVarChars($params);
+
+        foreach ($params as $key => $param) {
+            if (is_string($param)) {
+                $text = strtr($text, [$key => $param]);
+            } else {
+                if (!isset($param['value']) || !is_string($param['value'])) {
+                    continue;
+                }
+
+                if (!isset($param['type']) || $param['type'] != 'block') {
+                    $text = str_replace($key, $param['value'], $text);
+                } else {
+                    $value = $param['value'];
+                    $pattern = '/<p*>(.*)'.preg_quote($key, '/').'(.*)<\/p>/i';
+                    $text = preg_replace($pattern, $value, $text);
+                }
+            }
+        }
+
+        return $text;
     }
 
     /**
      * A HTML content-ben lévő relatív image url-ekből abszolútot csinál
      *
      * @param string $html
+     * @return mixed
      */
     public function setAbsoluteImageUrls($html)
     {
@@ -86,6 +108,7 @@ class ParamSubstituter
      * Embeddel egy képet és visszaadja a cid-et
      *
      * @param string $url
+     * @return string
      */
     protected function embedImage($url, $email)
     {
@@ -109,7 +132,7 @@ class ParamSubstituter
             file_put_contents($file, $content);
         }
 
-        $img = Swift_Image::fromPath($file);
+        $img = \Swift_Image::fromPath($file);
 
         return $email->embed($img);
     }
@@ -118,6 +141,7 @@ class ParamSubstituter
      * Abszolút url-t generál a relatívból
      *
      * @param string $url
+     * @return string
      */
     protected function addHost($url)
     {
@@ -163,7 +187,7 @@ class ParamSubstituter
                     }
                 }
             }
-            $normalized[$key] = empty($value) ? '' : (string)$value;
+            $normalized[$key] = empty($value) ? '' : $value;
         }
 
         return $normalized;
@@ -200,6 +224,7 @@ class ParamSubstituter
         }
         $string = $this->removeVarCharsFromString($string);
         $varChars = $this->getVarChars();
+
         if (!empty($varChars['prefix'])) {
             $string = $varChars['prefix'] . $string;
         }

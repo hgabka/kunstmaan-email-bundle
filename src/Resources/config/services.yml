@@ -27,7 +27,7 @@ services:
 
     hgabka_kunstmaan_email.param_substituter:
         class: 'Hgabka\KunstmaanEmailBundle\Helper\ParamSubstituter'
-        arguments: ["@request_stack", "%kernel.cache_dir%", "%kernel.project_dir%", '']
+        arguments: ["@request_stack", "%kernel.cache_dir%", "%kernel.project_dir%", []]
 
     hgabka_kunstmaan_email.email_subscriber:
         class: Hgabka\KunstmaanEmailBundle\EventListener\EmailSubscriber
@@ -96,7 +96,17 @@ services:
 
     hgabka_kunstmaan_email.email_template_type:
         class: Hgabka\KunstmaanEmailBundle\Form\EmailTemplateAdminType
-        arguments: ["@security.authorization_checker"]
+        arguments: ["@doctrine.orm.entity_manager", "@security.authorization_checker"]
         tags:
             - { name: form.type }
 
+    hgabka_kunstmaan_email.event_listener.entity_load:
+        class: Hgabka\KunstmaanEmailBundle\EventListener\EntityLoadListener
+        tags:
+            - { name: doctrine.event_listener, event: postLoad }
+
+    hgabka_kunstmaan_email.adminlist_subscriber:
+        class: Hgabka\KunstmaanEmailBundle\EventListener\AdminListSubscriber
+        arguments: ["@doctrine"]
+        tags:
+            - { name: kernel.event_subscriber }

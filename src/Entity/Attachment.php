@@ -59,21 +59,21 @@ class Attachment extends AbstractEntity
     /**
      * @var string
      *
-     * @ORM\Column(name="filename", type="string", length=512, nullable = true)
+     * @ORM\Column(name="filename", type="string", length=512, nullable=true)
      */
     private $filename;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="content", type="text", nullable = true)
+     * @ORM\Column(name="content", type="text", nullable=true)
      */
     private $content;
 
     /**
      * @var string
      *
-     * @ORM\Column(type="string", name="content_type")
+     * @ORM\Column(type="string", name="content_type", nullable=true)
      */
     protected $contentType;
 

@@ -10,10 +10,10 @@ namespace Hgabka\KunstmaanEmailBundle\Helper;
 
 use Doctrine\Bundle\DoctrineBundle\Registry;
 use Hgabka\KunstmaanEmailBundle\Entity\Attachment;
-use Hgabka\KunstmaanEmailBundle\Logger\MessageLogger;
 use Hgabka\KunstmaanEmailBundle\Entity\EmailTemplate;
 use Hgabka\KunstmaanExtensionBundle\Helper\KumaUtils;
 use Kunstmaan\MediaBundle\Entity\Media;
+use Kunstmaan\MediaBundle\Helper\MediaManager;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Translation\TranslatorInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -42,14 +42,15 @@ class MailBuilder
 
     /** @var  RouterInterface */
     protected $router;
+
     /**
      * MailBuilder constructor.
      * @param Registry $doctrine
-     * @param \Swift_Mailer $mailer
      * @param RequestStack $requestStack
      * @param ParamSubstituter $paramSubstituter
-     * @param Translator $translator
+     * @param TranslatorInterface $translator
      * @param KumaUtils $kumaUtils
+     * @param RouterInterface $router
      */
     public function __construct(
         Registry $doctrine,
@@ -119,6 +120,12 @@ class MailBuilder
         }
     }
 
+    /**
+     * @param EmailTemplate $template
+     * @param array $parameters
+     * @param null $culture
+     * @return bool|\Swift_Message
+     */
     public function createTemplateMessage(EmailTemplate $template, $parameters = [], $culture = null)
     {
         $parameters['from'] = empty($parameters['from']) ? $this->getDefaultFrom() : $parameters['from'];
@@ -200,7 +207,7 @@ class MailBuilder
 
             if ($media) {
                 $mail->attach(
-                    \Swift_Attachment::newInstance($media->getContent(), $media->getOriginalFilename(), $media->getContentType())
+                    \Swift_Attachment::newInstance($this->getMediaContent($media), $media->getOriginalFilename(), $media->getContentType())
                 );
             }
         }
@@ -291,7 +298,6 @@ class MailBuilder
             return null;
         }
 
-
         return $this->doctrine->getRepository('HgabkaKunstmaanEmailBundle:EmailTemplate')->findOneBy(['name' => $name]);
     }
 
@@ -308,6 +314,10 @@ class MailBuilder
         return $this->doctrine->getRepository('HgabkaKunstmaanEmailBundle:EmailTemplate')->findOneBy(['slug' => $slug]);
     }
 
+    /**
+     * @param $name
+     * @return EmailTemplate|null
+     */
     public function getTemplate($name)
     {
         $template = $this->getTemplateBySlug($name);
@@ -319,12 +329,20 @@ class MailBuilder
         return $template;
     }
 
+    /**
+     * @param Message $message
+     * @param $to
+     * @param null $culture
+     * @param bool $addCcs
+     * @param array $parameters
+     * @return \Swift_Message
+     */
     public function createMessageMail(Message $message, $to, $culture = null, $addCcs = true, $parameters = [])
     {
         $culture = $this->kumaUtils->getCurrentLocale($culture);
 
         $params = is_array($to) ? ['nev' => current($to), 'email' => key($to)] : ['email' => $to];
-        $params['webversion'] = $this->router->generate('hgabka_kunstmaan_email_message_webversion', ['id' =>  $message->getId(), 'culture' => $culture], UrlGeneratorInterface::ABSOLUTE_URL);
+        $params['webversion'] = $this->router->generate('hgabka_kunstmaan_email_message_webversion', ['id' => $message->getId(), 'culture' => $culture], UrlGeneratorInterface::ABSOLUTE_URL);
 
         $subscriber = $this->getSubscriberRepository()->findOneBy(['email' => $params['email']]);
 
@@ -375,7 +393,7 @@ class MailBuilder
 
             if ($media) {
                 $mail->attach(
-                    \Swift_Attachment::newInstance($media->getContent(), $media->getOriginalFilename(), $media->getContentType())
+                    \Swift_Attachment::newInstance($this->getMediaContent($media), $media->getOriginalFilename(), $media->getContentType())
                 );
             }
         }
@@ -427,8 +445,20 @@ class MailBuilder
         return $mail;
     }
 
+    /**
+     * @return \Doctrine\Common\Persistence\ObjectRepository
+     */
     protected function getSubscriberRepository()
     {
         return $this->doctrine->getRepository('HgabkaKunstmaanEmailBundle:MessageSubscriber');
+    }
+
+    /**
+     * @param $media
+     * @return bool|string
+     */
+    public function getMediaContent($media)
+    {
+        return $this->kumaUtils->getMediaContent($media);
     }
 }

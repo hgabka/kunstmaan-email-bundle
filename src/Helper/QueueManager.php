@@ -64,10 +64,10 @@ class QueueManager
     }
 
     /**
-     * @param MailBuilder $mailBulder
+     * @param MailBuilder $mailBuilder
      * @return QueueManager
      */
-    public function setMailBuilder($mailBuilder)
+    public function setMailBuilder(MailBuilder $mailBuilder)
     {
         $this->mailBuilder = $mailBuilder;
 
@@ -327,7 +327,7 @@ class QueueManager
             /** @var Media $media */
             $media = $attachment->getMedia();
             $newAttachment->setFilename($media->getOriginalFilename());
-            $newAttachment->setContent($media->getContent());
+            $newAttachment->setContent($this->mailBuilder->getMediaContent($media));
             $newAttachment->setContentType($media->getContentType());
             $newAttachment->setLocale($attachment->getLocale());
 

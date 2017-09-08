@@ -2,6 +2,13 @@ hgabka_kuma_email:
     labels:
         name: Name
         comment: Description
+        slug: Slug
+        is_system: System template
+        layout: Layout template
+        subject: Subject
+        content_text: Text content
+        content_html: HTML content
+        attachments: Attachments
     tabs:
         general: General data
         content: Subject, content
