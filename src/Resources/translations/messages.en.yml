@@ -1,0 +1,7 @@
+hgabka_kuma_email:
+    labels:
+        name: Name
+        comment: Description
+    tabs:
+        general: General data
+        content: Subject, content
