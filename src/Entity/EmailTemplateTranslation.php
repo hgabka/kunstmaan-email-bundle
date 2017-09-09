@@ -126,9 +126,6 @@ class EmailTemplateTranslation extends AbstractEntity implements TranslationInte
 
     public function addAttachment(Attachment $attachment)
     {
-        if (!$this->attachments) {
-            $this->attachments = new ArrayCollection();
-        }
         if (!$this->attachments->contains($attachment)) {
             $this->attachments->add($attachment);
         }
@@ -136,9 +133,6 @@ class EmailTemplateTranslation extends AbstractEntity implements TranslationInte
 
     public function removeAttachment(Attachment $attachment)
     {
-        if (!$this->attachments) {
-            $this->attachments = new ArrayCollection();
-        }
         $this->attachments->removeElement($attachment);
     }
 

@@ -20,49 +20,18 @@ class EntityLoadListener
         $obj = $eventArgs->getEntity();
         $em = $eventArgs->getEntityManager();
 
-        // @TODO: inkább valami service kéne, ami visszaadja az entitykhez a product documenteket
         if ($obj instanceof EmailTemplateTranslation) {
 
-            $attachments = $em->getRepository('HgabkaKunstmaanEmailBundle:Attachment')->getByTemplate($obj->getTranslatable(),$obj->getLocale());
             $productReflProp = $em->getClassMetadata(get_class($obj))->reflClass->getProperty('attachments');
             $productReflProp->setAccessible(true);
 
             $collection = new ArrayCollection();
+            $attachments = $em->getRepository('HgabkaKunstmaanEmailBundle:Attachment')->getByTemplate($obj->getTranslatable(), $obj->getLocale());
             foreach ($attachments as $att) {
                 $collection->add($att);
             }
 
             $productReflProp->setValue($obj, $collection);
-
- /*           $productIds = $obj->getProductIds();
-
-            if (!empty($productIds)) {
-                $products = $dm->getRepository('UjhazPublicBundle:Product')
-                               ->createQueryBuilder('p')
-                               ->field('id')->in($productIds)
-                               ->getQuery()
-                               ->execute();
-
-                $collection = new ArrayCollection();
-                foreach ($products as $product) {
-                    $collection->add($product);
-                }
-
-                $productReflProp = $em->getClassMetadata(get_class($obj))->reflClass->getProperty('products');
-                $productReflProp->setAccessible(true);
-                $productReflProp->setValue($obj, $collection);
-            }*/
         }
-
-    /*    if ($obj instanceof ProductCategoryProperty) {
-            $productPropertyId = $obj->getProductPropertyId();
-
-            if (!empty($productPropertyId)) {
-                $productProperty = $dm->getRepository('UjhazPublicBundle:ProductProperty')->findOneBy(['id' => $productPropertyId]);
-                $productReflProp = $em->getClassMetadata(get_class($obj))->reflClass->getProperty('productProperty');
-                $productReflProp->setAccessible(true);
-                $productReflProp->setValue($obj, $productProperty);
-            }
-        } */
     }
 }

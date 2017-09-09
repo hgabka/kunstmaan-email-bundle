@@ -46,12 +46,14 @@ class EmailSubscriber implements EventSubscriber
     {
         $object = $args->getObject();
         $manager = $args->getObjectManager();
+        $attachments = [];
 
-        if (!$object instanceof AbstractQueue) {
-            return;
+        if ($object instanceof EmailTemplate) {
+            $attachments = $manager->getRepository('HgabkaKunstmaanEmailBundle:Attachment')->getByTemplate($object);
+        } elseif ($object instanceof AbstractQueue) {
+            $attachments = $manager->getRepository('HgabkaKunstmaanEmailBundle:Attachment')->getByQueue($object);
         }
 
-        $attachments = $manager->getRepository('HgabkaKunstmaanEmailBundle:Attachment')->getByQueue($object);
         foreach ($attachments as $attachment) {
             $manager->remove($attachment);
         }
