@@ -110,3 +110,10 @@ services:
         arguments: ["@doctrine"]
         tags:
             - { name: kernel.event_subscriber }
+
+    hgabka_kunstmaan_email.email_twig_extension:
+        class: Hgabka\KunstmaanEmailBundle\Twig\EmailTwigExtension
+        arguments: ['@hgabka_kunstmaan_email.mail_builder']
+        public: false
+        tags:
+            - { name: twig.extension }

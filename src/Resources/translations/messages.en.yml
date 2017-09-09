@@ -9,6 +9,13 @@ hgabka_kuma_email:
         content_text: Text content
         content_html: HTML content
         attachments: Attachments
+        usable_vars: Placeholders
     tabs:
         general: General data
-        content: Subject, content
+        content: 'Subject, content'
+    default_param_labels:
+        name: Name of recipient
+        email: Email of recipient
+        webversion: Web version
+        unsubscribe: Unsubscribe URL
+        unsubscribe_link: Unsubscribe link

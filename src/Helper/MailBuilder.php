@@ -461,4 +461,22 @@ class MailBuilder
     {
         return $this->kumaUtils->getMediaContent($media);
     }
+
+    public function getTemplateVars($template)
+    {
+        if (!$template instanceof EmailTemplate) {
+            $template = $this->getTemplate($template);
+        }
+
+        $params =[
+            'nev' => 'hgabka_kuma_email.default_param_labels.name',
+            'email' => 'hgabka_kuma_email.default_param_labels.email',
+        ];
+
+        if ($template && isset($this->config['mail_template_params'][$template->getSlug()])) {
+            $params = array_merge($params, $this->config['mail_template_params'][$template->getSlug()]);
+        }
+
+        return $this->paramSubstituter->addVarChars($params);
+    }
 }

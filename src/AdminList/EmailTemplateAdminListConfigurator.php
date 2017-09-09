@@ -116,4 +116,9 @@ class EmailTemplateAdminListConfigurator extends AbstractDoctrineORMAdminListCon
             'hgabka_kuma_email.tabs.content' => ['layout', 'translations'],
         ];
     }
+
+    public function getEditTemplate()
+    {
+        return 'HgabkaKunstmaanEmailBundle:EmailTemplate:edit.html.twig';
+    }
 }

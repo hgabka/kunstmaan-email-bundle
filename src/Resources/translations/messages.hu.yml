@@ -9,6 +9,14 @@ hgabka_kuma_email:
         content_text: Szöveges tartalom
         content_html: HTML tartalom
         attachments: Csatolmányok
+        usable_vars: Használható változók
     tabs:
         general: Általános adatok
         content: Tárgy, tartalom
+    default_param_labels:
+        name: A címzett neve
+        email: A címzett email címe
+        webversion: Webes változat
+        unsubscribe: Leiratkozó URL
+        unsubscribe_link: Leiratkozó link
+
