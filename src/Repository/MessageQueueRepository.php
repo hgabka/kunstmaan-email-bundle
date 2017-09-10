@@ -1,5 +1,13 @@
 <?php
 
+/*
+ * This file is part of PHP CS Fixer.
+ * (c) Fabien Potencier <fabien@symfony.com>
+ *     Dariusz Rumiński <dariusz.ruminski@gmail.com>
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
+
 namespace Hgabka\KunstmaanEmailBundle\Repository;
 
 use Doctrine\ORM\EntityRepository;
@@ -42,7 +50,7 @@ class MessageQueueRepository extends EntityRepository
         if (!empty($days)) {
             $q
                 ->andWhere('q.updated_at <= :date')
-                ->setParameter('date', date('Y-m-d 00:00:00', strtotime('-' . $days . 'days')));
+                ->setParameter('date', date('Y-m-d 00:00:00', strtotime('-'.$days.'days')));
         }
 
         return $q->getQuery()->execute();
@@ -60,18 +68,17 @@ class MessageQueueRepository extends EntityRepository
         ;
 
         $sum = 0;
-        $res = array(
+        $res = [
             QueueStatusEnum::STATUS_INIT => 0,
             QueueStatusEnum::STATUS_ELKULDVE => 0,
             QueueStatusEnum::STATUS_HIBA => 0,
-            QueueStatusEnum::STATUS_SIKERTELEN =>  0,
-            QueueStatusEnum::STATUS_VISSZAPATTANT =>  0
-        );
+            QueueStatusEnum::STATUS_SIKERTELEN => 0,
+            QueueStatusEnum::STATUS_VISSZAPATTANT => 0,
+        ];
 
-        foreach ($data as $row)
-        {
+        foreach ($data as $row) {
             $res[$row['status']] = $row['num'];
-            $sum+= $row['num'];
+            $sum += $row['num'];
         }
 
         $res['sum'] = $sum;

@@ -1,5 +1,13 @@
 <?php
 
+/*
+ * This file is part of PHP CS Fixer.
+ * (c) Fabien Potencier <fabien@symfony.com>
+ *     Dariusz Rumiński <dariusz.ruminski@gmail.com>
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
+
 namespace Hgabka\KunstmaanEmailBundle\Controller;
 
 use Hgabka\KunstmaanEmailBundle\AdminList\EmailTemplateAdminListConfigurator;
@@ -10,7 +18,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
- * The admin list controller for Setting
+ * The admin list controller for Setting.
  */
 class EmailTemplateAdminListController extends AdminListController
 {
@@ -32,7 +40,7 @@ class EmailTemplateAdminListController extends AdminListController
     }
 
     /**
-     * The index action
+     * The index action.
      *
      * @Route("/", name="hgabkakunstmaanemailbundle_admin_emailtemplate")
      */
@@ -42,7 +50,7 @@ class EmailTemplateAdminListController extends AdminListController
     }
 
     /**
-     * The add action
+     * The add action.
      *
      * @Route("/add", name="hgabkakunstmaanemailbundle_admin_emailtemplate_add")
      * @Method({"GET", "POST"})
@@ -55,7 +63,7 @@ class EmailTemplateAdminListController extends AdminListController
     }
 
     /**
-     * The edit action
+     * The edit action.
      *
      * @param int $id
      *
@@ -70,7 +78,7 @@ class EmailTemplateAdminListController extends AdminListController
     }
 
     /**
-     * The edit action
+     * The edit action.
      *
      * @param int $id
      *
@@ -85,7 +93,7 @@ class EmailTemplateAdminListController extends AdminListController
     }
 
     /**
-     * The delete action
+     * The delete action.
      *
      * @param int $id
      *
@@ -100,7 +108,7 @@ class EmailTemplateAdminListController extends AdminListController
     }
 
     /**
-     * The export action
+     * The export action.
      *
      * @param string $_format
      *

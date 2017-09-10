@@ -1,5 +1,13 @@
 <?php
 
+/*
+ * This file is part of PHP CS Fixer.
+ * (c) Fabien Potencier <fabien@symfony.com>
+ *     Dariusz Rumiński <dariusz.ruminski@gmail.com>
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
+
 namespace Hgabka\KunstmaanEmailBundle\Helper;
 
 use Doctrine\Bundle\DoctrineBundle\Registry;
@@ -7,18 +15,19 @@ use Hgabka\KunstmaanEmailBundle\Enum\QueueStatusEnum;
 
 class BounceChecker
 {
-    /** @var  Registry */
+    /** @var Registry */
     protected $doctrine;
 
-    /** @var  MailboxReader */
+    /** @var MailboxReader */
     protected $mailReader;
 
-    /** @var  array */
+    /** @var array */
     protected $config;
 
     /**
      * BounceChecker constructor.
-     * @param Registry $doctrine
+     *
+     * @param Registry      $doctrine
      * @param MailboxReader $mailReader
      */
     public function __construct(Registry $doctrine, MailboxReader $mailReader)
@@ -37,6 +46,7 @@ class BounceChecker
 
     /**
      * @param array $config
+     *
      * @return BounceChecker
      */
     public function setConfig(array $config): BounceChecker
@@ -68,7 +78,7 @@ class BounceChecker
                 if ($queue) {
                     $queue->setStatus(QueueStatusEnum::STATUS_VISSZAPATTANT);
 
-                    $count++;
+                    ++$count;
                 }
             }
 
@@ -77,13 +87,13 @@ class BounceChecker
 
                 if ($queue) {
                     $queue->setStatus(QueueStatusEnum::STATUS_VISSZAPATTANT);
-                    $count++;
+                    ++$count;
                 }
             }
 
-            if ($action == 'delete') {
+            if ($action === 'delete') {
                 $this->mailReader->deleteMessage($message);
-            } elseif ($action == 'mark_as_read') {
+            } elseif ($action === 'mark_as_read') {
                 $this->mailReader->markMessageAsRead($message);
             }
         }

@@ -1,20 +1,22 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: User
- * Date: 2017.09.06.
- * Time: 12:48
+
+/*
+ * This file is part of PHP CS Fixer.
+ * (c) Fabien Potencier <fabien@symfony.com>
+ *     Dariusz Rumiński <dariusz.ruminski@gmail.com>
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
  */
 
 namespace Hgabka\KunstmaanEmailBundle\Helper;
 
-use Hgabka\KunstmaanEmailBundle\Entity\AbstractQueue;
 use Doctrine\Bundle\DoctrineBundle\Registry;
+use Hgabka\KunstmaanEmailBundle\Entity\AbstractQueue;
 use Hgabka\KunstmaanEmailBundle\Entity\Attachment;
 use Hgabka\KunstmaanEmailBundle\Entity\MessageQueue;
 use Hgabka\KunstmaanEmailBundle\Enum\QueueStatusEnum;
-use Kunstmaan\MediaBundle\Entity\Media;
 use Hgabka\KunstmaanEmailBundle\Logger\MessageLogger;
+use Kunstmaan\MediaBundle\Entity\Media;
 
 class QueueManager
 {
@@ -26,7 +28,7 @@ class QueueManager
     /** @var \Swift_Mailer */
     protected $mailer;
 
-    /** @var  MessageLogger */
+    /** @var MessageLogger */
     protected $logger;
 
     /** @var bool */
@@ -35,7 +37,7 @@ class QueueManager
     /** @var bool */
     protected $loggingEnabled = false;
 
-    /** @var  array */
+    /** @var array */
     protected $bounceConfig;
 
     /** @var int */
@@ -44,10 +46,10 @@ class QueueManager
     /** @var int */
     protected $sendLimit;
 
-    /** @var  int */
+    /** @var int */
     protected $deleteSentMessagesAfter;
 
-    /** @var  MailBuilder */
+    /** @var MailBuilder */
     protected $mailBuilder;
 
     public function __construct(Registry $doctrine, \Swift_Mailer $mailer, MessageLogger $logger, MailBuilder $mailBuilder, array $bounceConfig, int $maxRetries, int $sendLimit, bool $loggingEnabled, int $deleteSentMessagesAfter)
@@ -65,6 +67,7 @@ class QueueManager
 
     /**
      * @param MailBuilder $mailBuilder
+     *
      * @return QueueManager
      */
     public function setMailBuilder(MailBuilder $mailBuilder)
@@ -76,6 +79,8 @@ class QueueManager
 
     /**
      * @param $message
+     * @param mixed $force
+     *
      * @return bool
      */
     public function log($message, $force = false)
@@ -97,6 +102,7 @@ class QueueManager
 
     /**
      * @param bool $forceLog
+     *
      * @return MailBuilder
      */
     public function setForceLog($forceLog): MailBuilder
@@ -167,12 +173,11 @@ class QueueManager
                 $this->doctrine->getManager()->flush();
 
                 return true;
-            } else {
-                $queue->setStatus(QueueStatusEnum::STATUS_ELKULDVE);
-                $this->doctrine->getManager()->flush();
-
-                return false;
             }
+            $queue->setStatus(QueueStatusEnum::STATUS_ELKULDVE);
+            $this->doctrine->getManager()->flush();
+
+            return false;
         } catch (\Exception $e) {
             $this->setError($e->getMessage(), $queue);
             $this->doctrine->getManager()->flush();
@@ -192,7 +197,7 @@ class QueueManager
             $this->lastError = 'Hianyzo uzenet';
         }
 
-        if (in_array($queue->getStatus(), [QueueStatusEnum::STATUS_SIKERTELEN, QueueStatusEnum::STATUS_VISSZAPATTANT])) {
+        if (in_array($queue->getStatus(), [QueueStatusEnum::STATUS_SIKERTELEN, QueueStatusEnum::STATUS_VISSZAPATTANT], true)) {
             return false;
         }
 
@@ -222,12 +227,11 @@ class QueueManager
                 $this->doctrine->getManager()->flush();
 
                 return false;
-            } else {
-                $queue->setStatus(QueueStatusEnum::STATUS_ELKULDVE);
-                $this->doctrine->getManager()->flush();
-
-                return true;
             }
+            $queue->setStatus(QueueStatusEnum::STATUS_ELKULDVE);
+            $this->doctrine->getManager()->flush();
+
+            return true;
         } catch (Exception $e) {
             $queue->setError($e->getMessage());
             $this->doctrine->getManager()->flush();
@@ -312,7 +316,7 @@ class QueueManager
 
         $children = $message->getChildren();
         foreach ($children as $child) {
-            if ($child->getContentType() == 'text/html') {
+            if ($child->getContentType() === 'text/html') {
                 $queue->setContentHtml($child->getBody());
             }
         }
@@ -348,7 +352,8 @@ class QueueManager
     }
 
     /**
-     * @param int|null $limit
+     * @param null|int $limit
+     *
      * @return array
      */
     public function sendEmails($limit = null): array
@@ -357,7 +362,7 @@ class QueueManager
             $limit = $this->sendLimit;
         }
 
-        $this->log('Uzenetek kuldese (limit: ' . $limit . ')');
+        $this->log('Uzenetek kuldese (limit: '.$limit.')');
 
         $count = $sent = $fail = 0;
 
@@ -365,18 +370,18 @@ class QueueManager
         $errorQueues = $queueRepo->getErrorQueuesForSend($limit);
 
         foreach ($errorQueues as $queue) {
-            $count++;
+            ++$count;
             $to = unserialize($queue->getTo());
 
             $email = is_array($to) ? key($to) : $to;
 
             if ($this->sendEmailQueue($queue)) {
-                $this->log('Sikertelen kuldes ujra. Email kuldese sikeres. Email: ' . $email);
+                $this->log('Sikertelen kuldes ujra. Email kuldese sikeres. Email: '.$email);
                 $this->doctrine->getManager()->remove($queue);
-                $sent++;
+                ++$sent;
             } else {
-                $this->log('Sikertelen kuldes ujra. Email kuldes sikertelen. Email: ' . $email . ' Hiba: ' . $queue->getLastError());
-                $fail++;
+                $this->log('Sikertelen kuldes ujra. Email kuldes sikertelen. Email: '.$email.' Hiba: '.$queue->getLastError());
+                ++$fail;
             }
         }
 
@@ -389,22 +394,22 @@ class QueueManager
         $queues = $queueRepo->getNotSentQueuesForSend($limit - $sent);
 
         foreach ($queues as $queue) {
-            $count++;
+            ++$count;
             $to = unserialize($queue->getTo());
 
             $email = is_array($to) ? key($to) : $to;
             if ($this->send($queue)) {
-                $this->log('Email kuldese sikeres. Email: ' . $email);
+                $this->log('Email kuldese sikeres. Email: '.$email);
 
                 $days = $this->config['delete_sent_messages_after'];
 
                 if (empty($days)) {
                     $queue->delete();
                 }
-                $sent++;
+                ++$sent;
             } else {
-                $this->log('Email kuldes sikertelen. Email: ' . $email . ' Hiba: ' . $queue->getLastError());
-                $fail++;
+                $this->log('Email kuldes sikertelen. Email: '.$email.' Hiba: '.$queue->getLastError());
+                ++$fail;
             }
         }
 
@@ -418,16 +423,17 @@ class QueueManager
     }
 
     /**
-     * @param int|null $limit
+     * @param null|int $limit
+     *
      * @return array
      */
-    public function sendMessages($limit = null) : array
+    public function sendMessages($limit = null): array
     {
         if (empty($limit)) {
             $limit = $this->sendLimit;
         }
 
-        $this->log('Uzenetek kuldese (limit: ' . $limit . ')');
+        $this->log('Uzenetek kuldese (limit: '.$limit.')');
 
         $count = $sent = $fail = 0;
 
@@ -435,15 +441,15 @@ class QueueManager
         $errorQueues = $queueRepo->getErrorQueuesForSend($limit);
 
         foreach ($errorQueues as $queue) {
-            $count++;
+            ++$count;
             $email = $queue->getToEmail();
 
             if ($this->sendMessageQueue($queue)) {
-                $this->log('Sikertelen kuldes ujra. Email kuldese sikeres. Email: ' . $email);
-                $sent++;
+                $this->log('Sikertelen kuldes ujra. Email kuldese sikeres. Email: '.$email);
+                ++$sent;
             } else {
-                $this->log('Sikertelen kuldes ujra. Email kuldes sikertelen. Email: ' . $email . ' Hiba: ' . $queue->getLastError());
-                $fail++;
+                $this->log('Sikertelen kuldes ujra. Email kuldes sikertelen. Email: '.$email.' Hiba: '.$queue->getLastError());
+                ++$fail;
             }
         }
 
@@ -456,14 +462,14 @@ class QueueManager
         $queues = $queueRepo->getNotSentQueuesForSend($limit - $sent);
 
         foreach ($queues as $queue) {
-            $count++;
+            ++$count;
             $email = $queue->getToEmail();
             if ($queue->send()) {
-                $this->log('Email kuldese sikeres. Email: ' . $email);
-                $sent++;
+                $this->log('Email kuldese sikeres. Email: '.$email);
+                ++$sent;
             } else {
-                $this->log('Email kuldes sikertelen. Email: ' . $email . ' Hiba: ' . $queue->getLastError());
-                $fail++;
+                $this->log('Email kuldes sikertelen. Email: '.$email.' Hiba: '.$queue->getLastError());
+                ++$fail;
             }
         }
 

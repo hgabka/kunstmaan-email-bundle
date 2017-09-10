@@ -1,5 +1,13 @@
 <?php
 
+/*
+ * This file is part of PHP CS Fixer.
+ * (c) Fabien Potencier <fabien@symfony.com>
+ *     Dariusz Rumiński <dariusz.ruminski@gmail.com>
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
+
 namespace Hgabka\KunstmaanEmailBundle\Repository;
 
 use Doctrine\ORM\EntityRepository;
@@ -8,8 +16,9 @@ use Hgabka\KunstmaanEmailBundle\Enum\QueueStatusEnum;
 class EmailQueueRepository extends EntityRepository
 {
     /**
-     * @param string $status
-     * @param int|null $limit
+     * @param string   $status
+     * @param null|int $limit
+     *
      * @return array
      */
     public function getQueuesByStatus($status, $limit = null)
@@ -22,7 +31,7 @@ class EmailQueueRepository extends EntityRepository
             ->andWhere('q.sendAt IS NULL OR q.sendAt <= :now')
             ->orderBy('q.createdAt', 'DESC')
             ->setParameters([
-                'now'    => new \DateTime(),
+                'now' => new \DateTime(),
                 'status' => $status,
             ])
         ;
@@ -35,7 +44,8 @@ class EmailQueueRepository extends EntityRepository
     }
 
     /**
-     * @param int|null $limit
+     * @param null|int $limit
+     *
      * @return array
      */
     public function getErrorQueuesForSend($limit = null)
@@ -44,7 +54,8 @@ class EmailQueueRepository extends EntityRepository
     }
 
     /**
-     * @param int|null $limit
+     * @param null|int $limit
+     *
      * @return array
      */
     public function getNotSentQueuesForSend($limit = null)

@@ -1,5 +1,13 @@
 <?php
 
+/*
+ * This file is part of PHP CS Fixer.
+ * (c) Fabien Potencier <fabien@symfony.com>
+ *     Dariusz Rumiński <dariusz.ruminski@gmail.com>
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
+
 namespace Hgabka\KunstmaanEmailBundle\Mailer;
 
 use Hgabka\KunstmaanEmailBundle\Event\MailerEvent;
@@ -7,7 +15,7 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class AddHeadersPlugin implements \Swift_Events_SendListener
 {
-    /** @var  array */
+    /** @var array */
     protected $config;
 
     /** @var EventDispatcher */
@@ -33,6 +41,7 @@ class AddHeadersPlugin implements \Swift_Events_SendListener
 
     /**
      * @param array $config
+     *
      * @return AddHeadersPlugin
      */
     public function setConfig($config)

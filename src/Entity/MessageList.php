@@ -1,17 +1,23 @@
 <?php
 
+/*
+ * This file is part of PHP CS Fixer.
+ * (c) Fabien Potencier <fabien@symfony.com>
+ *     Dariusz Rumiński <dariusz.ruminski@gmail.com>
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
+
 namespace Hgabka\KunstmaanEmailBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Mapping\Annotation as Gedmo;
-use Hgabka\KunstmaanExtensionBundle\Entity\TranslatableTrait;
 use Hgabka\KunstmaanExtensionBundle\Traits\TimestampableEntity;
 use Kunstmaan\AdminBundle\Entity\AbstractEntity;
 use Symfony\Component\Validator\Constraints as Assert;
-use Doctrine\Common\Collections\ArrayCollection;
 
 /**
- * MessageList
+ * MessageList.
  *
  * @ORM\Table(name="hg_kuma_email_message_list")
  * @ORM\Entity(repositoryClass="Hgabka\KunstmaanEmailBundle\Repository\MessageListRepository")
@@ -82,6 +88,7 @@ class MessageList extends AbstractEntity
 
     /**
      * @param mixed $name
+     *
      * @return MessageList
      */
     public function setName($name)
@@ -101,6 +108,7 @@ class MessageList extends AbstractEntity
 
     /**
      * @param mixed $isDefault
+     *
      * @return MessageList
      */
     public function setIsDefault($isDefault)
@@ -120,6 +128,7 @@ class MessageList extends AbstractEntity
 
     /**
      * @param mixed $isPublic
+     *
      * @return MessageList
      */
     public function setIsPublic($isPublic)
@@ -150,7 +159,7 @@ class MessageList extends AbstractEntity
     }
 
     /**
-     * Add send list
+     * Add send list.
      *
      * @param MessageSendList $sendList
      *
@@ -168,7 +177,7 @@ class MessageList extends AbstractEntity
     }
 
     /**
-     * Remove send list
+     * Remove send list.
      *
      * @param MessageSendList $sendList
      */
@@ -198,7 +207,7 @@ class MessageList extends AbstractEntity
     }
 
     /**
-     * Add send list
+     * Add send list.
      *
      * @param MessageListSubscription $listSubscription
      *
@@ -216,7 +225,7 @@ class MessageList extends AbstractEntity
     }
 
     /**
-     * Remove send list
+     * Remove send list.
      *
      * @param MessageListSubscription $listSubscription
      */

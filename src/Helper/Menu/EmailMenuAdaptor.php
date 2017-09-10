@@ -1,9 +1,11 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: sfhun
- * Date: 2017.09.02.
- * Time: 19:36
+
+/*
+ * This file is part of PHP CS Fixer.
+ * (c) Fabien Potencier <fabien@symfony.com>
+ *     Dariusz Rumiński <dariusz.ruminski@gmail.com>
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
  */
 
 namespace Hgabka\KunstmaanEmailBundle\Helper\Menu;
@@ -31,11 +33,11 @@ class EmailMenuAdaptor implements MenuAdaptorInterface
     }
 
     /**
-     * In this method you can add children for a specific parent, but also remove and change the already created children
+     * In this method you can add children for a specific parent, but also remove and change the already created children.
      *
      * @param MenuBuilder   $menu      The MenuBuilder
      * @param MenuItem[]    &$children The current children
-     * @param MenuItem|null $parent    The parent Menu item
+     * @param null|MenuItem $parent    The parent Menu item
      * @param Request       $request   The Request
      */
     public function adaptChildren(MenuBuilder $menu, array &$children, MenuItem $parent = null, Request $request = null)
@@ -43,8 +45,7 @@ class EmailMenuAdaptor implements MenuAdaptorInterface
         if (!$this->authorizationChecker->isGranted('ROLE_ADMIN')) {
             return;
         }
-        if (is_null($parent)) {
-
+        if (null === $parent) {
             $menuItem = new TopMenuItem($menu);
             $menuItem->setRoute('hgabkakunstmaanemailbundle_admin_emailtemplate');
             $menuItem->setUniqueId('email');
@@ -54,7 +55,7 @@ class EmailMenuAdaptor implements MenuAdaptorInterface
             $newChildren = [];
             $inserted = false;
             foreach ($children as $child) {
-                if ($child->getUniqueId() == 'settings') {
+                if ($child->getUniqueId() === 'settings') {
                     $newChildren[] = $menuItem;
                     $inserted = true;
                 }
@@ -69,9 +70,7 @@ class EmailMenuAdaptor implements MenuAdaptorInterface
             if (stripos($request->attributes->get('_route'), $menuItem->getRoute()) === 0) {
                 $menuItem->setActive(true);
             }
-
-        } elseif ('email' == $parent->getUniqueId()) {
-
+        } elseif ('email' === $parent->getUniqueId()) {
             $menuItem = new MenuItem($menu);
             $menuItem
                 ->setRoute('hgabkakunstmaanemailbundle_admin_emailtemplate')
@@ -92,13 +91,12 @@ class EmailMenuAdaptor implements MenuAdaptorInterface
                 ->setLabel('Email sablonok')
                 ->setParent($parent)
                 ->setAppearInNavigation(false);
-            ;
+
             if (stripos($request->attributes->get('_route'), $menuItem->getRoute()) === 0) {
                 $menuItem->setActive(true);
                 $parent->setActive(true);
             }
             $children[] = $menuItem;
-
         }
     }
 }

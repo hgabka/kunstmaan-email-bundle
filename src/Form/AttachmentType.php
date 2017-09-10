@@ -1,5 +1,12 @@
 <?php
 
+/*
+ * This file is part of PHP CS Fixer.
+ * (c) Fabien Potencier <fabien@symfony.com>
+ *     Dariusz Rumiński <dariusz.ruminski@gmail.com>
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
 
 namespace Hgabka\KunstmaanEmailBundle\Form;
 
@@ -8,7 +15,6 @@ use Kunstmaan\MediaBundle\Form\Type\MediaType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
 
 class AttachmentType extends AbstractType
 {
@@ -21,7 +27,7 @@ class AttachmentType extends AbstractType
      * @see FormTypeExtensionInterface::buildForm()
      *
      * @param FormBuilderInterface $builder The form builder
-     * @param array $options The options
+     * @param array                $options The options
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
@@ -41,6 +47,7 @@ class AttachmentType extends AbstractType
             'data_class' => Attachment::class,
         ]);
     }
+
     /**
      * Returns the name of this type.
      *

@@ -1,20 +1,26 @@
 <?php
 
+/*
+ * This file is part of PHP CS Fixer.
+ * (c) Fabien Potencier <fabien@symfony.com>
+ *     Dariusz Rumiński <dariusz.ruminski@gmail.com>
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
+
 namespace Hgabka\KunstmaanEmailBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Mapping\Annotation as Gedmo;
 use Hgabka\KunstmaanExtensionBundle\Entity\TranslatableTrait;
 use Hgabka\KunstmaanExtensionBundle\Traits\TimestampableEntity;
 use Kunstmaan\AdminBundle\Entity\AbstractEntity;
-use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Prezent\Doctrine\Translatable\Annotation as Prezent;
 use Prezent\Doctrine\Translatable\TranslatableInterface;
-use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * Email layout
+ * Email layout.
  *
  * @ORM\Table(name="hg_kuma_email_email_template")
  * @ORM\Entity(repositoryClass="Hgabka\KunstmaanEmailBundle\Repository\EmailTemplateRepository")
@@ -78,6 +84,7 @@ class EmailTemplate extends AbstractEntity implements TranslatableInterface
 
     /**
      * @param string $name
+     *
      * @return EmailTemplate
      */
     public function setName($name)
@@ -97,6 +104,7 @@ class EmailTemplate extends AbstractEntity implements TranslatableInterface
 
     /**
      * @param mixed $comment
+     *
      * @return EmailTemplate
      */
     public function setComment($comment)
@@ -116,6 +124,7 @@ class EmailTemplate extends AbstractEntity implements TranslatableInterface
 
     /**
      * @param string $slug
+     *
      * @return EmailTemplate
      */
     public function setSlug($slug)
@@ -135,6 +144,7 @@ class EmailTemplate extends AbstractEntity implements TranslatableInterface
 
     /**
      * @param EmailLayout $layout
+     *
      * @return EmailTemplate
      */
     public function setLayout($layout)
@@ -154,6 +164,7 @@ class EmailTemplate extends AbstractEntity implements TranslatableInterface
 
     /**
      * @param mixed $isSystem
+     *
      * @return EmailTemplate
      */
     public function setIsSystem($isSystem)

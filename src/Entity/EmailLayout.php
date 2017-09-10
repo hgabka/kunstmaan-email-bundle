@@ -1,26 +1,26 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: User
- * Date: 2017.09.04.
- * Time: 8:27
+
+/*
+ * This file is part of PHP CS Fixer.
+ * (c) Fabien Potencier <fabien@symfony.com>
+ *     Dariusz Rumiński <dariusz.ruminski@gmail.com>
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
  */
 
 namespace Hgabka\KunstmaanEmailBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Mapping\Annotation as Gedmo;
 use Hgabka\KunstmaanExtensionBundle\Entity\TranslatableTrait;
 use Hgabka\KunstmaanExtensionBundle\Traits\TimestampableEntity;
 use Kunstmaan\AdminBundle\Entity\AbstractEntity;
-use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Prezent\Doctrine\Translatable\Annotation as Prezent;
 use Prezent\Doctrine\Translatable\TranslatableInterface;
-use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * Email layout
+ * Email layout.
  *
  * @ORM\Table(name="hg_kuma_email_email_layout")
  * @ORM\Entity(repositoryClass="Hgabka\KunstmaanEmailBundle\Repository\EmailLayoutRepository")
@@ -77,6 +77,11 @@ class EmailLayout extends AbstractEntity implements TranslatableInterface
         $this->messages = new ArrayCollection();
     }
 
+    public function __toString()
+    {
+        return $this->getName();
+    }
+
     /**
      * @return string
      */
@@ -87,6 +92,7 @@ class EmailLayout extends AbstractEntity implements TranslatableInterface
 
     /**
      * @param string $name
+     *
      * @return EmailLayout
      */
     public function setName($name)
@@ -106,6 +112,7 @@ class EmailLayout extends AbstractEntity implements TranslatableInterface
 
     /**
      * @param string $styles
+     *
      * @return EmailLayout
      */
     public function setStyles($styles)
@@ -136,7 +143,7 @@ class EmailLayout extends AbstractEntity implements TranslatableInterface
     }
 
     /**
-     * Add template
+     * Add template.
      *
      * @param EmailTemplate $template
      *
@@ -154,7 +161,7 @@ class EmailLayout extends AbstractEntity implements TranslatableInterface
     }
 
     /**
-     * Remove template
+     * Remove template.
      *
      * @param EmailTemplate $template
      */
@@ -162,7 +169,6 @@ class EmailLayout extends AbstractEntity implements TranslatableInterface
     {
         $this->templates->removeElement($template);
     }
-
 
     /**
      * @return Message[]
@@ -185,7 +191,7 @@ class EmailLayout extends AbstractEntity implements TranslatableInterface
     }
 
     /**
-     * Add message
+     * Add message.
      *
      * @param Message $message
      *
@@ -203,7 +209,7 @@ class EmailLayout extends AbstractEntity implements TranslatableInterface
     }
 
     /**
-     * Remove message
+     * Remove message.
      *
      * @param Message $message
      */
@@ -212,31 +218,22 @@ class EmailLayout extends AbstractEntity implements TranslatableInterface
         $this->messages->removeElement($message);
     }
 
-    public function __toString()
-    {
-        return $this->getName();
-    }
-
     public function getDecoratedHtml($culture, $subject = '', $layoutFile = false)
     {
-        if (!empty($layoutFile))
-        {
-            $layoutFile = strtr($layoutFile, array('%culture%' => $culture));
+        if (!empty($layoutFile)) {
+            $layoutFile = strtr($layoutFile, ['%culture%' => $culture]);
             $html = @file_get_contents($layoutFile);
-        }
-        else
-        {
+        } else {
             $html = null;
         }
         $content = $this->translate($culture)->getContentHtml();
-        if (empty($html))
-        {
+        if (empty($html)) {
             return $content;
         }
 
         $styles = $this->getStyles();
 
-        return strtr($html, array('%%styles%%' => $styles, '%%title%%' => $subject, '%%content%%' => $content));
+        return strtr($html, ['%%styles%%' => $styles, '%%title%%' => $subject, '%%content%%' => $content]);
     }
 
     /**

@@ -1,18 +1,18 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: User
- * Date: 2017.09.07.
- * Time: 8:55
+
+/*
+ * This file is part of PHP CS Fixer.
+ * (c) Fabien Potencier <fabien@symfony.com>
+ *     Dariusz Rumiński <dariusz.ruminski@gmail.com>
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
  */
 
 namespace Hgabka\KunstmaanEmailBundle\Mailer;
 
-use Hgabka\KunstmaanEmailBundle\Event\MailerEvent;
-
 class AddRecipientsPlugin implements \Swift_Events_SendListener
 {
-    /** @var  array */
+    /** @var array */
     protected $config;
 
     /**
@@ -25,6 +25,7 @@ class AddRecipientsPlugin implements \Swift_Events_SendListener
 
     /**
      * @param array $config
+     *
      * @return AddHeadersPlugin
      */
     public function setConfig($config)
@@ -44,38 +45,29 @@ class AddRecipientsPlugin implements \Swift_Events_SendListener
         $message = $evt->getMessage();
         $recipients = $this->config;
 
-        if (empty($recipients))
-        {
+        if (empty($recipients)) {
             return;
         }
 
-        if (isset($recipients['cc']) && $recipients['cc'])
-        {
-            if (is_string($recipients['cc']))
-            {
+        if (isset($recipients['cc']) && $recipients['cc']) {
+            if (is_string($recipients['cc'])) {
                 $message->addCc($recipients['cc']);
             }
 
-            if (is_array($recipients['cc']))
-            {
-                foreach ($recipients['cc'] as $to)
-                {
+            if (is_array($recipients['cc'])) {
+                foreach ($recipients['cc'] as $to) {
                     $message->addCc($to);
                 }
             }
         }
 
-        if (isset($recipients['bcc']) && $recipients['bcc'])
-        {
-            if (is_string($recipients['bcc']))
-            {
+        if (isset($recipients['bcc']) && $recipients['bcc']) {
+            if (is_string($recipients['bcc'])) {
                 $message->addBcc($recipients['bcc']);
             }
 
-            if (is_array($recipients['bcc']))
-            {
-                foreach ($recipients['bcc'] as $to)
-                {
+            if (is_array($recipients['bcc'])) {
+                foreach ($recipients['bcc'] as $to) {
                     $message->addBcc($to);
                 }
             }

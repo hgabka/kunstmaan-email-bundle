@@ -1,9 +1,11 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: sfhun
- * Date: 2017.09.05.
- * Time: 19:16
+
+/*
+ * This file is part of PHP CS Fixer.
+ * (c) Fabien Potencier <fabien@symfony.com>
+ *     Dariusz Rumiński <dariusz.ruminski@gmail.com>
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
  */
 
 namespace Hgabka\KunstmaanEmailBundle\Repository;
@@ -23,31 +25,13 @@ class AttachmentRepository extends EntityRepository
             ->andWhere('a.ownerId = :queueId')
             ->setParameters(
                 [
-                    'type'    => get_class($queue),
+                    'type' => get_class($queue),
                     'queueId' => $queue->getId(),
                 ]
             )
             ->getQuery()
             ->getResult()
         ;
-    }
-
-    protected function createQueryBuilderByTypeAndId($type, $id, $locale)
-    {
-        $qb = $this
-            ->createQueryBuilder('a')
-            ->where('a.type = :type')
-            ->andWhere('a.ownerId = :typeid')
-            ->setParameters(['type' => $type, 'typeid' => $id ])
-        ;
-
-        if (!empty($locale)) {
-            $qb
-                ->andWhere('a.locale = :locale')
-                ->setParameter('locale', $locale);
-        }
-
-        return $qb;
     }
 
     public function getByTypeAndId($type, $id, $locale = null)
@@ -78,5 +62,23 @@ class AttachmentRepository extends EntityRepository
     public function getByMessage(Message $message, $locale = null)
     {
         return $this->getByTypeAndId(Message::class, $message->getId(), $locale);
+    }
+
+    protected function createQueryBuilderByTypeAndId($type, $id, $locale)
+    {
+        $qb = $this
+            ->createQueryBuilder('a')
+            ->where('a.type = :type')
+            ->andWhere('a.ownerId = :typeid')
+            ->setParameters(['type' => $type, 'typeid' => $id])
+        ;
+
+        if (!empty($locale)) {
+            $qb
+                ->andWhere('a.locale = :locale')
+                ->setParameter('locale', $locale);
+        }
+
+        return $qb;
     }
 }

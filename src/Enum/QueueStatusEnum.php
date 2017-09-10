@@ -1,32 +1,35 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: User
- * Date: 2017.09.05.
- * Time: 12:37
+
+/*
+ * This file is part of PHP CS Fixer.
+ * (c) Fabien Potencier <fabien@symfony.com>
+ *     Dariusz Rumiński <dariusz.ruminski@gmail.com>
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
  */
 
 namespace Hgabka\KunstmaanEmailBundle\Enum;
 
 abstract class QueueStatusEnum
 {
-    const STATUS_INIT = "init";
-    const STATUS_ELKULDVE = "elkuldve";
-    const STATUS_HIBA = "hiba";
-    const STATUS_SIKERTELEN = "sikertelen";
+    const STATUS_INIT = 'init';
+    const STATUS_ELKULDVE = 'elkuldve';
+    const STATUS_HIBA = 'hiba';
+    const STATUS_SIKERTELEN = 'sikertelen';
     const STATUS_VISSZAPATTANT = 'visszapattant';
 
     /** @var array user friendly named type */
     protected static $statusName = [
-        self::STATUS_INIT    => 'Létrehozva',
+        self::STATUS_INIT => 'Létrehozva',
         self::STATUS_ELKULDVE => 'Elküldve',
         self::STATUS_HIBA => 'Hiba',
-        self::STATUS_SIKERTELEN  => 'Sikertelen',
-        self::STATUS_VISSZAPATTANT  => 'Sikertelen',
+        self::STATUS_SIKERTELEN => 'Sikertelen',
+        self::STATUS_VISSZAPATTANT => 'Sikertelen',
     ];
 
     /**
-     * @param  string $statusShortName
+     * @param string $statusShortName
+     *
      * @return string
      */
     public static function getStatusName($statusShortName)

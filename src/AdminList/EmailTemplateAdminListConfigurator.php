@@ -1,5 +1,13 @@
 <?php
 
+/*
+ * This file is part of PHP CS Fixer.
+ * (c) Fabien Potencier <fabien@symfony.com>
+ *     Dariusz Rumiński <dariusz.ruminski@gmail.com>
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
+
 namespace Hgabka\KunstmaanEmailBundle\AdminList;
 
 use Doctrine\ORM\EntityManager;
@@ -7,21 +15,19 @@ use Hgabka\KunstmaanEmailBundle\Entity\EmailTemplate;
 use Hgabka\KunstmaanEmailBundle\Form\EmailTemplateAdminType;
 use Kunstmaan\AdminBundle\Helper\Security\Acl\AclHelper;
 use Kunstmaan\AdminListBundle\AdminList\Configurator\AbstractDoctrineORMAdminListConfigurator;
-use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
 
 /**
- * The admin list configurator for Setting
+ * The admin list configurator for Setting.
  */
 class EmailTemplateAdminListConfigurator extends AbstractDoctrineORMAdminListConfigurator
 {
     /** @var AuthorizationChecker */
     private $authChecker;
 
-
     /**
-     * @param EntityManager $em The entity manager
-     * @param AclHelper $aclHelper The acl helper
+     * @param EntityManager $em        The entity manager
+     * @param AclHelper     $aclHelper The acl helper
      */
     public function __construct(EntityManager $em, AuthorizationChecker $authChecker, AclHelper $aclHelper = null)
     {
@@ -31,7 +37,7 @@ class EmailTemplateAdminListConfigurator extends AbstractDoctrineORMAdminListCon
     }
 
     /**
-     * Configure the visible columns
+     * Configure the visible columns.
      */
     public function buildFields()
     {
@@ -40,14 +46,14 @@ class EmailTemplateAdminListConfigurator extends AbstractDoctrineORMAdminListCon
     }
 
     /**
-     * Build filters for admin list
+     * Build filters for admin list.
      */
     public function buildFilters()
     {
     }
 
     /**
-     * Get bundle name
+     * Get bundle name.
      *
      * @return string
      */
@@ -57,7 +63,7 @@ class EmailTemplateAdminListConfigurator extends AbstractDoctrineORMAdminListCon
     }
 
     /**
-     * Get entity name
+     * Get entity name.
      *
      * @return string
      */
@@ -90,7 +96,7 @@ class EmailTemplateAdminListConfigurator extends AbstractDoctrineORMAdminListCon
     }
 
     /**
-     * Returns edit title
+     * Returns edit title.
      *
      * @return null|string
      */
@@ -100,7 +106,7 @@ class EmailTemplateAdminListConfigurator extends AbstractDoctrineORMAdminListCon
     }
 
     /**
-     * Returns new title
+     * Returns new title.
      *
      * @return null|string
      */

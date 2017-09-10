@@ -1,12 +1,20 @@
 <?php
 
+/*
+ * This file is part of PHP CS Fixer.
+ * (c) Fabien Potencier <fabien@symfony.com>
+ *     Dariusz Rumiński <dariusz.ruminski@gmail.com>
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
+
 namespace Hgabka\KunstmaanEmailBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Hgabka\KunstmaanExtensionBundle\Traits\TimestampableEntity;
 
 /**
- * MessageQueue
+ * MessageQueue.
  *
  * @ORM\Table(name="hg_kuma_email_message_queue")
  * @ORM\Entity(repositoryClass="Hgabka\KunstmaanEmailBundle\Repository\MessageQueueRepository")
@@ -61,6 +69,7 @@ class MessageQueue extends AbstractQueue
 
     /**
      * @param Message $message
+     *
      * @return MessageQueue
      */
     public function setMessage($message)
@@ -80,6 +89,7 @@ class MessageQueue extends AbstractQueue
 
     /**
      * @param string $toName
+     *
      * @return MessageQueue
      */
     public function setToName($toName)
@@ -99,6 +109,7 @@ class MessageQueue extends AbstractQueue
 
     /**
      * @param string $toEmail
+     *
      * @return MessageQueue
      */
     public function setToEmail($toEmail)
@@ -118,6 +129,7 @@ class MessageQueue extends AbstractQueue
 
     /**
      * @param string $locale
+     *
      * @return MessageQueue
      */
     public function setLocale($locale)
@@ -137,6 +149,7 @@ class MessageQueue extends AbstractQueue
 
     /**
      * @param string $parameters
+     *
      * @return MessageQueue
      */
     public function setParameters($parameters)

@@ -1,9 +1,11 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: User
- * Date: 2017.09.04.
- * Time: 8:25
+
+/*
+ * This file is part of PHP CS Fixer.
+ * (c) Fabien Potencier <fabien@symfony.com>
+ *     Dariusz Rumiński <dariusz.ruminski@gmail.com>
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
  */
 
 namespace Hgabka\KunstmaanEmailBundle\Helper;
@@ -11,46 +13,45 @@ namespace Hgabka\KunstmaanEmailBundle\Helper;
 use Doctrine\Bundle\DoctrineBundle\Registry;
 use Hgabka\KunstmaanEmailBundle\Entity\Attachment;
 use Hgabka\KunstmaanEmailBundle\Entity\EmailTemplate;
+use Hgabka\KunstmaanEmailBundle\Entity\Message;
 use Hgabka\KunstmaanExtensionBundle\Helper\KumaUtils;
-use Kunstmaan\MediaBundle\Entity\Media;
-use Kunstmaan\MediaBundle\Helper\MediaManager;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\Translation\TranslatorInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
-use Hgabka\KunstmaanEmailBundle\Entity\Message;
+use Symfony\Component\Translation\TranslatorInterface;
 
 class MailBuilder
 {
     /** @var Registry */
     protected $doctrine;
 
-    /** @var  array */
+    /** @var array */
     protected $config;
 
-    /** @var  RequestStack */
+    /** @var RequestStack */
     protected $requestStack;
 
-    /** @var  ParamSubstituter */
+    /** @var ParamSubstituter */
     protected $paramSubstituter;
 
     /** @var TranslatorInterface */
     protected $translator;
 
-    /** @var  KumaUtils */
+    /** @var KumaUtils */
     protected $kumaUtils;
 
-    /** @var  RouterInterface */
+    /** @var RouterInterface */
     protected $router;
 
     /**
      * MailBuilder constructor.
-     * @param Registry $doctrine
-     * @param RequestStack $requestStack
-     * @param ParamSubstituter $paramSubstituter
+     *
+     * @param Registry            $doctrine
+     * @param RequestStack        $requestStack
+     * @param ParamSubstituter    $paramSubstituter
      * @param TranslatorInterface $translator
-     * @param KumaUtils $kumaUtils
-     * @param RouterInterface $router
+     * @param KumaUtils           $kumaUtils
+     * @param RouterInterface     $router
      */
     public function __construct(
         Registry $doctrine,
@@ -101,29 +102,30 @@ class MailBuilder
     }
 
     /**
-     * email cím formázás
+     * email cím formázás.
      *
      * @param array $address
      *
-     * @return string|array
+     * @return array|string
      */
     public function translateEmailAddress($address)
     {
-        if (is_string($address) || ((!isset($address['name']) || strlen($address['name']) == 0) && (!isset($address['email']) || strlen($address['email']) == 0))) {
+        if (is_string($address) || ((!isset($address['name']) || strlen($address['name']) === 0) && (!isset($address['email']) || strlen($address['email']) === 0))) {
             return $address;
         }
 
         if (isset($address['name']) && strlen($address['name'])) {
             return [$address['email'] => $address['name']];
-        } else {
-            return $address['email'];
         }
+
+        return $address['email'];
     }
 
     /**
      * @param EmailTemplate $template
-     * @param array $parameters
-     * @param null $culture
+     * @param array         $parameters
+     * @param null          $culture
+     *
      * @return bool|\Swift_Message
      */
     public function createTemplateMessage(EmailTemplate $template, $parameters = [], $culture = null)
@@ -168,9 +170,9 @@ class MailBuilder
 
             $bodyHtml = strtr($layout->getDecoratedHtml($culture, $subject, $layoutFile), [
                 '%%tartalom%%' => $bodyHtml,
-                '%%nev%%'      => $name,
-                '%%email%%'    => $email,
-                '%%host%%'     => $this->requestStack->getMasterRequest()->getSchemeAndHttpHost(),
+                '%%nev%%' => $name,
+                '%%email%%' => $email,
+                '%%host%%' => $this->requestStack->getMasterRequest()->getSchemeAndHttpHost(),
             ]);
         } elseif (strlen($bodyHtml) > 0 && (false !== $this->config['layout_file'] || !empty($parameters['layout_file']))) {
             $layoutFile = !empty($parameters['layout_file']) || (isset($parameters['layout_file']) && false === $parameters['layout_file']) ? $parameters['layout_file'] : $this->config['layout_file'];
@@ -264,33 +266,9 @@ class MailBuilder
     }
 
     /**
-     * @param $layout
-     * @param $subject
-     * @param $bodyHtml
-     * @param $name
-     * @param $email
-     * @return string
-     */
-    protected function applyLayout($layout, $subject, $bodyHtml, $name, $email)
-    {
-        if (empty($name)) {
-            $name = $this->translator->trans($this->config['default_name']);
-        }
-
-        return strtr($layout, [
-            '%%host%%'    => $this->requestStack->getCurrentRequest()->getHost(),
-            '%%styles%%'  => '',
-            '%%title%%'   => $subject,
-            '%%content%%' => $bodyHtml,
-            '%%name%%'    => $name,
-            '%%email%%'   => $email,
-
-        ]);
-    }
-
-    /**
      * @param string $name
-     * @return EmailTemplate|null
+     *
+     * @return null|EmailTemplate
      */
     public function getTemplateByName(string $name)
     {
@@ -303,6 +281,7 @@ class MailBuilder
 
     /**
      * @param $slug
+     *
      * @return null|EmailTemplate
      */
     public function getTemplateBySlug(string $slug)
@@ -316,7 +295,8 @@ class MailBuilder
 
     /**
      * @param $name
-     * @return EmailTemplate|null
+     *
+     * @return null|EmailTemplate
      */
     public function getTemplate($name)
     {
@@ -332,9 +312,10 @@ class MailBuilder
     /**
      * @param Message $message
      * @param $to
-     * @param null $culture
-     * @param bool $addCcs
+     * @param null  $culture
+     * @param bool  $addCcs
      * @param array $parameters
+     *
      * @return \Swift_Message
      */
     public function createMessageMail(Message $message, $to, $culture = null, $addCcs = true, $parameters = [])
@@ -347,12 +328,12 @@ class MailBuilder
         $subscriber = $this->getSubscriberRepository()->findOneBy(['email' => $params['email']]);
 
         $unsubscribeUrl = $subscriber ? $this->router->generate('hgabka_kunstmaan_email_message_unsubscribe', ['token' => $subscriber->getToken()], UrlGeneratorInterface::ABSOLUTE_URL) : '';
-        $unsubscribeLink = $subscriber ? '<a href="' . $unsubscribeUrl . '">' . $this->translator->trans('hgabka_kunstmaan_email.message_unsubscribe_default_text') . '</a>' : '';
+        $unsubscribeLink = $subscriber ? '<a href="'.$unsubscribeUrl.'">'.$this->translator->trans('hgabka_kunstmaan_email.message_unsubscribe_default_text').'</a>' : '';
         $params['unsubscribe'] = $unsubscribeUrl;
         $params['unsubscribe_link'] = $unsubscribeLink;
 
         foreach ($parameters as $key => $value) {
-            if (!in_array($key, ['to', 'name', 'email', 'webversion', 'unsubscribe', 'unsubscribe_link']) && is_string($value)) {
+            if (!in_array($key, ['to', 'name', 'email', 'webversion', 'unsubscribe', 'unsubscribe_link'], true) && is_string($value)) {
                 $params[$key] = $value;
             }
         }
@@ -364,7 +345,7 @@ class MailBuilder
         $bodyHtml = $this->paramSubstituter->substituteParams($this->paramSubstituter->embedImages($message->translate($culture)->getHtmlBody(), $mail), $params);
 
         if ($this->config['auto_append_unsubscribe_link'] && !empty($unsubscribeLink)) {
-            $bodyHtml .= '<br /><br />' . $unsubscribeLink;
+            $bodyHtml .= '<br /><br />'.$unsubscribeLink;
         }
 
         $layout = $message->getLayout();
@@ -372,9 +353,9 @@ class MailBuilder
         if ($layout && strlen($bodyHtml) > 0) {
             $bodyHtml = strtr($layout->getDecoratedHtml($culture, $subject), [
                 '%%tartalom%%' => $bodyHtml,
-                '%%nev%%'      => isset($params['nev']) ? $params['nev'] : '',
-                '%%email%%'    => isset($params['email']) ? $params['email'] : '',
-                '%%host%%'     => $this->requestStack->getMasterRequest()->getSchemeAndHttpHost(),
+                '%%nev%%' => isset($params['nev']) ? $params['nev'] : '',
+                '%%email%%' => isset($params['email']) ? $params['email'] : '',
+                '%%host%%' => $this->requestStack->getMasterRequest()->getSchemeAndHttpHost(),
             ]);
         }
 
@@ -446,15 +427,8 @@ class MailBuilder
     }
 
     /**
-     * @return \Doctrine\Common\Persistence\ObjectRepository
-     */
-    protected function getSubscriberRepository()
-    {
-        return $this->doctrine->getRepository('HgabkaKunstmaanEmailBundle:MessageSubscriber');
-    }
-
-    /**
      * @param $media
+     *
      * @return bool|string
      */
     public function getMediaContent($media)
@@ -468,7 +442,7 @@ class MailBuilder
             $template = $this->getTemplate($template);
         }
 
-        $params =[
+        $params = [
             'nev' => 'hgabka_kuma_email.default_param_labels.name',
             'email' => 'hgabka_kuma_email.default_param_labels.email',
         ];
@@ -478,5 +452,38 @@ class MailBuilder
         }
 
         return $this->paramSubstituter->addVarChars($params);
+    }
+
+    /**
+     * @param $layout
+     * @param $subject
+     * @param $bodyHtml
+     * @param $name
+     * @param $email
+     *
+     * @return string
+     */
+    protected function applyLayout($layout, $subject, $bodyHtml, $name, $email)
+    {
+        if (empty($name)) {
+            $name = $this->translator->trans($this->config['default_name']);
+        }
+
+        return strtr($layout, [
+            '%%host%%' => $this->requestStack->getCurrentRequest()->getHost(),
+            '%%styles%%' => '',
+            '%%title%%' => $subject,
+            '%%content%%' => $bodyHtml,
+            '%%name%%' => $name,
+            '%%email%%' => $email,
+        ]);
+    }
+
+    /**
+     * @return \Doctrine\Common\Persistence\ObjectRepository
+     */
+    protected function getSubscriberRepository()
+    {
+        return $this->doctrine->getRepository('HgabkaKunstmaanEmailBundle:MessageSubscriber');
     }
 }

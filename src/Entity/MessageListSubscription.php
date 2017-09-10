@@ -1,22 +1,21 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: User
- * Date: 2017.09.05.
- * Time: 15:09
+
+/*
+ * This file is part of PHP CS Fixer.
+ * (c) Fabien Potencier <fabien@symfony.com>
+ *     Dariusz Rumiński <dariusz.ruminski@gmail.com>
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
  */
 
 namespace Hgabka\KunstmaanEmailBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Mapping\Annotation as Gedmo;
 use Hgabka\KunstmaanExtensionBundle\Traits\TimestampableEntity;
 use Kunstmaan\AdminBundle\Entity\AbstractEntity;
-use Symfony\Component\Validator\Constraints as Assert;
-
 
 /**
- * MessageListSubscription
+ * MessageListSubscription.
  *
  * @ORM\Table(name="hg_kuma_email_message_list_subscription")
  * @ORM\Entity(repositoryClass="Hgabka\KunstmaanEmailBundle\Repository\MessageListSubscriptionRepository")
@@ -51,6 +50,7 @@ class MessageListSubscription extends AbstractEntity
 
     /**
      * @param MessageList $list
+     *
      * @return MessageListSubscription
      */
     public function setList($list)
@@ -70,6 +70,7 @@ class MessageListSubscription extends AbstractEntity
 
     /**
      * @param MessageSubscriber $subscriber
+     *
      * @return MessageListSubscription
      */
     public function setSubscriber($subscriber)

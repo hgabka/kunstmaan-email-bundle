@@ -1,9 +1,11 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: sfhun
- * Date: 2017.09.09.
- * Time: 18:25
+
+/*
+ * This file is part of PHP CS Fixer.
+ * (c) Fabien Potencier <fabien@symfony.com>
+ *     Dariusz Rumiński <dariusz.ruminski@gmail.com>
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
  */
 
 namespace Hgabka\KunstmaanEmailBundle\Twig;
@@ -27,12 +29,10 @@ class EmailTwigExtension extends \Twig_Extension implements \Twig_Extension_Glob
         $this->mailBuilder = $mailBuilder;
     }
 
-
     public function getGlobals()
     {
         return ['mail_builder' => $this->mailBuilder];
     }
-
 
     /**
      * {@inheritdoc}

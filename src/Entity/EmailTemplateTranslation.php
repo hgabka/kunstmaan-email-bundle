@@ -1,5 +1,13 @@
 <?php
 
+/*
+ * This file is part of PHP CS Fixer.
+ * (c) Fabien Potencier <fabien@symfony.com>
+ *     Dariusz Rumiński <dariusz.ruminski@gmail.com>
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
+
 namespace Hgabka\KunstmaanEmailBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
@@ -16,6 +24,9 @@ use Prezent\Doctrine\Translatable\TranslationInterface;
 class EmailTemplateTranslation extends AbstractEntity implements TranslationInterface
 {
     use TranslationTrait;
+
+    /** @var ArrayCollection |Attachment[] */
+    protected $attachments;
 
     /**
      * @Prezent\Translatable(targetEntity="Hgabka\KunstmaanEmailBundle\Entity\EmailTemplate")
@@ -37,9 +48,6 @@ class EmailTemplateTranslation extends AbstractEntity implements TranslationInte
      */
     private $contentHtml = '';
 
-    /** @var ArrayCollection |Attachment[] */
-    protected $attachments;
-
     /**
      * EmailTemplateTranslation constructor.
      */
@@ -58,6 +66,7 @@ class EmailTemplateTranslation extends AbstractEntity implements TranslationInte
 
     /**
      * @param mixed $subject
+     *
      * @return EmailTemplateTranslation
      */
     public function setSubject($subject)
@@ -77,6 +86,7 @@ class EmailTemplateTranslation extends AbstractEntity implements TranslationInte
 
     /**
      * @param string $contentText
+     *
      * @return EmailTemplateTranslation
      */
     public function setContentText($contentText)
@@ -96,6 +106,7 @@ class EmailTemplateTranslation extends AbstractEntity implements TranslationInte
 
     /**
      * @param string $contentHtml
+     *
      * @return EmailTemplateTranslation
      */
     public function setContentHtml($contentHtml)
@@ -115,6 +126,7 @@ class EmailTemplateTranslation extends AbstractEntity implements TranslationInte
 
     /**
      * @param mixed $attachments
+     *
      * @return EmailTemplateTranslation
      */
     public function setAttachments($attachments)

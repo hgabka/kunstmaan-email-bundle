@@ -1,15 +1,21 @@
 <?php
 
+/*
+ * This file is part of PHP CS Fixer.
+ * (c) Fabien Potencier <fabien@symfony.com>
+ *     Dariusz Rumiński <dariusz.ruminski@gmail.com>
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
+
 namespace Hgabka\KunstmaanEmailBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Mapping\Annotation as Gedmo;
 use Hgabka\KunstmaanExtensionBundle\Traits\TimestampableEntity;
 use Kunstmaan\AdminBundle\Entity\AbstractEntity;
-use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * Email layout
+ * Email layout.
  *
  * @ORM\Table(name="hg_kuma_email_email_campaign_message")
  * @ORM\Entity(repositoryClass="Hgabka\KunstmaanEmailBundle\Repository\EmailCampaignMessageRepository")
@@ -35,7 +41,7 @@ class EmailCampaignMessage extends AbstractEntity
     private $template;
 
     /**
-     * @var integer
+     * @var int
      *
      * @ORM\Column(name="send_after", type="integer")
      */
@@ -51,6 +57,7 @@ class EmailCampaignMessage extends AbstractEntity
 
     /**
      * @param EmailCampaign $campaign
+     *
      * @return EmailCampaignMessage
      */
     public function setCampaign($campaign)
@@ -70,6 +77,7 @@ class EmailCampaignMessage extends AbstractEntity
 
     /**
      * @param EmailTemplate $template
+     *
      * @return EmailCampaignMessage
      */
     public function setTemplate($template)
@@ -89,6 +97,7 @@ class EmailCampaignMessage extends AbstractEntity
 
     /**
      * @param int $sendAfter
+     *
      * @return EmailCampaignMessage
      */
     public function setSendAfter($sendAfter)

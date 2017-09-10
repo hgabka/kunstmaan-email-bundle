@@ -1,15 +1,21 @@
 <?php
 
+/*
+ * This file is part of PHP CS Fixer.
+ * (c) Fabien Potencier <fabien@symfony.com>
+ *     Dariusz Rumiński <dariusz.ruminski@gmail.com>
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
+
 namespace Hgabka\KunstmaanEmailBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Mapping\Annotation as Gedmo;
 use Hgabka\KunstmaanExtensionBundle\Traits\TimestampableEntity;
 use Kunstmaan\AdminBundle\Entity\AbstractEntity;
-use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * MessageSendList
+ * MessageSendList.
  *
  * @ORM\Table(name="hg_kuma_email_message_send_list")
  * @ORM\Entity(repositoryClass="Hgabka\KunstmaanEmailBundle\Repository\MessageSendListRepository")
@@ -44,6 +50,7 @@ class MessageSendList extends AbstractEntity
 
     /**
      * @param MessageList $list
+     *
      * @return MessageSendList
      */
     public function setList($list)
@@ -63,6 +70,7 @@ class MessageSendList extends AbstractEntity
 
     /**
      * @param Message $message
+     *
      * @return MessageSendList
      */
     public function setMessage($message)
@@ -71,5 +79,4 @@ class MessageSendList extends AbstractEntity
 
         return $this;
     }
-
 }

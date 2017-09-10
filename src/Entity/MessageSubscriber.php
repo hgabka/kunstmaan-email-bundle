@@ -1,24 +1,23 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: User
- * Date: 2017.09.05.
- * Time: 14:09
+
+/*
+ * This file is part of PHP CS Fixer.
+ * (c) Fabien Potencier <fabien@symfony.com>
+ *     Dariusz Rumiński <dariusz.ruminski@gmail.com>
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
  */
 
 namespace Hgabka\KunstmaanEmailBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Mapping\Annotation as Gedmo;
-use Hgabka\KunstmaanEmailBundle\Enum\MessageStatusEnum;
-use Hgabka\KunstmaanExtensionBundle\Entity\TranslatableTrait;
 use Hgabka\KunstmaanExtensionBundle\Traits\TimestampableEntity;
 use Kunstmaan\AdminBundle\Entity\AbstractEntity;
 use Symfony\Component\Validator\Constraints as Assert;
-use Doctrine\Common\Collections\ArrayCollection;
 
 /**
- * Subscriber
+ * Subscriber.
  *
  * @ORM\Table(name="hg_kuma_email_message_subscriber")
  * @ORM\Entity(repositoryClass="Hgabka\KunstmaanEmailBundle\Repository\MessageSubscriberRepository")
@@ -75,6 +74,7 @@ class MessageSubscriber extends AbstractEntity
 
     /**
      * @param mixed $name
+     *
      * @return MessageSubscriber
      */
     public function setName($name)
@@ -94,6 +94,7 @@ class MessageSubscriber extends AbstractEntity
 
     /**
      * @param mixed $email
+     *
      * @return MessageSubscriber
      */
     public function setEmail($email)
@@ -113,6 +114,7 @@ class MessageSubscriber extends AbstractEntity
 
     /**
      * @param string $locale
+     *
      * @return MessageSubscriber
      */
     public function setLocale($locale)
@@ -132,6 +134,7 @@ class MessageSubscriber extends AbstractEntity
 
     /**
      * @param mixed $token
+     *
      * @return MessageSubscriber
      */
     public function setToken($token)
@@ -162,7 +165,7 @@ class MessageSubscriber extends AbstractEntity
     }
 
     /**
-     * Add send list
+     * Add send list.
      *
      * @param MessageListSubscription $listSubscription
      *
@@ -180,7 +183,7 @@ class MessageSubscriber extends AbstractEntity
     }
 
     /**
-     * Remove send list
+     * Remove send list.
      *
      * @param MessageListSubscription $listSubscription
      */

@@ -1,34 +1,31 @@
 <?php
 
+/*
+ * This file is part of PHP CS Fixer.
+ * (c) Fabien Potencier <fabien@symfony.com>
+ *     Dariusz Rumiński <dariusz.ruminski@gmail.com>
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
+
 namespace Hgabka\KunstmaanEmailBundle\Form;
 
 use A2lix\TranslationFormBundle\Form\Type\TranslationsType;
-use Doctrine\Bundle\DoctrineBundle\Registry;
 use Doctrine\ORM\EntityManager;
 use Hgabka\KunstmaanEmailBundle\Entity\EmailLayout;
-use Hgabka\KunstmaanEmailBundle\Entity\EmailTemplate;
-use Hgabka\KunstmaanSettingsBundle\Choices\SettingTypes;
-use Hgabka\KunstmaanSettingsBundle\Entity\Setting;
-use Hgabka\KunstmaanSettingsBundle\Helper\SettingsManager;
 use Kunstmaan\AdminBundle\Form\WysiwygType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
-use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\CollectionType;
-use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\Form\FormEvent;
-use Symfony\Component\Form\FormEvents;
-use Symfony\Component\Form\FormInterface;
-use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\TextareaType;
-use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use Hgabka\KunstmaanEmailBundle\Form\AttachmentType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
 
 class EmailTemplateAdminType extends AbstractType
 {
-    /** @var  EntityManager */
+    /** @var EntityManager */
     private $manager;
 
     /** @var AuthorizationChecker */
@@ -49,7 +46,7 @@ class EmailTemplateAdminType extends AbstractType
      * @see FormTypeExtensionInterface::buildForm()
      *
      * @param FormBuilderInterface $builder The form builder
-     * @param array $options The options
+     * @param array                $options The options
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
@@ -63,32 +60,31 @@ class EmailTemplateAdminType extends AbstractType
         }
         $builder->add('layout', EntityType::class, ['label' => 'hgabka_kuma_email.labels.layout', 'class' => EmailLayout::class]);
         $builder->add('translations', TranslationsType::class, [
-            'label'  => false,
+            'label' => false,
             'fields' => [
-                'subject'     => [
+                'subject' => [
                     'field_type' => TextType::class,
-                    'label'      => 'hgabka_kuma_email.labels.subject',
+                    'label' => 'hgabka_kuma_email.labels.subject',
                 ],
                 'contentText' => [
                     'field_type' => TextareaType::class,
-                    'label'      => 'hgabka_kuma_email.labels.content_text',
+                    'label' => 'hgabka_kuma_email.labels.content_text',
                 ],
                 'contentHtml' => [
                     'field_type' => WysiwygType::class,
-                    'label'      => 'hgabka_kuma_email.labels.content_html',
+                    'label' => 'hgabka_kuma_email.labels.content_html',
                 ],
                 'attachments' => [
                     'field_type' => CollectionType::class,
-                    'label'      => 'hgabka_kuma_email.labels.attachments',
-                    'entry_type'   => AttachmentType::class,
-                    'allow_add'    => true,
+                    'label' => 'hgabka_kuma_email.labels.attachments',
+                    'entry_type' => AttachmentType::class,
+                    'allow_add' => true,
                     'allow_delete' => true,
                     'delete_empty' => true,
                     'attr' => [
-                        'nested_form'           => true,
-                        'nested_sortable'       => false,
+                        'nested_form' => true,
+                        'nested_sortable' => false,
                     ],
-
                 ],
             ],
         ]);

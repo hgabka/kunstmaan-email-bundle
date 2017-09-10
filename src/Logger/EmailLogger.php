@@ -1,24 +1,27 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: sfhun
- * Date: 2017.09.06.
- * Time: 20:36
+
+/*
+ * This file is part of PHP CS Fixer.
+ * (c) Fabien Potencier <fabien@symfony.com>
+ *     Dariusz Rumiński <dariusz.ruminski@gmail.com>
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
  */
 
 namespace Hgabka\KunstmaanEmailBundle\Logger;
 
+use Doctrine\Bundle\DoctrineBundle\Registry;
 use Hgabka\KunstmaanEmailBundle\Entity\EmailLog;
 use Hgabka\KunstmaanEmailBundle\Event\MailerEvent;
-use Doctrine\Bundle\DoctrineBundle\Registry;
 
 class EmailLogger
 {
-    /** @var  Registry */
+    /** @var Registry */
     protected $doctrine;
 
     /**
      * EmailLogger constructor.
+     *
      * @param Registry $doctrine
      */
     public function __construct(Registry $doctrine)
@@ -27,7 +30,8 @@ class EmailLogger
     }
 
     /**
-     * Log message to DB
+     * Log message to DB.
+     *
      * @param sfEvent $event
      */
     public function logMessage(MailerEvent $event)

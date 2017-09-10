@@ -1,9 +1,11 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: sfhun
- * Date: 2017.09.06.
- * Time: 20:02
+
+/*
+ * This file is part of PHP CS Fixer.
+ * (c) Fabien Potencier <fabien@symfony.com>
+ *     Dariusz Rumiński <dariusz.ruminski@gmail.com>
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
  */
 
 namespace Hgabka\KunstmaanEmailBundle\Event;
@@ -13,33 +15,34 @@ use Symfony\Component\EventDispatcher\Event;
 class MailerEvent extends Event
 {
     const
-        EVENT_SEND_CALLED = 'email.log.mail_send_called',
-        EVENT_MAIL_SENT = 'email.log.mail_sent',
-        EVENT_ADD_HEADERS = 'email.add_headers'
+        EVENT_SEND_CALLED = 'email.log.mail_send_called';
+    const EVENT_MAIL_SENT = 'email.log.mail_sent';
+    const EVENT_ADD_HEADERS = 'email.add_headers'
     ;
 
-    /** @var  \Swift_Message */
+    /** @var \Swift_Message */
     private $message;
 
-    /** @var  array */
+    /** @var array */
     private $parameters;
 
-    /** @var  mixed */
+    /** @var mixed */
     private $returnValue;
 
     /**
      * @return \Swift_Message
      */
-    public function getMessage() : \Swift_Message
+    public function getMessage(): \Swift_Message
     {
         return $this->message;
     }
 
     /**
      * @param \Swift_Message $message
+     *
      * @return MailerEvent
      */
-    public function setMessage(\Swift_Message $message) : MailerEvent
+    public function setMessage(\Swift_Message $message): MailerEvent
     {
         $this->message = $message;
 
@@ -63,6 +66,7 @@ class MailerEvent extends Event
 
     /**
      * @param array $parameters
+     *
      * @return MailerEvent
      */
     public function setParameters($parameters)
@@ -82,6 +86,7 @@ class MailerEvent extends Event
 
     /**
      * @param mixed $returnValue
+     *
      * @return MailerEvent
      */
     public function setReturnValue($returnValue)

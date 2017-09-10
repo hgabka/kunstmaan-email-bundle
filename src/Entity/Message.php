@@ -1,21 +1,27 @@
 <?php
 
+/*
+ * This file is part of PHP CS Fixer.
+ * (c) Fabien Potencier <fabien@symfony.com>
+ *     Dariusz Rumiński <dariusz.ruminski@gmail.com>
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
+
 namespace Hgabka\KunstmaanEmailBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Mapping\Annotation as Gedmo;
 use Hgabka\KunstmaanEmailBundle\Enum\MessageStatusEnum;
 use Hgabka\KunstmaanExtensionBundle\Entity\TranslatableTrait;
 use Hgabka\KunstmaanExtensionBundle\Traits\TimestampableEntity;
 use Kunstmaan\AdminBundle\Entity\AbstractEntity;
-use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Prezent\Doctrine\Translatable\Annotation as Prezent;
 use Prezent\Doctrine\Translatable\TranslatableInterface;
-use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * Email layout
+ * Email layout.
  *
  * @ORM\Table(name="hg_kuma_email_message")
  * @ORM\Entity(repositoryClass="Hgabka\KunstmaanEmailBundle\Repository\MessageRepository")
@@ -101,23 +107,22 @@ class Message extends AbstractEntity implements TranslatableInterface
      * @ORM\OneToOne(targetEntity="Hgabka\KunstmaanEmailBundle\Entity\MessageQueue", inversedBy="message")
      * @ORM\JoinColumn(name="message_queue_id", referencedColumnName="id", onDelete="SET NULL")
      */
-
     private $queue;
 
     /**
-     * @var integer
+     * @var int
      * @ORM\Column(name="sent_mail", type="integer")
      */
     private $sentMail = 0;
 
     /**
-     * @var integer
+     * @var int
      * @ORM\Column(name="sent_success", type="integer")
      */
     private $sentSuccess = 0;
 
     /**
-     * @var integer
+     * @var int
      * @ORM\Column(name="sent_fail", type="integer")
      */
     private $sentFail = 0;
@@ -152,6 +157,7 @@ class Message extends AbstractEntity implements TranslatableInterface
 
     /**
      * @param string $fromName
+     *
      * @return Message
      */
     public function setFromName($fromName)
@@ -171,6 +177,7 @@ class Message extends AbstractEntity implements TranslatableInterface
 
     /**
      * @param string $fromEmail
+     *
      * @return Message
      */
     public function setFromEmail($fromEmail)
@@ -190,6 +197,7 @@ class Message extends AbstractEntity implements TranslatableInterface
 
     /**
      * @param EmailLayout $layout
+     *
      * @return Message
      */
     public function setLayout($layout)
@@ -209,12 +217,13 @@ class Message extends AbstractEntity implements TranslatableInterface
 
     /**
      * @param string $status
+     *
      * @return Message
      */
     public function setType($status)
     {
-        if (!in_array($status, MessageStatusEnum::getAvailableStatuses())) {
-            throw new \InvalidArgumentException("Invalid type");
+        if (!in_array($status, MessageStatusEnum::getAvailableStatuses(), true)) {
+            throw new \InvalidArgumentException('Invalid type');
         }
 
         $this->status = $status;
@@ -232,6 +241,7 @@ class Message extends AbstractEntity implements TranslatableInterface
 
     /**
      * @param mixed $toType
+     *
      * @return Message
      */
     public function setToType($toType)
@@ -251,6 +261,7 @@ class Message extends AbstractEntity implements TranslatableInterface
 
     /**
      * @param mixed $to
+     *
      * @return Message
      */
     public function setTo($to)
@@ -270,6 +281,7 @@ class Message extends AbstractEntity implements TranslatableInterface
 
     /**
      * @param mixed $cc
+     *
      * @return Message
      */
     public function setCc($cc)
@@ -289,6 +301,7 @@ class Message extends AbstractEntity implements TranslatableInterface
 
     /**
      * @param mixed $bcc
+     *
      * @return Message
      */
     public function setBcc($bcc)
@@ -308,6 +321,7 @@ class Message extends AbstractEntity implements TranslatableInterface
 
     /**
      * @param mixed $sendAt
+     *
      * @return Message
      */
     public function setSendAt(\DateTime $sendAt = null)
@@ -327,6 +341,7 @@ class Message extends AbstractEntity implements TranslatableInterface
 
     /**
      * @param int $sentMail
+     *
      * @return Message
      */
     public function setSentMail($sentMail)
@@ -346,6 +361,7 @@ class Message extends AbstractEntity implements TranslatableInterface
 
     /**
      * @param int $sentSuccess
+     *
      * @return Message
      */
     public function setSentSuccess($sentSuccess)
@@ -365,6 +381,7 @@ class Message extends AbstractEntity implements TranslatableInterface
 
     /**
      * @param int $sentFail
+     *
      * @return Message
      */
     public function setSentFail($sentFail)
@@ -384,6 +401,7 @@ class Message extends AbstractEntity implements TranslatableInterface
 
     /**
      * @param mixed $isSimple
+     *
      * @return Message
      */
     public function setIsSimple($isSimple)
@@ -403,6 +421,7 @@ class Message extends AbstractEntity implements TranslatableInterface
 
     /**
      * @param string $locale
+     *
      * @return Message
      */
     public function setLocale($locale)
@@ -422,6 +441,7 @@ class Message extends AbstractEntity implements TranslatableInterface
 
     /**
      * @param MessageQueue $queue
+     *
      * @return Message
      */
     public function setQueue($queue)
@@ -452,7 +472,7 @@ class Message extends AbstractEntity implements TranslatableInterface
     }
 
     /**
-     * Add send list
+     * Add send list.
      *
      * @param MessageSendList $sendList
      *
@@ -470,7 +490,7 @@ class Message extends AbstractEntity implements TranslatableInterface
     }
 
     /**
-     * Remove send list
+     * Remove send list.
      *
      * @param MessageSendList $sendList
      */
@@ -494,6 +514,7 @@ class Message extends AbstractEntity implements TranslatableInterface
 
     /**
      * @param \DateTime $sentAt
+     *
      * @return Message
      */
     public function setSentAt($sentAt)

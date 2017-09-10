@@ -1,12 +1,20 @@
 <?php
 
+/*
+ * This file is part of PHP CS Fixer.
+ * (c) Fabien Potencier <fabien@symfony.com>
+ *     Dariusz Rumiński <dariusz.ruminski@gmail.com>
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
+
 namespace Hgabka\KunstmaanEmailBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Hgabka\KunstmaanExtensionBundle\Traits\TimestampableEntity;
 
 /**
- * Email log
+ * Email log.
  *
  * @ORM\Table(name="hg_kuma_email_email_queue")
  * @ORM\Entity(repositoryClass="Hgabka\KunstmaanEmailBundle\Repository\EmailQueueRepository")
@@ -64,7 +72,6 @@ class EmailQueue extends AbstractQueue
      */
     private $contentHtml;
 
-
     /**
      * @var \DateTime
      *
@@ -90,6 +97,7 @@ class EmailQueue extends AbstractQueue
 
     /**
      * @param EmailCampaign $campaign
+     *
      * @return EmailQueue
      */
     public function setCampaign($campaign)
@@ -102,30 +110,21 @@ class EmailQueue extends AbstractQueue
     public function isForEmail($email)
     {
         $to = $this->getTo();
-        if (empty($to))
-        {
+        if (empty($to)) {
             return false;
         }
 
         $to = unserialize($to);
-        if (!is_array($to))
-        {
-            return $to == $email;
+        if (!is_array($to)) {
+            return $to === $email;
         }
-        else
-        {
-            foreach ($to as $mail => $name)
-            {
-                if (!is_array($name) && $mail == $email)
-                {
+
+        foreach ($to as $mail => $name) {
+            if (!is_array($name) && $mail === $email) {
+                return true;
+            } elseif (is_array($name)) {
+                if (in_array($email, $name, true) || array_key_exists($email, $name)) {
                     return true;
-                }
-                elseif(is_array($name))
-                {
-                    if (in_array($email, $name) || array_key_exists($email, $name))
-                    {
-                        return true;
-                    }
                 }
             }
         }

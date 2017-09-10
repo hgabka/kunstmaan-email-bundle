@@ -1,22 +1,22 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: User
- * Date: 2017.09.05.
- * Time: 16:03
+
+/*
+ * This file is part of PHP CS Fixer.
+ * (c) Fabien Potencier <fabien@symfony.com>
+ *     Dariusz Rumiński <dariusz.ruminski@gmail.com>
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
  */
 
 namespace Hgabka\KunstmaanEmailBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Mapping\Annotation as Gedmo;
-use Hgabka\KunstmaanExtensionBundle\Traits\TimestampableEntity;
 use Kunstmaan\AdminBundle\Entity\AbstractEntity;
 use Symfony\Component\Validator\Constraints as Assert;
-use Doctrine\Common\Collections\ArrayCollection;
 
 /**
- * Email layout
+ * Email layout.
  *
  * @ORM\Table(name="hg_kuma_email_email_campaign")
  * @ORM\Entity(repositoryClass="Hgabka\KunstmaanEmailBundle\Repository\EmailCampaignRepository")
@@ -84,6 +84,7 @@ class EmailCampaign extends AbstractEntity
 
     /**
      * @param MessageList $list
+     *
      * @return EmailCampaign
      */
     public function setList($list)
@@ -103,6 +104,7 @@ class EmailCampaign extends AbstractEntity
 
     /**
      * @param string $name
+     *
      * @return EmailCampaign
      */
     public function setName($name)
@@ -122,6 +124,7 @@ class EmailCampaign extends AbstractEntity
 
     /**
      * @param string $fromName
+     *
      * @return EmailCampaign
      */
     public function setFromName($fromName)
@@ -141,6 +144,7 @@ class EmailCampaign extends AbstractEntity
 
     /**
      * @param string $fromEmail
+     *
      * @return EmailCampaign
      */
     public function setFromEmail($fromEmail)
@@ -160,6 +164,7 @@ class EmailCampaign extends AbstractEntity
 
     /**
      * @param mixed $isActive
+     *
      * @return EmailCampaign
      */
     public function setIsActive($isActive)
@@ -190,7 +195,7 @@ class EmailCampaign extends AbstractEntity
     }
 
     /**
-     * Add message
+     * Add message.
      *
      * @param EmailCampaignMessage $message
      *
@@ -208,7 +213,7 @@ class EmailCampaign extends AbstractEntity
     }
 
     /**
-     * Remove message
+     * Remove message.
      *
      * @param EmailCampaignMessage $message
      */

@@ -1,22 +1,22 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: User
- * Date: 2017.09.06.
- * Time: 10:26
+
+/*
+ * This file is part of PHP CS Fixer.
+ * (c) Fabien Potencier <fabien@symfony.com>
+ *     Dariusz Rumiński <dariusz.ruminski@gmail.com>
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
  */
 
 namespace Hgabka\KunstmaanEmailBundle\Helper;
 
 use Doctrine\Bundle\DoctrineBundle\Registry;
-use Hgabka\KunstmaanEmailBundle\Entity\Message;
 use Hgabka\KunstmaanEmailBundle\Entity\EmailTemplate;
+use Hgabka\KunstmaanEmailBundle\Entity\Message;
 use Hgabka\KunstmaanEmailBundle\Entity\MessageSendList;
 use Hgabka\KunstmaanEmailBundle\Enum\MessageStatusEnum;
 use Hgabka\KunstmaanEmailBundle\Enum\QueueStatusEnum;
-use Hgabka\KunstmaanEmailBundle\Logger\MessageLogger;
 use Hgabka\KunstmaanExtensionBundle\Helper\KumaUtils;
-use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Translation\TranslatorInterface;
 
 class MessageSender
@@ -24,36 +24,37 @@ class MessageSender
     /** @var Registry */
     protected $doctrine;
 
-    /** @var  array */
+    /** @var array */
     protected $config;
 
-    /** @var  \Swift_Mailer */
+    /** @var \Swift_Mailer */
     protected $mailer;
 
     /** @var TranslatorInterface */
     protected $translator;
 
-    /** @var  QueueManager */
+    /** @var QueueManager */
     protected $queueManager;
 
     /** @var bool */
     protected $forceLog = false;
 
-    /** @var  KumaUtils */
+    /** @var KumaUtils */
     protected $kumaUtils;
 
-    /** @var  MailBuilder */
+    /** @var MailBuilder */
     protected $mailBuilder;
 
     /**
      * MailBuilder constructor.
-     * @param Registry $doctrine
-     * @param \Swift_Mailer $mailer
-     * @param QueueManager $queueManager
-     * @param ParamSubstituter $paramSubstituter
+     *
+     * @param Registry            $doctrine
+     * @param \Swift_Mailer       $mailer
+     * @param QueueManager        $queueManager
+     * @param ParamSubstituter    $paramSubstituter
      * @param TranslatorInterface $translator
-     * @param KumaUtils $kumaUtils,
-     * @param MailBuilder $mailBuilder
+     * @param KumaUtils           $kumaUtils,
+     * @param MailBuilder         $mailBuilder
      */
     public function __construct(
         Registry $doctrine,
@@ -81,6 +82,7 @@ class MessageSender
 
     /**
      * @param bool $forceLog
+     *
      * @return MessageSender
      */
     public function setForceLog($forceLog)
@@ -174,7 +176,7 @@ class MessageSender
                 }
 
                 foreach (array_keys($row) as $other) {
-                    if (!in_array($other, ['to', 'culture', 'email', 'name'])) {
+                    if (!in_array($other, ['to', 'culture', 'email', 'name'], true)) {
                         $oneRow[$other] = $row[$other];
                     }
                 }
@@ -238,10 +240,11 @@ class MessageSender
                 $subscriber = $listSubscription->getSubscriber();
                 if ($subscriber) {
                     $listSubscription->delete();
+
                     continue;
                 }
 
-                if (!in_array($subscriber->getEmail(), $emails)) {
+                if (!in_array($subscriber->getEmail(), $emails, true)) {
                     $ar = get_object_vars($subscriber);
                     $recs[] = array_merge($ar, ['to' => [$subscriber->getEmail() => $subscriber->getName()], 'culture' => $subscriber->getCulture()]);
                     $emails[] = $subscriber->getEmail();
@@ -259,7 +262,7 @@ class MessageSender
         $sent = 0;
         $fail = 0;
 
-        if (((!is_null($sendAt) && $sendAt > date('Y-m-d H:i:s')) || !empty($sentAt)) && !$forceSend) {
+        if (((null !== $sendAt && $sendAt > date('Y-m-d H:i:s')) || !empty($sentAt)) && !$forceSend) {
             return;
         }
 
@@ -278,18 +281,18 @@ class MessageSender
             try {
                 $mail = $this->createMessageMail($message, $to, $culture, true, $rec);
                 if ($mailer->send($mail)) {
-                    $this->log('Email kuldese sikeres. Email: ' . $email);
+                    $this->log('Email kuldese sikeres. Email: '.$email);
 
                     $message->setSentAt(date('Y-m-d H:i:s'));
-                    $sent++;
+                    ++$sent;
                 } else {
-                    $this->log('Email kuldes sikertelen. Email: ' . $email);
-                    $fail++;
+                    $this->log('Email kuldes sikertelen. Email: '.$email);
+                    ++$fail;
                 }
             } catch (Exception $e) {
-                $this->log('Email kuldes sikertelen. Email: ' . $email . ' Hiba: ' . $e->getMessage());
+                $this->log('Email kuldes sikertelen. Email: '.$email.' Hiba: '.$e->getMessage());
 
-                $fail++;
+                ++$fail;
             }
         }
 
@@ -303,7 +306,6 @@ class MessageSender
     {
         $this->queueManager->log($message, $this->forceLog);
     }
-
 
     public function prepareMessage($message)
     {
@@ -319,7 +321,7 @@ class MessageSender
 
     public function updateMessageSendData($message)
     {
-        if (!$message || $message->getStatus() != MessageStatusEnum::STATUS_FOLYAMATBAN) {
+        if (!$message || $message->getStatus() !== MessageStatusEnum::STATUS_FOLYAMATBAN) {
             return;
         }
 
@@ -330,7 +332,7 @@ class MessageSender
             ->setSentSuccess($sendData[QueueStatusEnum::STATUS_ELKULDVE])
             ->setSentFail($sendData[QueueStatusEnum::STATUS_SIKERTELEN]);
 
-        if ($sendData['sum'] == $sendData[QueueStatusEnum::STATUS_ELKULDVE] + $sendData[QueueStatusEnum::STATUS_SIKERTELEN] + $sendData[QueueStatusEnum::STATUS_VISSZAPATTANT]) {
+        if ($sendData['sum'] === $sendData[QueueStatusEnum::STATUS_ELKULDVE] + $sendData[QueueStatusEnum::STATUS_SIKERTELEN] + $sendData[QueueStatusEnum::STATUS_VISSZAPATTANT]) {
             $message->setStatus(MessageStatusEnum::STATUS_ELKULDVE);
             $days = $this->config['delete_sent_messages_after'];
 
@@ -362,7 +364,8 @@ class MessageSender
     }
 
     /**
-     * @param int|null $limit
+     * @param null|int $limit
+     *
      * @return array
      */
     public function sendEmailQueue($limit = null)
@@ -371,7 +374,8 @@ class MessageSender
     }
 
     /**
-     * @param int|null $limit
+     * @param null|int $limit
+     *
      * @return array
      */
     public function sendMessageQueue($limit = null)
@@ -447,7 +451,7 @@ class MessageSender
             $limit = $this->config['send_limit'];
         }
 
-        $this->log('Uzenetek kuldese (limit: ' . $limit . ')');
+        $this->log('Uzenetek kuldese (limit: '.$limit.')');
         $messages = $this->getMessageRepository()->getMessagesToSend();
 
         $sent = 0;
@@ -489,10 +493,11 @@ class MessageSender
 
     /**
      * @param EmailTemplate $template
-     * @param array $params
-     * @param null $culture
-     * @param null $sendAt
-     * @param bool $campaign
+     * @param array         $params
+     * @param null          $culture
+     * @param null          $sendAt
+     * @param bool          $campaign
+     *
      * @return bool|mixed
      */
     public function enqueueTemplateMessage(EmailTemplate $template, $params = [], $culture = null, $sendAt = null, $campaign = false)
@@ -510,8 +515,9 @@ class MessageSender
 
     /**
      * @param EmailTemplate $template
-     * @param array $params
-     * @param null $culture
+     * @param array         $params
+     * @param null          $culture
+     *
      * @return bool|int|mixed
      */
     public function sendTemplateMessage(EmailTemplate $template, $params = [], $culture = null)
@@ -540,6 +546,11 @@ class MessageSender
         return $this->sendTemplateMessage($template, $params, $culture);
     }
 
+    public function deleteEmailFromQueue($email)
+    {
+        return $this->getQueueRepository()->deleteEmailFromQueue($email);
+    }
+
     protected function getQueueRepository()
     {
         return $this->doctrine->getRepository('HgabkaKunstmaanEmailBundle:MessageQueue');
@@ -548,10 +559,5 @@ class MessageSender
     protected function getMessageRepository()
     {
         return $this->doctrine->getRepository('HgabkaKunstmaanEmailBundle:Message');
-    }
-
-    public function deleteEmailFromQueue($email)
-    {
-        return $this->getQueueRepository()->deleteEmailFromQueue($email);
     }
 }

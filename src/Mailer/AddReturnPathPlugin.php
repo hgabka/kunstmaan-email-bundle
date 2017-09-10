@@ -1,16 +1,18 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: User
- * Date: 2017.09.07.
- * Time: 8:58
+
+/*
+ * This file is part of PHP CS Fixer.
+ * (c) Fabien Potencier <fabien@symfony.com>
+ *     Dariusz Rumiński <dariusz.ruminski@gmail.com>
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
  */
 
 namespace Hgabka\KunstmaanEmailBundle\Mailer;
 
 class AddReturnPathPlugin implements \Swift_Events_SendListener
 {
-    /** @var  array */
+    /** @var array */
     protected $config;
 
     /**
@@ -23,6 +25,7 @@ class AddReturnPathPlugin implements \Swift_Events_SendListener
 
     /**
      * @param array $config
+     *
      * @return AddHeadersPlugin
      */
     public function setConfig($config)
@@ -40,8 +43,7 @@ class AddReturnPathPlugin implements \Swift_Events_SendListener
     public function beforeSendPerformed(\Swift_Events_SendEvent $evt)
     {
         $message = $evt->getMessage();
-        if (!($path = $this->config))
-        {
+        if (!($path = $this->config)) {
             return;
         }
 

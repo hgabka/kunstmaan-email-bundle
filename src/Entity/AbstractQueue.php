@@ -1,17 +1,18 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: User
- * Date: 2017.09.06.
- * Time: 12:52
+
+/*
+ * This file is part of PHP CS Fixer.
+ * (c) Fabien Potencier <fabien@symfony.com>
+ *     Dariusz Rumiński <dariusz.ruminski@gmail.com>
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
  */
 
 namespace Hgabka\KunstmaanEmailBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Mapping\Annotation as Gedmo;
-use Hgabka\KunstmaanExtensionBundle\Traits\TimestampableEntity;
 use Hgabka\KunstmaanEmailBundle\Enum\QueueStatusEnum;
+use Hgabka\KunstmaanExtensionBundle\Traits\TimestampableEntity;
 use Kunstmaan\AdminBundle\Entity\AbstractEntity;
 
 class AbstractQueue extends AbstractEntity
@@ -19,7 +20,7 @@ class AbstractQueue extends AbstractEntity
     use TimestampableEntity;
 
     /**
-     * @var integer
+     * @var int
      *
      * @ORM\Column(name="retries", type="integer")
      */
@@ -42,6 +43,7 @@ class AbstractQueue extends AbstractEntity
 
     /**
      * @param mixed $from
+     *
      * @return EmailQueue
      */
     public function setFrom($from)
@@ -61,6 +63,7 @@ class AbstractQueue extends AbstractEntity
 
     /**
      * @param string $to
+     *
      * @return EmailQueue
      */
     public function setTo($to)
@@ -80,6 +83,7 @@ class AbstractQueue extends AbstractEntity
 
     /**
      * @param mixed $cc
+     *
      * @return EmailQueue
      */
     public function setCc($cc)
@@ -99,6 +103,7 @@ class AbstractQueue extends AbstractEntity
 
     /**
      * @param mixed $bcc
+     *
      * @return EmailQueue
      */
     public function setBcc($bcc)
@@ -118,6 +123,7 @@ class AbstractQueue extends AbstractEntity
 
     /**
      * @param mixed $subject
+     *
      * @return EmailQueue
      */
     public function setSubject($subject)
@@ -137,6 +143,7 @@ class AbstractQueue extends AbstractEntity
 
     /**
      * @param string $contentText
+     *
      * @return EmailQueue
      */
     public function setContentText($contentText)
@@ -156,6 +163,7 @@ class AbstractQueue extends AbstractEntity
 
     /**
      * @param string $contentHtml
+     *
      * @return EmailQueue
      */
     public function setContentHtml($contentHtml)
@@ -175,6 +183,7 @@ class AbstractQueue extends AbstractEntity
 
     /**
      * @param int $retries
+     *
      * @return EmailQueue
      */
     public function setRetries($retries)
@@ -194,6 +203,7 @@ class AbstractQueue extends AbstractEntity
 
     /**
      * @param string $status
+     *
      * @return EmailQueue
      */
     public function setStatus($status)
@@ -213,6 +223,7 @@ class AbstractQueue extends AbstractEntity
 
     /**
      * @param \DateTime $sendAt
+     *
      * @return EmailQueue
      */
     public function setSendAt($sendAt)

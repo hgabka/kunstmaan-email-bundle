@@ -1,23 +1,21 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: sfhun
- * Date: 2017.09.04.
- * Time: 17:46
+
+/*
+ * This file is part of PHP CS Fixer.
+ * (c) Fabien Potencier <fabien@symfony.com>
+ *     Dariusz Rumiński <dariusz.ruminski@gmail.com>
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
  */
 
 namespace Hgabka\KunstmaanEmailBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Mapping\Annotation as Gedmo;
 use Hgabka\KunstmaanExtensionBundle\Traits\TimestampableEntity;
 use Kunstmaan\AdminBundle\Entity\AbstractEntity;
-use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Component\Validator\Context\ExecutionContextInterface;
-
 
 /**
- * Email log
+ * Email log.
  *
  * @ORM\Table(name="hg_kuma_email_email_log")
  * @ORM\Entity(repositoryClass="Hgabka\KunstmaanEmailBundle\Repository\EmailLogRepository")
@@ -99,6 +97,7 @@ class EmailLog extends AbstractEntity
 
     /**
      * @param string $subject
+     *
      * @return EmailLog
      */
     public function setSubject($subject)
@@ -118,6 +117,7 @@ class EmailLog extends AbstractEntity
 
     /**
      * @param string $from
+     *
      * @return EmailLog
      */
     public function setFrom($from)
@@ -137,6 +137,7 @@ class EmailLog extends AbstractEntity
 
     /**
      * @param string $to
+     *
      * @return EmailLog
      */
     public function setTo($to)
@@ -156,6 +157,7 @@ class EmailLog extends AbstractEntity
 
     /**
      * @param string $cc
+     *
      * @return EmailLog
      */
     public function setCc($cc)
@@ -175,6 +177,7 @@ class EmailLog extends AbstractEntity
 
     /**
      * @param string $bcc
+     *
      * @return EmailLog
      */
     public function setBcc($bcc)
@@ -194,6 +197,7 @@ class EmailLog extends AbstractEntity
 
     /**
      * @param string $textBody
+     *
      * @return EmailLog
      */
     public function setTextBody($textBody)
@@ -213,6 +217,7 @@ class EmailLog extends AbstractEntity
 
     /**
      * @param string $htmlBody
+     *
      * @return EmailLog
      */
     public function setHtmlBody($htmlBody)
@@ -232,6 +237,7 @@ class EmailLog extends AbstractEntity
 
     /**
      * @param string $attachment
+     *
      * @return EmailLog
      */
     public function setAttachment($attachment)
@@ -251,6 +257,7 @@ class EmailLog extends AbstractEntity
 
     /**
      * @param string $mime
+     *
      * @return EmailLog
      */
     public function setMime($mime)
@@ -261,7 +268,8 @@ class EmailLog extends AbstractEntity
     }
 
     /**
-     * Populate fields with $message data
+     * Populate fields with $message data.
+     *
      * @param Swift_Message $message
      */
     public function fromMessage(\Swift_Message $message)
@@ -274,48 +282,39 @@ class EmailLog extends AbstractEntity
         $this->setBcc($this->addressToString($message->getBcc()));
 
         $children = $message->getChildren();
-        foreach ($children as $child)
-        {
-            if ($child->getContentType() == 'text/html')
-            {
+        foreach ($children as $child) {
+            if ($child->getContentType() === 'text/html') {
                 $this->setHtmlBody($child->getBody());
-            }
-            elseif ($child instanceof Swift_Attachment)
-            {
+            } elseif ($child instanceof Swift_Attachment) {
                 $this->setAttachment($child->getFilename());
             }
-
         }
         $this->setMime($message->getContentType());
     }
 
     /**
-     * Convert address or addresses to string
+     * Convert address or addresses to string.
+     *
      * @param array $addr
+     *
      * @return string
      */
     protected function addressToString($addr)
     {
-        if (empty($addr))
-        {
+        if (empty($addr)) {
             return '';
         }
 
-        if (is_string($addr))
-        {
+        if (is_string($addr)) {
             return $addr;
         }
 
         $str = '';
-        foreach ($addr as $key => $val)
-        {
+        foreach ($addr as $key => $val) {
             $to = trim($val);
-            if (empty($to))
-            {
-                $str.= ($key.', ');
-            }
-            else
-            {
+            if (empty($to)) {
+                $str .= ($key.', ');
+            } else {
                 $str .= sprintf('%s <%s>, ', $val, $key);
             }
         }

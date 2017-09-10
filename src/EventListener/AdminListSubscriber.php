@@ -1,32 +1,29 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: sfhun
- * Date: 2017.09.08.
- * Time: 20:19
+
+/*
+ * This file is part of PHP CS Fixer.
+ * (c) Fabien Potencier <fabien@symfony.com>
+ *     Dariusz Rumiński <dariusz.ruminski@gmail.com>
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
  */
 
 namespace Hgabka\KunstmaanEmailBundle\EventListener;
 
 use Doctrine\Bundle\DoctrineBundle\Registry;
-use Doctrine\Common\EventSubscriber;
-use Doctrine\Common\Persistence\Event\LifecycleEventArgs;
-use Hgabka\KunstmaanEmailBundle\Entity\AbstractQueue;
-use Hgabka\KunstmaanEmailBundle\Entity\EmailQueue;
 use Hgabka\KunstmaanEmailBundle\Entity\EmailTemplate;
-use Hgabka\KunstmaanEmailBundle\Entity\EmailTemplateTranslation;
-use Doctrine\ORM\Event\OnFlushEventArgs;
 use Kunstmaan\AdminListBundle\Event\AdminListEvent;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Kunstmaan\AdminListBundle\Event\AdminListEvents;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class AdminListSubscriber implements EventSubscriberInterface
 {
-    /** @var  Registry */
+    /** @var Registry */
     protected $doctrine;
 
     /**
      * MailerSubscriber constructor.
+     *
      * @param Registry $doctrine
      */
     public function __construct(Registry $doctrine)
@@ -53,7 +50,7 @@ class AdminListSubscriber implements EventSubscriberInterface
                 foreach ($attRepo->getByTemplate($trans->getTranslatable(), $trans->getLocale()) as $att) {
                     $em->remove($att);
                 }
-                foreach($trans->getAttachments() as $att) {
+                foreach ($trans->getAttachments() as $att) {
                     $att
                         ->setType(EmailTemplate::class)
                         ->setOwnerId($object->getId())
@@ -78,7 +75,7 @@ class AdminListSubscriber implements EventSubscriberInterface
                 foreach ($attRepo->getByTemplate($trans->getTranslatable(), $trans->getLocale()) as $att) {
                     $em->remove($att);
                 }
-                foreach($trans->getAttachments() as $att) {
+                foreach ($trans->getAttachments() as $att) {
                     $att
                         ->setType(EmailTemplate::class)
                         ->setOwnerId($object->getId())

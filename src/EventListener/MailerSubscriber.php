@@ -1,9 +1,11 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: sfhun
- * Date: 2017.09.06.
- * Time: 20:21
+
+/*
+ * This file is part of PHP CS Fixer.
+ * (c) Fabien Potencier <fabien@symfony.com>
+ *     Dariusz Rumiński <dariusz.ruminski@gmail.com>
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
  */
 
 namespace Hgabka\KunstmaanEmailBundle\EventListener;
@@ -14,16 +16,17 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class MailerSubscriber implements EventSubscriberInterface
 {
-    /** @var  EmailLogger */
+    /** @var EmailLogger */
     protected $logger;
 
-    /** @var  string */
+    /** @var string */
     protected $strategy;
 
     /**
      * MailerSubscriber constructor.
+     *
      * @param EmailLogger $logger
-     * @param string $strategy
+     * @param string      $strategy
      */
     public function __construct(EmailLogger $logger, string $strategy)
     {
@@ -45,7 +48,7 @@ class MailerSubscriber implements EventSubscriberInterface
      */
     public function onSendCalled(MailerEvent $event)
     {
-        if ($this->strategy == 'mailer_send') {
+        if ($this->strategy === 'mailer_send') {
             $this->logger->logMessage($event);
         }
     }
@@ -55,7 +58,7 @@ class MailerSubscriber implements EventSubscriberInterface
      */
     public function onMailSent(MailerEvent $event)
     {
-        if ($this->strategy != 'mailer_send') {
+        if ($this->strategy !== 'mailer_send') {
             $this->logger->logMessage($event);
         }
     }
