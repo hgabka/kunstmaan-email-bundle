@@ -24,154 +24,14 @@ class AbstractQueue extends AbstractEntity
      *
      * @ORM\Column(name="retries", type="integer")
      */
-    private $retries = 0;
+    protected $retries = 0;
 
     /**
      * @var string
      *
      * @ORM\Column(name="status", type="string", length=20)
      */
-    private $status = QueueStatusEnum::STATUS_INIT;
-
-    /**
-     * @return mixed
-     */
-    public function getFrom()
-    {
-        return $this->from;
-    }
-
-    /**
-     * @param mixed $from
-     *
-     * @return EmailQueue
-     */
-    public function setFrom($from)
-    {
-        $this->from = $from;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getTo()
-    {
-        return $this->to;
-    }
-
-    /**
-     * @param string $to
-     *
-     * @return EmailQueue
-     */
-    public function setTo($to)
-    {
-        $this->to = $to;
-
-        return $this;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getCc()
-    {
-        return $this->cc;
-    }
-
-    /**
-     * @param mixed $cc
-     *
-     * @return EmailQueue
-     */
-    public function setCc($cc)
-    {
-        $this->cc = $cc;
-
-        return $this;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getBcc()
-    {
-        return $this->bcc;
-    }
-
-    /**
-     * @param mixed $bcc
-     *
-     * @return EmailQueue
-     */
-    public function setBcc($bcc)
-    {
-        $this->bcc = $bcc;
-
-        return $this;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getSubject()
-    {
-        return $this->subject;
-    }
-
-    /**
-     * @param mixed $subject
-     *
-     * @return EmailQueue
-     */
-    public function setSubject($subject)
-    {
-        $this->subject = $subject;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getContentText()
-    {
-        return $this->contentText;
-    }
-
-    /**
-     * @param string $contentText
-     *
-     * @return EmailQueue
-     */
-    public function setContentText($contentText)
-    {
-        $this->contentText = $contentText;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getContentHtml()
-    {
-        return $this->contentHtml;
-    }
-
-    /**
-     * @param string $contentHtml
-     *
-     * @return EmailQueue
-     */
-    public function setContentHtml($contentHtml)
-    {
-        $this->contentHtml = $contentHtml;
-
-        return $this;
-    }
+    protected $status = QueueStatusEnum::STATUS_INIT;
 
     /**
      * @return int
@@ -184,7 +44,7 @@ class AbstractQueue extends AbstractEntity
     /**
      * @param int $retries
      *
-     * @return EmailQueue
+     * @return AbstractQueue
      */
     public function setRetries($retries)
     {
@@ -204,31 +64,11 @@ class AbstractQueue extends AbstractEntity
     /**
      * @param string $status
      *
-     * @return EmailQueue
+     * @return AbstractQueue
      */
     public function setStatus($status)
     {
         $this->status = $status;
-
-        return $this;
-    }
-
-    /**
-     * @return \DateTime
-     */
-    public function getSendAt()
-    {
-        return $this->sendAt;
-    }
-
-    /**
-     * @param \DateTime $sendAt
-     *
-     * @return EmailQueue
-     */
-    public function setSendAt($sendAt)
-    {
-        $this->sendAt = $sendAt;
 
         return $this;
     }

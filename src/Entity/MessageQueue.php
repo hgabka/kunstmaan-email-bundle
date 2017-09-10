@@ -28,21 +28,21 @@ class MessageQueue extends AbstractQueue
      *
      * @ORM\Column(name="to_name", type="string", length=255, nullable=true)
      */
-    private $toName;
+    protected $toName;
 
     /**
      * @var string
      *
      * @ORM\Column(name="to_email", type="string", length=255, nullable=true)
      */
-    private $toEmail;
+    protected $toEmail;
 
     /**
      * @var string
      *
      * @ORM\Column(name="locale", type="string", length=2, nullable=true)
      */
-    private $locale;
+    protected $locale;
 
     /**
      * @var Message
@@ -50,14 +50,14 @@ class MessageQueue extends AbstractQueue
      * @ORM\OneToOne(targetEntity="Hgabka\KunstmaanEmailBundle\Entity\Message", mappedBy="queue")
      * @ORM\JoinColumn(name="message_id", referencedColumnName="id", onDelete="CASCADE")
      */
-    private $message;
+    protected $message;
 
     /**
      * @var string
      *
      * @ORM\Column(name="parameters", type="text", nullable=true)
      */
-    private $parameters;
+    protected $parameters;
 
     /**
      * @return Message

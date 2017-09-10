@@ -30,7 +30,7 @@ class EmailCampaignMessage extends AbstractEntity
      * @ORM\ManyToOne(targetEntity="Hgabka\KunstmaanEmailBundle\Entity\EmailCampaign", inversedBy="messages", cascade={"persist"})
      * @ORM\JoinColumn(name="email_campaign_id", referencedColumnName="id", onDelete="CASCADE")
      */
-    private $campaign;
+    protected $campaign;
 
     /**
      * @var EmailTemplate
@@ -38,14 +38,14 @@ class EmailCampaignMessage extends AbstractEntity
      * @ORM\ManyToOne(targetEntity="Hgabka\KunstmaanEmailBundle\Entity\EmailTemplate", cascade={"persist"})
      * @ORM\JoinColumn(name="email_template_id", referencedColumnName="id", onDelete="CASCADE")
      */
-    private $template;
+    protected $template;
 
     /**
      * @var int
      *
      * @ORM\Column(name="send_after", type="integer")
      */
-    private $sendAfter = 0;
+    protected $sendAfter = 0;
 
     /**
      * @return EmailCampaign

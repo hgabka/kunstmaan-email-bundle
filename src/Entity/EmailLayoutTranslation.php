@@ -27,14 +27,14 @@ class EmailLayoutTranslation extends AbstractEntity implements TranslationInterf
     /**
      * @Prezent\Translatable(targetEntity="Hgabka\KunstmaanEmailBundle\Entity\EmailLayout")
      */
-    private $translatable;
+    protected $translatable;
 
     /**
      * @var string
      *
      * @ORM\Column(name="content_html", type="text")
      */
-    private $contentHtml = '';
+    protected $contentHtml = '';
 
     /**
      * @return string

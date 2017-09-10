@@ -14,11 +14,9 @@ use Symfony\Component\EventDispatcher\Event;
 
 class MailerEvent extends Event
 {
-    const
-        EVENT_SEND_CALLED = 'email.log.mail_send_called';
+    const EVENT_SEND_CALLED = 'email.log.mail_send_called';
     const EVENT_MAIL_SENT = 'email.log.mail_sent';
-    const EVENT_ADD_HEADERS = 'email.add_headers'
-    ;
+    const EVENT_ADD_HEADERS = 'email.add_headers';
 
     /** @var \Swift_Message */
     private $message;

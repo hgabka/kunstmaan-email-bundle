@@ -33,7 +33,7 @@ class MessageList extends AbstractEntity
      *
      * @Assert\Valid()
      */
-    private $listSubscriptions;
+    protected $listSubscriptions;
 
     /**
      * @var ArrayCollection|MessageSendList[]
@@ -42,7 +42,7 @@ class MessageList extends AbstractEntity
      *
      * @Assert\Valid()
      */
-    private $sendLists;
+    protected $sendLists;
 
     /**
      * @var ArrayCollection|EmailCampaign[]
@@ -51,22 +51,22 @@ class MessageList extends AbstractEntity
      *
      * @Assert\Valid()
      */
-    private $campaigns;
+    protected $campaigns;
 
     /**
      * @ORM\Column(name="name", type="string", length=255)
      */
-    private $name;
+    protected $name;
 
     /**
      * @ORM\Column(name="is_default", type="boolean")
      */
-    private $isDefault = false;
+    protected $isDefault = false;
 
     /**
      * @ORM\Column(name="is_public", type="boolean")
      */
-    private $isPublic = true;
+    protected $isPublic = true;
 
     /**
      * constructor.

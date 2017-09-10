@@ -33,30 +33,30 @@ class EmailTemplate extends AbstractEntity implements TranslatableInterface
     /**
      * @Prezent\Translations(targetEntity="Hgabka\KunstmaanEmailBundle\Entity\EmailTemplateTranslation")
      */
-    private $translations;
+    protected $translations;
 
     /**
      * @ORM\Column(name="name", type="string", length=255)
      * @Assert\NotBlank()
      */
-    private $name;
+    protected $name;
 
     /**
      * @ORM\Column(name="slug", type="string", length=255)
      * @Assert\NotBlank()
      */
-    private $slug;
+    protected $slug;
 
     /**
      * @ORM\Column(name="comment", type="text")
      * @Assert\NotBlank()
      */
-    private $comment;
+    protected $comment;
 
     /**
      * @ORM\Column(name="is_system", type="boolean")
      */
-    private $isSystem = false;
+    protected $isSystem = false;
 
     /**
      * @var EmailLayout
@@ -64,7 +64,7 @@ class EmailTemplate extends AbstractEntity implements TranslatableInterface
      * @ORM\ManyToOne(targetEntity="Hgabka\KunstmaanEmailBundle\Entity\EmailLayout", inversedBy="templates", cascade={"persist"})
      * @ORM\JoinColumn(name="email_layout_id", referencedColumnName="id", onDelete="SET NULL")
      */
-    private $layout;
+    protected $layout;
 
     /**
      * constructor.

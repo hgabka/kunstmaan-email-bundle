@@ -33,28 +33,28 @@ class MessageSubscriber extends AbstractEntity
      *
      * @Assert\Valid()
      */
-    private $listSubscriptions;
+    protected $listSubscriptions;
 
     /**
      * @ORM\Column(name="name", type="string", length=255)
      */
-    private $name;
+    protected $name;
 
     /**
      * @ORM\Column(name="email", type="string", length=255)
      */
-    private $email;
+    protected $email;
 
     /**
      * @var string
      * @ORM\Column(name="locale", type="string", length=2, nullable=true)
      */
-    private $locale;
+    protected $locale;
 
     /**
      * @ORM\Column(name="token", type="string", length=255, nullable=true)
      */
-    private $token;
+    protected $token;
 
     /**
      * constructor.

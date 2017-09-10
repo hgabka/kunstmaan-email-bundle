@@ -30,7 +30,7 @@ class MessageListSubscription extends AbstractEntity
      * @ORM\ManyToOne(targetEntity="Hgabka\KunstmaanEmailBundle\Entity\MessageList", inversedBy="listSubscriptions", cascade={"persist"})
      * @ORM\JoinColumn(name="message_list_id", referencedColumnName="id", onDelete="CASCADE")
      */
-    private $list;
+    protected $list;
 
     /**
      * @var MessageSubscriber
@@ -38,7 +38,7 @@ class MessageListSubscription extends AbstractEntity
      * @ORM\ManyToOne(targetEntity="Hgabka\KunstmaanEmailBundle\Entity\MessageSubscriber", inversedBy="listSubscriptions", cascade={"persist"})
      * @ORM\JoinColumn(name="subscriber_id", referencedColumnName="id", onDelete="CASCADE")
      */
-    private $subscriber;
+    protected $subscriber;
 
     /**
      * @return MessageList

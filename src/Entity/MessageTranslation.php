@@ -27,22 +27,22 @@ class MessageTranslation extends AbstractEntity implements TranslationInterface
     /**
      * @Prezent\Translatable(targetEntity="Hgabka\KunstmaanEmailBundle\Entity\Message")
      */
-    private $translatable;
+    protected $translatable;
 
     /**
      * @ORM\Column(name="subject", type="string", length=255)
      */
-    private $subject;
+    protected $subject;
 
     /**
      * @ORM\Column(name="content_text", type="text")
      */
-    private $contentText = '';
+    protected $contentText = '';
 
     /**
      * @ORM\Column(name="content_html", type="text")
      */
-    private $contentHtml = '';
+    protected $contentHtml = '';
 
     /**
      * @return mixed

@@ -38,14 +38,14 @@ class Attachment extends AbstractEntity
      *
      * @ORM\Column(name="type", type="string", length=255)
      */
-    private $type;
+    protected $type;
 
     /**
      * @var int
      *
      * @ORM\Column(name="owner_id", type="bigint")
      */
-    private $ownerId;
+    protected $ownerId;
 
     /**
      * @var Media
@@ -54,28 +54,28 @@ class Attachment extends AbstractEntity
      * @ORM\JoinColumn(name="media_id", referencedColumnName="id")
      * @Assert\NotNull()
      */
-    private $media;
+    protected $media;
 
     /**
      * @var string
      *
      * @ORM\Column(name="locale", type="string", length=2, nullable=true)
      */
-    private $locale;
+    protected $locale;
 
     /**
      * @var string
      *
      * @ORM\Column(name="filename", type="string", length=512, nullable=true)
      */
-    private $filename;
+    protected $filename;
 
     /**
      * @var string
      *
      * @ORM\Column(name="content", type="text", nullable=true)
      */
-    private $content;
+    protected $content;
 
     /**
      * @return string

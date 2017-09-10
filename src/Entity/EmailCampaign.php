@@ -29,7 +29,7 @@ class EmailCampaign extends AbstractEntity
      * @ORM\ManyToOne(targetEntity="Hgabka\KunstmaanEmailBundle\Entity\MessageList", inversedBy="campaigns", cascade={"persist"})
      * @ORM\JoinColumn(name="message_list_id", referencedColumnName="id", onDelete="CASCADE")
      */
-    private $list;
+    protected $list;
 
     /**
      * @var ArrayCollection|EmailCampaignMessage[]
@@ -38,33 +38,33 @@ class EmailCampaign extends AbstractEntity
      *
      * @Assert\Valid()
      */
-    private $messages;
+    protected $messages;
 
     /**
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255, nullable=true)
      */
-    private $name;
+    protected $name;
 
     /**
      * @var string
      *
      * @ORM\Column(name="from_name", type="string", length=255, nullable=true)
      */
-    private $fromName;
+    protected $fromName;
 
     /**
      * @var string
      *
      * @ORM\Column(name="from_email", type="string", length=255, nullable=true)
      */
-    private $fromEmail;
+    protected $fromEmail;
 
     /**
      * @ORM\Column(name="is_active", type="boolean")
      */
-    private $isActive = true;
+    protected $isActive = true;
 
     /**
      * constructor.

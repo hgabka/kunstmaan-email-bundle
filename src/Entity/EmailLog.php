@@ -29,63 +29,63 @@ class EmailLog extends AbstractEntity
      *
      * @ORM\Column(name="subject", type="string", length=255, nullable=true)
      */
-    private $subject;
+    protected $subject;
 
     /**
      * @var string
      *
      * @ORM\Column(name="mail_from", type="string", length=255, nullable=true)
      */
-    private $from;
+    protected $from;
 
     /**
      * @var string
      *
      * @ORM\Column(name="mail_to", type="string", length=255, nullable=true)
      */
-    private $to;
+    protected $to;
 
     /**
      * @var string
      *
      * @ORM\Column(name="mail_cc", type="string", length=255, nullable=true)
      */
-    private $cc;
+    protected $cc;
 
     /**
      * @var string
      *
      * @ORM\Column(name="mail_bcc", type="string", length=255, nullable=true)
      */
-    private $bcc;
+    protected $bcc;
 
     /**
      * @var string
      *
      * @ORM\Column(name="content_text", type="text", nullable=true)
      */
-    private $textBody;
+    protected $textBody;
 
     /**
      * @var string
      *
      * @ORM\Column(name="content_html", type="text", nullable=true)
      */
-    private $htmlBody;
+    protected $htmlBody;
 
     /**
      * @var string
      *
      * @ORM\Column(name="attachment", type="string", length=255, nullable=true)
      */
-    private $attachment;
+    protected $attachment;
 
     /**
      * @var string
      *
      * @ORM\Column(name="mime", type="string", length=255, nullable=true)
      */
-    private $mime;
+    protected $mime;
 
     /**
      * @return string

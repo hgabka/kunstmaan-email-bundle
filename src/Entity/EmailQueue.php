@@ -28,56 +28,56 @@ class EmailQueue extends AbstractQueue
      *
      * @ORM\Column(name="mail_from", type="text", nullable=true)
      */
-    private $from;
+    protected $from;
 
     /**
      * @var string
      *
      * @ORM\Column(name="mail_to", type="text", nullable=true)
      */
-    private $to;
+    protected $to;
 
     /**
      * @var string
      *
      * @ORM\Column(name="mail_cc", type="text", nullable=true)
      */
-    private $cc;
+    protected $cc;
 
     /**
      * @var string
      *
      * @ORM\Column(name="mail_bcc", type="text", nullable=true)
      */
-    private $bcc;
+    protected $bcc;
 
     /**
      * @var string
      *
      * @ORM\Column(name="subject", type="string", length=255, nullable=true)
      */
-    private $subject;
+    protected $subject;
 
     /**
      * @var string
      *
      * @ORM\Column(name="content_text", type="text", nullable=true)
      */
-    private $contentText;
+    protected $contentText;
 
     /**
      * @var string
      *
      * @ORM\Column(name="content_html", type="text", nullable=true)
      */
-    private $contentHtml;
+    protected $contentHtml;
 
     /**
      * @var \DateTime
      *
      * @ORM\Column(name="send_at", type="datetime", nullable=true)
      */
-    private $sendAt;
+    protected $sendAt;
 
     /**
      * @var EmailCampaign
@@ -85,7 +85,7 @@ class EmailQueue extends AbstractQueue
      * @ORM\ManyToOne(targetEntity="Hgabka\KunstmaanEmailBundle\Entity\EmailCampaign", cascade={"persist"})
      * @ORM\JoinColumn(name="email_campaign_id", nullable=true, referencedColumnName="id", onDelete="CASCADE")
      */
-    private $campaign;
+    protected $campaign;
 
     /**
      * @return EmailCampaign

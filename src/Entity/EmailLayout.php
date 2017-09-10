@@ -37,7 +37,7 @@ class EmailLayout extends AbstractEntity implements TranslatableInterface
      *
      * @Assert\Valid()
      */
-    private $templates;
+    protected $templates;
 
     /**
      * @var ArrayCollection|Message[]
@@ -46,26 +46,26 @@ class EmailLayout extends AbstractEntity implements TranslatableInterface
      *
      * @Assert\Valid()
      */
-    private $messages;
+    protected $messages;
 
     /**
      * @Prezent\Translations(targetEntity="Hgabka\KunstmaanEmailBundle\Entity\EmailLayoutTranslation")
      */
-    private $translations;
+    protected $translations;
 
     /**
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255)
      */
-    private $name;
+    protected $name;
 
     /**
      * @var string
      *
      * @ORM\Column(name="styles", type="text")
      */
-    private $styles;
+    protected $styles;
 
     /**
      * constructor.

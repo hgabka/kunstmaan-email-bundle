@@ -34,7 +34,7 @@ class Message extends AbstractEntity implements TranslatableInterface
     /**
      * @Prezent\Translations(targetEntity="Hgabka\KunstmaanEmailBundle\Entity\MessageTranslation")
      */
-    private $translations;
+    protected $translations;
 
     /**
      * @var ArrayCollection|MessageSendList[]
@@ -43,55 +43,55 @@ class Message extends AbstractEntity implements TranslatableInterface
      *
      * @Assert\Valid()
      */
-    private $sendLists;
+    protected $sendLists;
 
     /**
      * @ORM\Column(name="from_name", type="string", length=255, nullable=true)
      */
-    private $fromName;
+    protected $fromName;
 
     /**
      * @ORM\Column(name="from_email", type="string", length=255, nullable=true)
      */
-    private $fromEmail;
+    protected $fromEmail;
 
     /**
      * @ORM\Column(name="to_type", type="string", length=255, nullable=true)
      */
-    private $toType;
+    protected $toType;
 
     /**
      * @ORM\Column(name="mail_to", type="text", nullable=true)
      */
-    private $to;
+    protected $to;
 
     /**
      * @ORM\Column(name="mail_cc", type="text", nullable=true)
      */
-    private $cc;
+    protected $cc;
 
     /**
      * @ORM\Column(name="mail_bcc", type="text", nullable=true)
      */
-    private $bcc;
+    protected $bcc;
 
     /**
      * @var \DateTime
      * @ORM\Column(name="send_at", type="datetime", nullable=true)
      */
-    private $sendAt;
+    protected $sendAt;
 
     /**
      * @var \DateTime
      * @ORM\Column(name="sent_at", type="datetime", nullable=true)
      */
-    private $sentAt;
+    protected $sentAt;
 
     /**
      * @var string
      * @ORM\Column(name="status", type="string", length=20)
      */
-    private $status = MessageStatusEnum::STATUS_INIT;
+    protected $status = MessageStatusEnum::STATUS_INIT;
 
     /**
      * @var EmailLayout
@@ -99,7 +99,7 @@ class Message extends AbstractEntity implements TranslatableInterface
      * @ORM\ManyToOne(targetEntity="Hgabka\KunstmaanEmailBundle\Entity\EmailLayout", inversedBy="messages", cascade={"persist"})
      * @ORM\JoinColumn(name="email_layout_id", referencedColumnName="id", onDelete="SET NULL")
      */
-    private $layout;
+    protected $layout;
 
     /**
      * @var MessageQueue
@@ -107,36 +107,36 @@ class Message extends AbstractEntity implements TranslatableInterface
      * @ORM\OneToOne(targetEntity="Hgabka\KunstmaanEmailBundle\Entity\MessageQueue", inversedBy="message")
      * @ORM\JoinColumn(name="message_queue_id", referencedColumnName="id", onDelete="SET NULL")
      */
-    private $queue;
+    protected $queue;
 
     /**
      * @var int
      * @ORM\Column(name="sent_mail", type="integer")
      */
-    private $sentMail = 0;
+    protected $sentMail = 0;
 
     /**
      * @var int
      * @ORM\Column(name="sent_success", type="integer")
      */
-    private $sentSuccess = 0;
+    protected $sentSuccess = 0;
 
     /**
      * @var int
      * @ORM\Column(name="sent_fail", type="integer")
      */
-    private $sentFail = 0;
+    protected $sentFail = 0;
 
     /**
      * @ORM\Column(name="is_simple", type="boolean")
      */
-    private $isSimple = false;
+    protected $isSimple = false;
 
     /**
      * @var string
      * @ORM\Column(name="locale", type="string", length=2, nullable=true)
      */
-    private $locale;
+    protected $locale;
 
     /**
      * constructor.
