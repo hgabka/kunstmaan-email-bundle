@@ -110,7 +110,7 @@ class MailBuilder
      */
     public function translateEmailAddress($address)
     {
-        if (is_string($address) || ((!isset($address['name']) || strlen($address['name']) === 0) && (!isset($address['email']) || strlen($address['email']) === 0))) {
+        if (is_string($address) || ((!isset($address['name']) || 0 === strlen($address['name'])) && (!isset($address['email']) || 0 === strlen($address['email'])))) {
             return $address;
         }
 
@@ -162,7 +162,7 @@ class MailBuilder
 
         if ($layout && strlen($bodyHtml) > 0) {
             $layoutFile = $this->config['layout_file'];
-            if ($layoutFile === false) {
+            if (false === $layoutFile) {
                 $layoutFile = null;
             } elseif (empty($layoutFile)) {
                 $layoutFile = $this->paramSubstituter->getDefaultLayoutPath();

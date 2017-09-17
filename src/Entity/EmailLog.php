@@ -283,7 +283,7 @@ class EmailLog extends AbstractEntity
 
         $children = $message->getChildren();
         foreach ($children as $child) {
-            if ($child->getContentType() === 'text/html') {
+            if ('text/html' === $child->getContentType()) {
                 $this->setHtmlBody($child->getBody());
             } elseif ($child instanceof Swift_Attachment) {
                 $this->setAttachment($child->getFilename());

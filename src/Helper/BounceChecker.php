@@ -91,9 +91,9 @@ class BounceChecker
                 }
             }
 
-            if ($action === 'delete') {
+            if ('delete' === $action) {
                 $this->mailReader->deleteMessage($message);
-            } elseif ($action === 'mark_as_read') {
+            } elseif ('mark_as_read' === $action) {
                 $this->mailReader->markMessageAsRead($message);
             }
         }

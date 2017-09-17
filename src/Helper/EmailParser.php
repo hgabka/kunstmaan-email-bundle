@@ -64,7 +64,7 @@ class EmailParser
 
         if ($this->isImapExtensionAvailable) {
             foreach (imap_mime_header_decode($this->rawFields['subject']) as $h) { // subject can span into several lines
-                $charset = ($h->charset === 'default') ? 'US-ASCII' : $h->charset;
+                $charset = ('default' === $h->charset) ? 'US-ASCII' : $h->charset;
                 $ret .= iconv($charset, 'UTF-8//TRANSLIT', $h->text);
             }
         } else {
@@ -130,7 +130,7 @@ class EmailParser
         $charset = 'ASCII';
         $waitingForContentStart = true;
 
-        if ($returnType === self::HTML) {
+        if (self::HTML === $returnType) {
             $contentTypeRegex = '/^Content-Type: ?text\/html/i';
         } else {
             $contentTypeRegex = '/^Content-Type: ?text\/plain/i';
@@ -158,7 +158,7 @@ class EmailParser
                     $charset = strtoupper(trim($matches[1], '"'));
                 }
 
-                if ($contentTransferEncoding === null && preg_match('/^Content-Transfer-Encoding: ?(.*)/i', $line, $matches)) {
+                if (null === $contentTransferEncoding && preg_match('/^Content-Transfer-Encoding: ?(.*)/i', $line, $matches)) {
                     $contentTransferEncoding = $matches[1];
                 }
 
@@ -187,13 +187,13 @@ class EmailParser
         // removing trailing new lines
         $body = preg_replace('/((\r?\n)*)$/', '', $body);
 
-        if ($contentTransferEncoding === 'base64') {
+        if ('base64' === $contentTransferEncoding) {
             $body = base64_decode($body, true);
-        } elseif ($contentTransferEncoding === 'quoted-printable') {
+        } elseif ('quoted-printable' === $contentTransferEncoding) {
             $body = quoted_printable_decode($body);
         }
 
-        if ($charset !== 'UTF-8') {
+        if ('UTF-8' !== $charset) {
             // FORMAT=FLOWED, despite being popular in emails, it is not
             // supported by iconv
             $charset = str_replace('FORMAT=FLOWED', '', $charset);
@@ -201,7 +201,7 @@ class EmailParser
             $bodyCopy = $body;
             $body = iconv($charset, 'UTF-8//TRANSLIT', $body);
 
-            if ($body === false) { // iconv returns FALSE on failure
+            if (false === $body) { // iconv returns FALSE on failure
                 $body = utf8_encode($bodyCopy);
             }
         }
@@ -253,7 +253,7 @@ class EmailParser
         $line = str_replace("\r", '', $line);
         $line = str_replace("\n", '', $line);
 
-        return strlen($line) === 0;
+        return 0 === strlen($line);
     }
 
     private function extractHeadersAndRawBody()

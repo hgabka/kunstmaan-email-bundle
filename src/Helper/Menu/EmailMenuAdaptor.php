@@ -1,5 +1,13 @@
 <?php
 
+/*
+ * This file is part of PHP CS Fixer.
+ * (c) Fabien Potencier <fabien@symfony.com>
+ *     Dariusz Rumiński <dariusz.ruminski@gmail.com>
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
+
 namespace Hgabka\KunstmaanEmailBundle\Helper\Menu;
 
 use Kunstmaan\AdminBundle\Helper\Menu\MenuAdaptorInterface;
@@ -47,7 +55,7 @@ class EmailMenuAdaptor implements MenuAdaptorInterface
             $newChildren = [];
             $inserted = false;
             foreach ($children as $child) {
-                if ($child->getUniqueId() === 'settings') {
+                if ('settings' === $child->getUniqueId()) {
                     $newChildren[] = $menuItem;
                     $inserted = true;
                 }
@@ -59,7 +67,7 @@ class EmailMenuAdaptor implements MenuAdaptorInterface
 
             $children = $newChildren;
 
-            if (stripos($request->attributes->get('_route'), $menuItem->getRoute()) === 0) {
+            if (0 === stripos($request->attributes->get('_route'), $menuItem->getRoute())) {
                 $menuItem->setActive(true);
             }
         } elseif ('email' === $parent->getUniqueId()) {
@@ -69,7 +77,7 @@ class EmailMenuAdaptor implements MenuAdaptorInterface
                 ->setUniqueId('email_template')
                 ->setLabel('Email sablonok')
                 ->setParent($parent);
-            if (stripos($request->attributes->get('_route'), $menuItem->getRoute()) === 0) {
+            if (0 === stripos($request->attributes->get('_route'), $menuItem->getRoute())) {
                 $menuItem->setActive(true);
                 $parent->setActive(true);
             }
@@ -84,7 +92,7 @@ class EmailMenuAdaptor implements MenuAdaptorInterface
                 ->setParent($parent)
                 ->setAppearInNavigation(false);
 
-            if (stripos($request->attributes->get('_route'), $menuItem->getRoute()) === 0) {
+            if (0 === stripos($request->attributes->get('_route'), $menuItem->getRoute())) {
                 $menuItem->setActive(true);
                 $parent->setActive(true);
             }

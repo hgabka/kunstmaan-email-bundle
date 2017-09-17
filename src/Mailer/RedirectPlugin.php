@@ -161,7 +161,7 @@ class RedirectPlugin extends \Swift_Plugins_RedirectingPlugin
         // Appending original recipient data to subject
         $redirectConfig = $this->redirectConfig;
 
-        if (isset($redirectConfig['subject_append']) && ($redirectConfig['subject_append'] === true)) {
+        if (isset($redirectConfig['subject_append']) && (true === $redirectConfig['subject_append'])) {
             $message->setSubject(
                 $message->getSubject()
                 .($message->getTo() ? (' - Eredeti to: '.$this->recipientToString($message->getTo())) : '')
@@ -195,7 +195,7 @@ class RedirectPlugin extends \Swift_Plugins_RedirectingPlugin
 
         $hostEnabled = false;
         foreach ($hosts as $host) {
-            if ((strpos($currentHost, $host) !== false)) {
+            if ((false !== strpos($currentHost, $host))) {
                 $hostEnabled = true;
             }
         }

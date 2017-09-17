@@ -321,7 +321,7 @@ class MessageSender
 
     public function updateMessageSendData($message)
     {
-        if (!$message || $message->getStatus() !== MessageStatusEnum::STATUS_FOLYAMATBAN) {
+        if (!$message || MessageStatusEnum::STATUS_FOLYAMATBAN !== $message->getStatus()) {
             return;
         }
 
@@ -332,7 +332,7 @@ class MessageSender
             ->setSentSuccess($sendData[QueueStatusEnum::STATUS_ELKULDVE])
             ->setSentFail($sendData[QueueStatusEnum::STATUS_SIKERTELEN]);
 
-        if ($sendData['sum'] === $sendData[QueueStatusEnum::STATUS_ELKULDVE] + $sendData[QueueStatusEnum::STATUS_SIKERTELEN] + $sendData[QueueStatusEnum::STATUS_VISSZAPATTANT]) {
+        if ($sendData[QueueStatusEnum::STATUS_ELKULDVE] + $sendData[QueueStatusEnum::STATUS_SIKERTELEN] + $sendData[QueueStatusEnum::STATUS_VISSZAPATTANT] === $sendData['sum']) {
             $message->setStatus(MessageStatusEnum::STATUS_ELKULDVE);
             $days = $this->config['delete_sent_messages_after'];
 

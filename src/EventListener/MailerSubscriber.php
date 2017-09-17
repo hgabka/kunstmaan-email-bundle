@@ -48,7 +48,7 @@ class MailerSubscriber implements EventSubscriberInterface
      */
     public function onSendCalled(MailerEvent $event)
     {
-        if ($this->strategy === 'mailer_send') {
+        if ('mailer_send' === $this->strategy) {
             $this->logger->logMessage($event);
         }
     }
@@ -58,7 +58,7 @@ class MailerSubscriber implements EventSubscriberInterface
      */
     public function onMailSent(MailerEvent $event)
     {
-        if ($this->strategy !== 'mailer_send') {
+        if ('mailer_send' !== $this->strategy) {
             $this->logger->logMessage($event);
         }
     }

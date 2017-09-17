@@ -316,7 +316,7 @@ class QueueManager
 
         $children = $message->getChildren();
         foreach ($children as $child) {
-            if ($child->getContentType() === 'text/html') {
+            if ('text/html' === $child->getContentType()) {
                 $queue->setContentHtml($child->getBody());
             }
         }

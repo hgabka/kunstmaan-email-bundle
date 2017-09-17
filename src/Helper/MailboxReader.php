@@ -19,7 +19,7 @@ class MailboxReader
 
     public function __construct(EmailParser $parser, $host, $port, $user, $pass, $folder = 'INBOX', $type = 'imap', $ssl = false)
     {
-        $ssl = $ssl === false ? '/novalidate-cert' : '/ssl';
+        $ssl = false === $ssl ? '/novalidate-cert' : '/ssl';
 
         $connStr = '{'."$host:$port/$type$ssl"."}$folder";
         $this->handle = @imap_open($connStr, $user, $pass);
@@ -118,7 +118,7 @@ class MailboxReader
                 $thisFrom = [$address => imap_utf8($from->personal)];
             }
 
-            if (count($headerInfo->from) === 1) {
+            if (1 === count($headerInfo->from)) {
                 return $thisFrom;
             }
 
@@ -141,7 +141,7 @@ class MailboxReader
                 $thisTo = [$address => imap_utf8($to->personal)];
             }
 
-            if (count($headerInfo->to) === 1) {
+            if (1 === count($headerInfo->to)) {
                 return $thisTo;
             }
 
@@ -160,7 +160,7 @@ class MailboxReader
     {
         $headers = $this->parseHeaders($this->fetchHeader($message));
 
-        return isset($headers['X-Failed-Recipients']) || (isset($headers['Content-Type']) && strpos($headers['Content-Type'], 'report') !== false);
+        return isset($headers['X-Failed-Recipients']) || (isset($headers['Content-Type']) && false !== strpos($headers['Content-Type'], 'report'));
     }
 
     public function getBouncingHeaderInfo($message)
@@ -279,7 +279,7 @@ class MailboxReader
 
                 if ($structure->parts[$i]->ifdparameters) {
                     foreach ($structure->parts[$i]->dparameters as $object) {
-                        if (strtolower($object->attribute) === 'filename') {
+                        if ('filename' === strtolower($object->attribute)) {
                             $attachments[$i]['is_attachment'] = true;
                             $attachments[$i]['filename'] = $object->value;
                         }
@@ -288,7 +288,7 @@ class MailboxReader
 
                 if ($structure->parts[$i]->ifparameters) {
                     foreach ($structure->parts[$i]->parameters as $object) {
-                        if (strtolower($object->attribute) === 'name') {
+                        if ('name' === strtolower($object->attribute)) {
                             $attachments[$i]['is_attachment'] = true;
                             $attachments[$i]['name'] = imap_utf8($object->value);
                         }
@@ -297,9 +297,9 @@ class MailboxReader
 
                 if ($attachments[$i]['is_attachment']) {
                     $attachments[$i]['content'] = imap_fetchbody($this->handle, $message, $i + 1);
-                    if ($structure->parts[$i]->encoding === 3) { // 3 = BASE64
+                    if (3 === $structure->parts[$i]->encoding) { // 3 = BASE64
                         $attachments[$i]['content'] = base64_decode($attachments[$i]['content'], true);
-                    } elseif ($structure->parts[$i]->encoding === 4) { // 4 = QUOTED-PRINTABLE
+                    } elseif (4 === $structure->parts[$i]->encoding) { // 4 = QUOTED-PRINTABLE
                         $attachments[$i]['content'] = quoted_printable_decode($attachments[$i]['content']);
                     }
 

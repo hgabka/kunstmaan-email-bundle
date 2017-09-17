@@ -57,7 +57,7 @@ class ParamSubstituter
                     continue;
                 }
 
-                if (!isset($param['type']) || $param['type'] !== 'block') {
+                if (!isset($param['type']) || 'block' !== $param['type']) {
                     $text = str_replace($key, $param['value'], $text);
                 } else {
                     $value = $param['value'];
@@ -204,14 +204,14 @@ class ParamSubstituter
      */
     protected function embedImage($url, $email)
     {
-        if (strpos($url, 'http://') !== 0 && strpos($url, 'https://') !== 0) {
+        if (0 !== strpos($url, 'http://') && 0 !== strpos($url, 'https://')) {
             $file = $this->projectDir.'/web/'.$url;
             if (!is_file($file)) {
                 return $url;
             }
         } else {
             $content = @file_get_contents($url);
-            if ($content === false) {
+            if (false === $content) {
                 return $url;
             }
             $p = pathinfo($url);
@@ -238,7 +238,7 @@ class ParamSubstituter
      */
     protected function addHost($url)
     {
-        if (strpos('http://', $url) === 0 || strpos('https://', $url) === 0) {
+        if (0 === strpos('http://', $url) || 0 === strpos('https://', $url)) {
             return $url;
         }
 
