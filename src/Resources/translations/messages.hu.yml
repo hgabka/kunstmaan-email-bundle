@@ -4,12 +4,13 @@ hgabka_kuma_email:
         comment: Leírás
         slug: Slug
         is_system: Rendszersablon
-        layout: Kerettemplate
+        layout: Keretsablon
         subject: Tárgy
         content_text: Szöveges tartalom
         content_html: HTML tartalom
         attachments: Csatolmányok
         usable_vars: Használható változók
+        no_layout: Keretsablon nélkül
     tabs:
         general: Általános adatok
         content: Tárgy, tartalom

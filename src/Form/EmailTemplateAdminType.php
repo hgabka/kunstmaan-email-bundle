@@ -50,7 +50,12 @@ class EmailTemplateAdminType extends AbstractType
             $builder->add('slug', TextType::class, ['label' => 'hgabka_kuma_email.labels.slug']);
             $builder->add('isSystem', CheckboxType::class, ['label' => 'hgabka_kuma_email.labels.is_system', 'required' => false]);
         }
-        $builder->add('layout', EntityType::class, ['label' => 'hgabka_kuma_email.labels.layout', 'class' => EmailLayout::class]);
+        $builder->add('layout', EntityType::class, [
+            'label' => 'hgabka_kuma_email.labels.layout',
+            'class' => EmailLayout::class,
+            'placeholder' => 'hgabka_kuma_email.labels.no_layout',
+            'required' => false,
+        ]);
         $builder->add('translations', TranslationsType::class, [
             'label' => false,
             'fields' => [
@@ -73,6 +78,7 @@ class EmailTemplateAdminType extends AbstractType
                     'allow_add' => true,
                     'allow_delete' => true,
                     'delete_empty' => true,
+                    'required' => true,
                     'attr' => [
                         'nested_form' => true,
                         'nested_sortable' => false,
