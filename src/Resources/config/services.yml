@@ -90,7 +90,7 @@ services:
 
     hgabka_kunstmaan_email.menu.adaptor.email:
         class: Hgabka\KunstmaanEmailBundle\Helper\Menu\EmailMenuAdaptor
-        arguments: ['@security.authorization_checker']
+        arguments: ['@security.authorization_checker', '']
         tags:
             -  { name: kunstmaan_admin.menu.adaptor }
 
@@ -117,3 +117,10 @@ services:
         public: false
         tags:
             - { name: twig.extension }
+
+    hgabka_kunstmaan_email.email_voter:
+        class:  Hgabka\KunstmaanEmailBundle\Security\EmailVoter
+        arguments: ['@security.access.decision_manager', '']
+        tags:
+            - { name: security.voter }
+        public: false

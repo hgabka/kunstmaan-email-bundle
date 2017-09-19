@@ -26,6 +26,7 @@ class Configuration implements ConfigurationInterface
 
         $rootNode
             ->children()
+                ->scalarNode('editor_role')->defaultValue('ROLE_EMAIL_ADMIN')->end()
                 ->arrayNode('default_sender')
                     ->addDefaultsIfNotSet()
                     ->canBeUnset()

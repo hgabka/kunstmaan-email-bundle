@@ -64,5 +64,13 @@ class HgabkaKunstmaanEmailExtension extends Extension
 
         $bounceCheckerDefinition = $container->getDefinition('hgabka_kunstmaan_email.bounce_checker');
         $bounceCheckerDefinition->addMethodCall('setConfig', [$bcConfig]);
+
+        $voterDefinition = $container->getDefinition('hgabka_kunstmaan_email.email_voter');
+        $voterDefinition->replaceArgument(1, $config['editor_role']);
+
+        $menuAdaptorDefinition = $container->getDefinition('hgabka_kunstmaan_email.menu.adaptor.email');
+        $menuAdaptorDefinition->replaceArgument(1, $config['editor_role']);
+
+        $container->setParameter('hgabka_kunstmaan_email.editor_role', $config['editor_role']);
     }
 }

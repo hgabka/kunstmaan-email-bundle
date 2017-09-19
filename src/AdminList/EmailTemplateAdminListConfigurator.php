@@ -5,6 +5,7 @@ namespace Hgabka\KunstmaanEmailBundle\AdminList;
 use Doctrine\ORM\EntityManager;
 use Hgabka\KunstmaanEmailBundle\Entity\EmailTemplate;
 use Hgabka\KunstmaanEmailBundle\Form\EmailTemplateAdminType;
+use Hgabka\KunstmaanEmailBundle\Security\EmailVoter;
 use Kunstmaan\AdminBundle\Helper\Security\Acl\AclHelper;
 use Kunstmaan\AdminListBundle\AdminList\Configurator\AbstractDoctrineORMAdminListConfigurator;
 use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
@@ -17,15 +18,19 @@ class EmailTemplateAdminListConfigurator extends AbstractDoctrineORMAdminListCon
     /** @var AuthorizationChecker */
     private $authChecker;
 
+    /** @var  string */
+    private $editorRole;
+
     /**
      * @param EntityManager $em        The entity manager
      * @param AclHelper     $aclHelper The acl helper
      */
-    public function __construct(EntityManager $em, AuthorizationChecker $authChecker, AclHelper $aclHelper = null)
+    public function __construct(EntityManager $em, AuthorizationChecker $authChecker, string $editorRole, AclHelper $aclHelper = null)
     {
         parent::__construct($em, $aclHelper);
         $this->setAdminType(new EmailTemplateAdminType($em, $authChecker));
         $this->authChecker = $authChecker;
+        $this->editorRole = $editorRole;
     }
 
     /**
@@ -70,6 +75,19 @@ class EmailTemplateAdminListConfigurator extends AbstractDoctrineORMAdminListCon
     public function canAdd()
     {
         return $this->authChecker->isGranted('ROLE_SUPER_ADMIN');
+    }
+
+    /**
+     * @return bool
+     */
+    public function canEdit($item)
+    {
+        return $this->authChecker->isGranted(EmailVoter::EDIT, $item);
+    }
+
+    public function canExport()
+    {
+        return false;
     }
 
     /**

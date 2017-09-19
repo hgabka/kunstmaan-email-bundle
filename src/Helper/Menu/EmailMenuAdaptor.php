@@ -16,12 +16,16 @@ class EmailMenuAdaptor implements MenuAdaptorInterface
      */
     protected $authorizationChecker;
 
+    /** @var  string */
+    protected $editorRole;
+
     /**
      * @param AuthorizationCheckerInterface $authorizationChecker
      */
-    public function __construct(AuthorizationCheckerInterface $authorizationChecker)
+    public function __construct(AuthorizationCheckerInterface $authorizationChecker, string $editorRole)
     {
         $this->authorizationChecker = $authorizationChecker;
+        $this->editorRole = $editorRole;
     }
 
     /**
@@ -34,7 +38,7 @@ class EmailMenuAdaptor implements MenuAdaptorInterface
      */
     public function adaptChildren(MenuBuilder $menu, array &$children, MenuItem $parent = null, Request $request = null)
     {
-        if (!$this->authorizationChecker->isGranted('ROLE_ADMIN')) {
+        if (!$this->authorizationChecker->isGranted($this->editorRole)) {
             return;
         }
         if (null === $parent) {

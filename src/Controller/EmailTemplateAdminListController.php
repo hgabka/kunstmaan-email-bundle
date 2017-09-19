@@ -25,7 +25,11 @@ class EmailTemplateAdminListController extends AdminListController
     public function getAdminListConfigurator()
     {
         if (!isset($this->configurator)) {
-            $this->configurator = new EmailTemplateAdminListConfigurator($this->getEntityManager(), $this->get('security.authorization_checker'));
+            $this->configurator = new EmailTemplateAdminListConfigurator(
+                $this->getEntityManager(),
+                $this->get('security.authorization_checker'),
+                $this->container->getParameter('hgabka_kunstmaan_email.editor_role')
+                );
         }
 
         return $this->configurator;
@@ -38,6 +42,8 @@ class EmailTemplateAdminListController extends AdminListController
      */
     public function indexAction(Request $request)
     {
+        $this->denyAccessUnlessGranted($this->container->getParameter('hgabka_kunstmaan_banner.editor_role'));
+
         return parent::doIndexAction($this->getAdminListConfigurator(), $request);
     }
 
