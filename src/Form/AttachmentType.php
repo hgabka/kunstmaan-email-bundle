@@ -24,7 +24,7 @@ class AttachmentType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('media', MediaType::class, ['label' => false, 'required' => false])
+            ->add('media', MediaType::class, ['label' => false, 'required' => false, 'mediatype' => 'file', 'foldername' => 'attachment'])
             ;
     }
 
