@@ -20,4 +20,5 @@ hgabka_kuma_email:
         webversion: Webes változat
         unsubscribe: Leiratkozó URL
         unsubscribe_link: Leiratkozó link
-
+    fixtures:
+        folder_name: Csatolmányok

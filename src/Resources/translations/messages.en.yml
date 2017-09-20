@@ -19,3 +19,5 @@ hgabka_kuma_email:
         webversion: Web version
         unsubscribe: Unsubscribe URL
         unsubscribe_link: Unsubscribe link
+    fixtures:
+        folder_name: Attachments
