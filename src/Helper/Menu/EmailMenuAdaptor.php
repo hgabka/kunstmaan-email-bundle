@@ -19,13 +19,18 @@ class EmailMenuAdaptor implements MenuAdaptorInterface
     /** @var  string */
     protected $editorRole;
 
+    /** @var array */
+    protected $config;
+
     /**
      * @param AuthorizationCheckerInterface $authorizationChecker
+     * @param array $config
      */
-    public function __construct(AuthorizationCheckerInterface $authorizationChecker, string $editorRole)
+    public function __construct(AuthorizationCheckerInterface $authorizationChecker, array $config)
     {
         $this->authorizationChecker = $authorizationChecker;
-        $this->editorRole = $editorRole;
+        $this->config = $config;
+        $this->editorRole = $config['editor_role'];
     }
 
     /**
@@ -67,32 +72,66 @@ class EmailMenuAdaptor implements MenuAdaptorInterface
                 $menuItem->setActive(true);
             }
         } elseif ('email' === $parent->getUniqueId()) {
-            $menuItem = new MenuItem($menu);
-            $menuItem
-                ->setRoute('hgabkakunstmaanemailbundle_admin_emailtemplate')
-                ->setUniqueId('email_template')
-                ->setLabel('Email sablonok')
-                ->setParent($parent);
-            if (0 === stripos($request->attributes->get('_route'), $menuItem->getRoute())) {
-                $menuItem->setActive(true);
-                $parent->setActive(true);
+            if ($this->config['email_templates_enabled']) {
+                $menuItem = new MenuItem($menu);
+                $menuItem
+                    ->setRoute('hgabkakunstmaanemailbundle_admin_emailtemplate')
+                    ->setUniqueId('email_template')
+                    ->setLabel('Email sablonok')
+                    ->setParent($parent)
+                ;
+                if (0 === stripos($request->attributes->get('_route'), $menuItem->getRoute())) {
+                    $menuItem->setActive(true);
+                    $parent->setActive(true);
+                }
+
+                $children[] = $menuItem;
+
+                $menuItem = new TopMenuItem($menu);
+                $menuItem
+                    ->setRoute('hgabkakunstmaanemailbundle_admin_emailtemplate')
+                    ->setUniqueId('email_template')
+                    ->setLabel('Email sablonok')
+                    ->setParent($parent)
+                    ->setAppearInNavigation(false)
+                ;
+
+                if (0 === stripos($request->attributes->get('_route'), $menuItem->getRoute())) {
+                    $menuItem->setActive(true);
+                    $parent->setActive(true);
+                }
+                $children[] = $menuItem;
             }
+            if ($this->config['messages_enabled']) {
+                $menuItem = new MenuItem($menu);
+                $menuItem
+                    ->setRoute('hgabkakunstmaanemailbundle_admin_message')
+                    ->setUniqueId('message')
+                    ->setLabel('Körlevelek')
+                    ->setParent($parent)
+                ;
+                if (0 === stripos($request->attributes->get('_route'), $menuItem->getRoute())) {
+                    $menuItem->setActive(true);
+                    $parent->setActive(true);
+                }
 
-            $children[] = $menuItem;
+                $children[] = $menuItem;
 
-            $menuItem = new TopMenuItem($menu);
-            $menuItem
-                ->setRoute('hgabkakunstmaanemailbundle_admin_emailtemplate')
-                ->setUniqueId('email_template')
-                ->setLabel('Email sablonok')
-                ->setParent($parent)
-                ->setAppearInNavigation(false);
+                $menuItem = new TopMenuItem($menu);
+                $menuItem
+                    ->setRoute('hgabkakunstmaanemailbundle_admin_message')
+                    ->setUniqueId('message')
+                    ->setLabel('Körlevelek')
+                    ->setParent($parent)
+                    ->setAppearInNavigation(false)
+                ;
 
-            if (0 === stripos($request->attributes->get('_route'), $menuItem->getRoute())) {
-                $menuItem->setActive(true);
-                $parent->setActive(true);
+                if (0 === stripos($request->attributes->get('_route'), $menuItem->getRoute())) {
+                    $menuItem->setActive(true);
+                    $parent->setActive(true);
+                }
+                $children[] = $menuItem;
             }
-            $children[] = $menuItem;
         }
     }
 }

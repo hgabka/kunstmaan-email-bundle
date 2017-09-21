@@ -69,7 +69,7 @@ class HgabkaKunstmaanEmailExtension extends Extension
         $voterDefinition->replaceArgument(1, $config['editor_role']);
 
         $menuAdaptorDefinition = $container->getDefinition('hgabka_kunstmaan_email.menu.adaptor.email');
-        $menuAdaptorDefinition->replaceArgument(1, $config['editor_role']);
+        $menuAdaptorDefinition->replaceArgument(1, $config);
 
         $container->setParameter('hgabka_kunstmaan_email.editor_role', $config['editor_role']);
     }

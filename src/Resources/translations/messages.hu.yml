@@ -7,13 +7,18 @@ hgabka_kuma_email:
         layout: Keretsablon
         subject: Tárgy
         content_text: Szöveges tartalom
-        content_html: HTML tartalom
+        content_html: Formázott tartalom
         attachments: Csatolmányok
         usable_vars: Használható változók
         no_layout: Keretsablon nélkül
+        from_name: Feladó neve
+        from_email: Feladó email címe
+        status: Állapot
     tabs:
         general: Általános adatok
         content: Tárgy, tartalom
+        recipients: Levél adatai
+
     default_param_labels:
         name: A címzett neve
         email: A címzett email címe

@@ -1,4 +1,4 @@
-{% set vars = mail_builder.getTemplateVars(template) %}
+{% set vars = mail_builder.getMessageVars() %}
 {% if vars is not empty %}
     <div class="form-header-block">
         <h4>{{ 'hgabka_kuma_email.labels.usable_vars' | trans }}</h4>

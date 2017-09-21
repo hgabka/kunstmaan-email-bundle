@@ -6,29 +6,15 @@ use Doctrine\Common\EventSubscriber;
 use Doctrine\Common\Persistence\Event\LifecycleEventArgs;
 use Hgabka\KunstmaanEmailBundle\Entity\AbstractQueue;
 use Hgabka\KunstmaanEmailBundle\Entity\EmailTemplate;
+use Hgabka\KunstmaanEmailBundle\Entity\Message;
 
 class EmailSubscriber implements EventSubscriber
 {
     public function getSubscribedEvents()
     {
         return [
-  //          'postPersist',
-  //          'postUpdate',
             'preRemove',
-    //        'onFlush',
         ];
-    }
-
-    public function postPersist(LifecycleEventArgs $args)
-    {
-        $object = $args->getObject();
-        $em = $args->getObjectManager();
-    }
-
-    public function postUpdate(LifecycleEventArgs $args)
-    {
-        $object = $args->getObject();
-        $em = $args->getObjectManager();
     }
 
     public function preRemove(LifecycleEventArgs $args)
@@ -41,6 +27,8 @@ class EmailSubscriber implements EventSubscriber
             $attachments = $manager->getRepository('HgabkaKunstmaanEmailBundle:Attachment')->getByTemplate($object);
         } elseif ($object instanceof AbstractQueue) {
             $attachments = $manager->getRepository('HgabkaKunstmaanEmailBundle:Attachment')->getByQueue($object);
+        } elseif ($object instanceof Message) {
+            $attachments = $manager->getRepository('HgabkaKunstmaanEmailBundle:Attachment')->getByMessage($object);
         }
 
         foreach ($attachments as $attachment) {

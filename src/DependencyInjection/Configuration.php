@@ -25,7 +25,11 @@ class Configuration implements ConfigurationInterface
         $rootNode = $treeBuilder->root('hgabka_kunstmaan_email');
 
         $rootNode
+            ->addDefaultsIfNotSet()
             ->children()
+                ->booleanNode('email_templates_enabled')->defaultTrue()->end()
+                ->booleanNode('messages_enabled')->defaultTrue()->end()
+                ->booleanNode('subscriptions_enabled')->defaultTrue()->end()
                 ->scalarNode('editor_role')->defaultValue('ROLE_EMAIL_ADMIN')->end()
                 ->arrayNode('default_sender')
                     ->addDefaultsIfNotSet()

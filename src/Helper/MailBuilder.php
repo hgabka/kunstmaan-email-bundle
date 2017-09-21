@@ -446,6 +446,19 @@ class MailBuilder
         return $this->paramSubstituter->addVarChars($params);
     }
 
+    public function getMessageVars()
+    {
+        $params = [
+            'nev' => 'hgabka_kuma_email.default_param_labels.name',
+            'email' => 'hgabka_kuma_email.default_param_labels.email',
+            'webversion' => 'hgabka_kuma_email.default_param_labels.webversion',
+            'unsubscribe' => 'hgabka_kuma_email.default_param_labels.unsubscribe',
+            'unsubscribe_link' => 'hgabka_kuma_email.default_param_labels.unsubscribe_link',
+        ];
+
+        return $this->paramSubstituter->addVarChars($params);
+    }
+
     /**
      * @param $layout
      * @param $subject

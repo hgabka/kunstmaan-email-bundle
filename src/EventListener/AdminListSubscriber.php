@@ -4,6 +4,7 @@ namespace Hgabka\KunstmaanEmailBundle\EventListener;
 
 use Doctrine\Bundle\DoctrineBundle\Registry;
 use Hgabka\KunstmaanEmailBundle\Entity\EmailTemplate;
+use Hgabka\KunstmaanEmailBundle\Entity\Message;
 use Kunstmaan\AdminListBundle\Event\AdminListEvent;
 use Kunstmaan\AdminListBundle\Event\AdminListEvents;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -54,6 +55,25 @@ class AdminListSubscriber implements EventSubscriberInterface
 
             $em->flush();
         }
+
+        if ($object instanceof Message) {
+            foreach ($object->getTranslations() as $trans) {
+                $attRepo = $em->getRepository('HgabkaKunstmaanEmailBundle:Attachment');
+                foreach ($attRepo->getByMessage($trans->getTranslatable(), $trans->getLocale()) as $att) {
+                    $em->remove($att);
+                }
+                foreach ($trans->getAttachments() as $att) {
+                    $att
+                        ->setType(Message::class)
+                        ->setOwnerId($object->getId())
+                        ->setLocale($trans->getLocale())
+                    ;
+                    $em->persist($att);
+                }
+            }
+
+            $em->flush();
+        }
     }
 
     public function onPostEdit(AdminListEvent $event)
@@ -70,6 +90,25 @@ class AdminListSubscriber implements EventSubscriberInterface
                 foreach ($trans->getAttachments() as $att) {
                     $att
                         ->setType(EmailTemplate::class)
+                        ->setOwnerId($object->getId())
+                        ->setLocale($trans->getLocale())
+                    ;
+                    $em->persist($att);
+                }
+            }
+
+            $em->flush();
+        }
+
+        if ($object instanceof Message) {
+            foreach ($object->getTranslations() as $trans) {
+                $attRepo = $em->getRepository('HgabkaKunstmaanEmailBundle:Attachment');
+                foreach ($attRepo->getByMessage($trans->getTranslatable(), $trans->getLocale()) as $att) {
+                    $em->remove($att);
+                }
+                foreach ($trans->getAttachments() as $att) {
+                    $att
+                        ->setType(Message::class)
                         ->setOwnerId($object->getId())
                         ->setLocale($trans->getLocale())
                     ;

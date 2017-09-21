@@ -10,9 +10,14 @@ hgabka_kuma_email:
         content_html: HTML content
         attachments: Attachments
         usable_vars: Placeholders
+        no_layout: Without layout
+        from_name: Sender name
+        from_email: Sender email
+        status: Status
     tabs:
         general: General data
         content: 'Subject, content'
+        recipients: Sender data
     default_param_labels:
         name: Name of recipient
         email: Email of recipient

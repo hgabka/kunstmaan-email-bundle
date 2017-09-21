@@ -2,6 +2,7 @@
 
 namespace Hgabka\KunstmaanEmailBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Kunstmaan\AdminBundle\Entity\AbstractEntity;
 use Prezent\Doctrine\Translatable\Annotation as Prezent;
@@ -16,28 +17,37 @@ class MessageTranslation extends AbstractEntity implements TranslationInterface
 {
     use TranslationTrait;
 
+    /** @var ArrayCollection |Attachment[] */
+    protected $attachments;
+
     /**
      * @Prezent\Translatable(targetEntity="Hgabka\KunstmaanEmailBundle\Entity\Message")
      */
     protected $translatable;
 
     /**
+     * @var string
+     *
      * @ORM\Column(name="subject", type="string", length=255)
      */
     protected $subject;
 
     /**
+     * @var string
+     *
      * @ORM\Column(name="content_text", type="text")
      */
     protected $contentText = '';
 
     /**
+     * @var string
+     *
      * @ORM\Column(name="content_html", type="text")
      */
     protected $contentHtml = '';
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getSubject()
     {
@@ -45,9 +55,9 @@ class MessageTranslation extends AbstractEntity implements TranslationInterface
     }
 
     /**
-     * @param mixed $subject
+     * @param string $subject
      *
-     * @return EmailTemplateTranslation
+     * @return MessageTranslation
      */
     public function setSubject($subject)
     {
@@ -67,7 +77,7 @@ class MessageTranslation extends AbstractEntity implements TranslationInterface
     /**
      * @param string $contentText
      *
-     * @return EmailTemplateTranslation
+     * @return MessageTranslation
      */
     public function setContentText($contentText)
     {
@@ -87,11 +97,32 @@ class MessageTranslation extends AbstractEntity implements TranslationInterface
     /**
      * @param string $contentHtml
      *
-     * @return EmailTemplateTranslation
+     * @return MessageTranslation
      */
     public function setContentHtml($contentHtml)
     {
         $this->contentHtml = $contentHtml;
+
+        return $this;
+    }
+
+
+    /**
+     * @return ArrayCollection
+     */
+    public function getAttachments()
+    {
+        return $this->attachments;
+    }
+
+    /**
+     * @param mixed $attachments
+     *
+     * @return MessageTranslation
+     */
+    public function setAttachments($attachments)
+    {
+        $this->attachments = $attachments;
 
         return $this;
     }

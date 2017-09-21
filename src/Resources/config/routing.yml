@@ -1,4 +1,9 @@
-KunstmaanEmailBundle_routes:
+KunstmaanEmailBundle_email_routes:
     resource: '@HgabkaKunstmaanEmailBundle/Controller/EmailTemplateAdminListController.php'
     type:     annotation
     prefix:   /admin/email-templates
+
+KunstmaanEmailBundle_message_routes:
+    resource: '@HgabkaKunstmaanEmailBundle/Controller/MessageAdminListController.php'
+    type:     annotation
+    prefix:   /admin/messages

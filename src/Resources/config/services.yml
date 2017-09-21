@@ -90,12 +90,18 @@ services:
 
     hgabka_kunstmaan_email.menu.adaptor.email:
         class: Hgabka\KunstmaanEmailBundle\Helper\Menu\EmailMenuAdaptor
-        arguments: ['@security.authorization_checker', '']
+        arguments: ['@security.authorization_checker', "@hgabka_kunstmaan_email.mail_builder", '']
         tags:
             -  { name: kunstmaan_admin.menu.adaptor }
 
     hgabka_kunstmaan_email.email_template_type:
         class: Hgabka\KunstmaanEmailBundle\Form\EmailTemplateAdminType
+        arguments: ["@doctrine.orm.entity_manager", "@security.authorization_checker"]
+        tags:
+            - { name: form.type }
+
+    hgabka_kunstmaan_email.message_type:
+        class: Hgabka\KunstmaanEmailBundle\Form\MessageAdminType
         arguments: ["@doctrine.orm.entity_manager", "@security.authorization_checker"]
         tags:
             - { name: form.type }
