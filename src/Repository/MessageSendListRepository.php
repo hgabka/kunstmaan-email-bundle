@@ -28,7 +28,7 @@ class MessageSendListRepository extends EntityRepository
             ->andWhere('l.message = :message')
             ->setParameters([
                 'list' => $list,
-                'message' => $message
+                'message' => $message,
             ])
             ->setMaxResults(1)
             ->getQuery()

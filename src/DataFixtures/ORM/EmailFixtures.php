@@ -12,15 +12,14 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Translation\TranslatorInterface;
 
 /**
- * Class EmailFixtures
- *
+ * Class EmailFixtures.
  */
 class EmailFixtures extends AbstractFixture implements OrderedFixtureInterface, ContainerAwareInterface
 {
     /**
      * @var ContainerInterface
      */
-    private $container = null;
+    private $container;
 
     /**
      * @var ObjectManager
@@ -40,8 +39,43 @@ class EmailFixtures extends AbstractFixture implements OrderedFixtureInterface, 
         $this->createBaseRecipientList();
     }
 
+    public function createBaseRecipientList()
+    {
+        $list = new MessageList();
+        $list
+            ->setName($translator->trans('hgabka_kuma_email.fictures.base_list', [], null, $this->container->getParameter('defaultlocale')))
+            ->setIsDefault(true)
+            ->setIsPublic(true)
+        ;
+
+        $this->manager->persist($list);
+        $this->manager->flush();
+    }
+
     /**
-     * Create some dummy media files
+     * Get the order of this fixture.
+     *
+     * @return int
+     */
+    public function getOrder()
+    {
+        return 52;
+    }
+
+    /**
+     * Sets the Container.
+     *
+     * @param ContainerInterface $container A ContainerInterface instance
+     *
+     * @api
+     */
+    public function setContainer(ContainerInterface $container = null)
+    {
+        $this->container = $container;
+    }
+
+    /**
+     * Create some dummy media files.
      */
     private function createAttachmentFolder()
     {
@@ -64,40 +98,5 @@ class EmailFixtures extends AbstractFixture implements OrderedFixtureInterface, 
             $this->manager->persist($attFolder);
             $this->manager->flush();
         }
-    }
-
-    public function createBaseRecipientList()
-    {
-        $list = new MessageList();
-        $list
-            ->setName($translator->trans('hgabka_kuma_email.fictures.base_list', [], null, $this->container->getParameter('defaultlocale')))
-            ->setIsDefault(true)
-            ->setIsPublic(true)
-        ;
-
-        $this->manager->persist($list);
-        $this->manager->flush();
-    }
-
-    /**
-     * Get the order of this fixture
-     *
-     * @return int
-     */
-    public function getOrder()
-    {
-        return 52;
-    }
-
-    /**
-     * Sets the Container.
-     *
-     * @param ContainerInterface $container A ContainerInterface instance
-     *
-     * @api
-     */
-    public function setContainer(ContainerInterface $container = null)
-    {
-        $this->container = $container;
     }
 }

@@ -18,7 +18,7 @@ class EmailTemplateAdminListConfigurator extends AbstractDoctrineORMAdminListCon
     /** @var AuthorizationChecker */
     private $authChecker;
 
-    /** @var  string */
+    /** @var string */
     private $editorRole;
 
     /**
@@ -78,6 +78,8 @@ class EmailTemplateAdminListConfigurator extends AbstractDoctrineORMAdminListCon
     }
 
     /**
+     * @param mixed $item
+     *
      * @return bool
      */
     public function canEdit($item)

@@ -106,7 +106,6 @@ class MessageTranslation extends AbstractEntity implements TranslationInterface
         return $this;
     }
 
-
     /**
      * @return ArrayCollection
      */

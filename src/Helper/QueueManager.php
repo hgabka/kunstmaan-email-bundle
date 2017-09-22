@@ -203,6 +203,7 @@ class QueueManager
 
         $from = empty($fromName) ? $fromEmail : [$fromEmail => $fromName];
         $bounceConfig = $this->bounceConfig;
+
         try {
             $params = $queue->getParameters();
             $message = $this->mailBuilder->createMessageMail($message, $to, $queue->getLocale(), true, unserialize($params));
@@ -285,7 +286,6 @@ class QueueManager
             $em = $this->doctrine->getManager();
             $em->persist($queue);
             $em->flush();
-
         }
     }
 

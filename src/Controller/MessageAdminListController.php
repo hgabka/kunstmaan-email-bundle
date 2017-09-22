@@ -8,13 +8,13 @@ use Kunstmaan\AdminBundle\Event\AdaptSimpleFormEvent;
 use Kunstmaan\AdminBundle\Event\Events;
 use Kunstmaan\AdminListBundle\AdminList\Configurator\AdminListConfiguratorInterface;
 use Kunstmaan\AdminListBundle\Controller\AdminListController;
+use Kunstmaan\AdminListBundle\Event\AdminListEvent;
 use Kunstmaan\AdminListBundle\Event\AdminListEvents;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Kunstmaan\AdminListBundle\Event\AdminListEvent;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 /**
@@ -251,13 +251,12 @@ class MessageAdminListController extends AdminListController
                 $this->get('session')->getFlashBag()->add('success', 'hgabka_kuma_email.messages.prepare_success');
 
                 return $this->redirectToRoute('hgabkakunstmaanemailbundle_admin_message');
-            } else {
-                $this->get('session')->getFlashBag()->add('error', 'hgabka_kuma_email.messages.prepare_error');
             }
+            $this->get('session')->getFlashBag()->add('error', 'hgabka_kuma_email.messages.prepare_error');
         }
 
         return $this->render('HgabkaKunstmaanEmailBundle:AdminList:Message/send.html.twig', [
-            'form' => $form->createView(), 'entity' => $helper, 'adminlistconfigurator' => $configurator
+            'form' => $form->createView(), 'entity' => $helper, 'adminlistconfigurator' => $configurator,
             ]);
     }
 
@@ -290,6 +289,4 @@ class MessageAdminListController extends AdminListController
 
         return $this->redirectToRoute('hgabkakunstmaanemailbundle_admin_message');
     }
-
-
 }

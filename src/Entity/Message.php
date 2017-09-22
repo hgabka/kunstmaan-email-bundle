@@ -70,7 +70,6 @@ class Message extends AbstractEntity implements TranslatableInterface
     /**
      * @var \DateTime
      * @ORM\Column(name="send_at", type="datetime", nullable=true)
-     *
      */
     protected $sendAt;
 
@@ -519,22 +518,22 @@ class Message extends AbstractEntity implements TranslatableInterface
 
     public function isPrepareable()
     {
-        return $this->getStatus() == MessageStatusEnum::STATUS_INIT;
+        return MessageStatusEnum::STATUS_INIT === $this->getStatus();
     }
 
     public function isUnprepareable()
     {
-        return in_array($this->getStatus(), [MessageStatusEnum::STATUS_KULDENDO, MessageStatusEnum::STATUS_FOLYAMATBAN]);
+        return in_array($this->getStatus(), [MessageStatusEnum::STATUS_KULDENDO, MessageStatusEnum::STATUS_FOLYAMATBAN], true);
     }
 
     public function isBeingSent()
     {
-        return in_array($this->getStatus(), [MessageStatusEnum::STATUS_ELKULDVE, MessageStatusEnum::STATUS_FOLYAMATBAN]);
+        return in_array($this->getStatus(), [MessageStatusEnum::STATUS_ELKULDVE, MessageStatusEnum::STATUS_FOLYAMATBAN], true);
     }
 
     public function isPrepared()
     {
-        return $this->getStatus() == MessageStatusEnum::STATUS_KULDENDO;
+        return MessageStatusEnum::STATUS_KULDENDO === $this->getStatus();
     }
 
     public function getSendTime()
@@ -544,17 +543,17 @@ class Message extends AbstractEntity implements TranslatableInterface
                 'type' => 'now',
                 'time' => null,
             ];
-        } else {
-            return [
+        }
+
+        return [
                 'type' => 'later',
                 'time' => $this->sendAt,
             ];
-        }
     }
 
     public function setSendTime($data)
     {
-        if (!isset($data['type']) || $data['type'] == 'now') {
+        if (!isset($data['type']) || 'now' === $data['type']) {
             $this->setSendAt(null);
         } else {
             $this->setSendAt($data['time']);
@@ -570,6 +569,7 @@ class Message extends AbstractEntity implements TranslatableInterface
 
     /**
      * @param string $status
+     *
      * @return Message
      */
     public function setStatus($status)

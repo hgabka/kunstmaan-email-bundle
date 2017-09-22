@@ -1,24 +1,18 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: sfhun
- * Date: 2017.09.21.
- * Time: 17:56
- */
+
 
 namespace Hgabka\KunstmaanEmailBundle\Form;
 
 use A2lix\TranslationFormBundle\Form\Type\TranslationsType;
 use Doctrine\ORM\EntityManager;
 use Hgabka\KunstmaanEmailBundle\Entity\EmailLayout;
-use Hgabka\KunstmaanEmailBundle\Entity\MessageList;
 use Hgabka\KunstmaanEmailBundle\Entity\Message;
+use Hgabka\KunstmaanEmailBundle\Entity\MessageList;
 use Hgabka\KunstmaanEmailBundle\Entity\MessageSendList;
 use Hgabka\KunstmaanEmailBundle\Helper\MailBuilder;
 use Kunstmaan\AdminBundle\Form\WysiwygType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
@@ -36,7 +30,7 @@ class MessageAdminType extends AbstractType
     /** @var AuthorizationChecker */
     private $authChecker;
 
-    /** @var  MailBuilder */
+    /** @var MailBuilder */
     private $mailBulder;
 
     public function __construct(EntityManager $manager = null, MailBuilder $mailBuilder, AuthorizationChecker $authChecker = null)
@@ -55,7 +49,7 @@ class MessageAdminType extends AbstractType
      * @see FormTypeExtensionInterface::buildForm()
      *
      * @param FormBuilderInterface $builder The form builder
-     * @param array $options The options
+     * @param array                $options The options
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
@@ -65,43 +59,43 @@ class MessageAdminType extends AbstractType
             ->add('fromEmail', EmailType::class, ['label' => 'hgabka_kuma_email.labels.from_email', 'required' => true])
         ;
         $builder->add('layout', EntityType::class, [
-            'label'       => 'hgabka_kuma_email.labels.layout',
-            'class'       => EmailLayout::class,
+            'label' => 'hgabka_kuma_email.labels.layout',
+            'class' => EmailLayout::class,
             'placeholder' => 'hgabka_kuma_email.labels.no_layout',
-            'required'    => false,
+            'required' => false,
         ]);
         $builder
             ->add('translations', TranslationsType::class, [
-                'label'  => false,
+                'label' => false,
                 'fields' => [
-                    'subject'     => [
+                    'subject' => [
                         'field_type' => TextType::class,
-                        'label'      => 'hgabka_kuma_email.labels.subject',
+                        'label' => 'hgabka_kuma_email.labels.subject',
                     ],
                     'contentText' => [
                         'field_type' => TextareaType::class,
-                        'label'      => 'hgabka_kuma_email.labels.content_text',
+                        'label' => 'hgabka_kuma_email.labels.content_text',
                     ],
                     'contentHtml' => [
                         'field_type' => WysiwygType::class,
-                        'label'      => 'hgabka_kuma_email.labels.content_html',
+                        'label' => 'hgabka_kuma_email.labels.content_html',
                     ],
                     'attachments' => [
-                        'field_type'   => CollectionType::class,
-                        'label'        => 'hgabka_kuma_email.labels.attachments',
-                        'entry_type'   => AttachmentType::class,
-                        'allow_add'    => true,
+                        'field_type' => CollectionType::class,
+                        'label' => 'hgabka_kuma_email.labels.attachments',
+                        'entry_type' => AttachmentType::class,
+                        'allow_add' => true,
                         'allow_delete' => true,
                         'delete_empty' => true,
-                        'required'     => true,
-                        'attr'         => [
-                            'nested_form'     => true,
+                        'required' => true,
+                        'attr' => [
+                            'nested_form' => true,
                             'nested_sortable' => false,
                         ],
                     ],
                 ],
             ])
-            ->addEventListener(FormEvents::PRE_SET_DATA, function(FormEvent $event) use($mailBuilder) {
+            ->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) use ($mailBuilder) {
                 $message = $event->getData();
 
                 if (empty($message->getId())) {
@@ -112,7 +106,7 @@ class MessageAdminType extends AbstractType
                         ->setFromEmail(is_array($from) ? key($from) : $from);
                 }
             })
-            ->addEventListener(FormEvents::POST_SUBMIT, function(FormEvent $event) {
+            ->addEventListener(FormEvents::POST_SUBMIT, function (FormEvent $event) {
                 /** @var Message $message */
                 $message = $event->getData();
 
@@ -130,7 +124,6 @@ class MessageAdminType extends AbstractType
                 if (!$messageList) {
                     $messageList = new MessageSendList();
                     $this->manager->persist($messageList);
-
                 }
 
                 $list->addSendList($messageList);

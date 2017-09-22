@@ -16,7 +16,7 @@ class EmailMenuAdaptor implements MenuAdaptorInterface
      */
     protected $authorizationChecker;
 
-    /** @var  string */
+    /** @var string */
     protected $editorRole;
 
     /** @var array */
@@ -24,7 +24,7 @@ class EmailMenuAdaptor implements MenuAdaptorInterface
 
     /**
      * @param AuthorizationCheckerInterface $authorizationChecker
-     * @param array $config
+     * @param array                         $config
      */
     public function __construct(AuthorizationCheckerInterface $authorizationChecker, array $config)
     {

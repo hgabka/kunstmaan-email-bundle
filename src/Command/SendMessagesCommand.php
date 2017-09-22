@@ -2,10 +2,10 @@
 
 namespace Hgabka\KunstmaanEmailBundle\Command;
 
+use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 
 class SendMessagesCommand extends ContainerAwareCommand
 {
@@ -54,7 +54,11 @@ class SendMessagesCommand extends ContainerAwareCommand
             ->get('hgabka_kunstmaan_email.message_sender')
             ->sendMessageQueue($limit)
         ;
-        $output->writeln(sprintf('Total [%d] message(s) / success [%d] / failed [%d]',
-            $result['total'], $result['sent'], $result['fail']));
+        $output->writeln(sprintf(
+            'Total [%d] message(s) / success [%d] / failed [%d]',
+            $result['total'],
+            $result['sent'],
+            $result['fail']
+        ));
     }
 }

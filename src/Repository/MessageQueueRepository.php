@@ -10,6 +10,7 @@ class MessageQueueRepository extends EntityRepository
 {
     /**
      * @param Message $message
+     *
      * @return mixed
      */
     public function deleteMessageFromQueue(Message $message)
@@ -26,6 +27,7 @@ class MessageQueueRepository extends EntityRepository
 
     /**
      * @param $email
+     *
      * @return mixed
      */
     public function deleteEmailFromQueue($email)
@@ -42,6 +44,7 @@ class MessageQueueRepository extends EntityRepository
 
     /**
      * @param $days
+     *
      * @return mixed
      */
     public function clearQueue($days)
@@ -56,7 +59,7 @@ class MessageQueueRepository extends EntityRepository
         if (!empty($days)) {
             $q
                 ->andWhere('q.updatedAt <= :date')
-                ->setParameter('date', new \DateTime('-' . $days . 'days'))
+                ->setParameter('date', new \DateTime('-'.$days.'days'))
             ;
         }
 
@@ -65,6 +68,7 @@ class MessageQueueRepository extends EntityRepository
 
     /**
      * @param Message $message
+     *
      * @return array
      */
     public function getSendDataForMessage(Message $message)
@@ -81,6 +85,7 @@ class MessageQueueRepository extends EntityRepository
 
     /**
      * @param $limit
+     *
      * @return array
      */
     public function getErrorQueuesForSend($limit)
@@ -101,6 +106,7 @@ class MessageQueueRepository extends EntityRepository
 
     /**
      * @param $limit
+     *
      * @return array
      */
     public function getNotSentQueuesForSend($limit)

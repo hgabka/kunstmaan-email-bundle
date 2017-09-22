@@ -7,13 +7,11 @@ use Hgabka\KunstmaanEmailBundle\AdminList\ItemAction\MessageSendItemAction;
 use Hgabka\KunstmaanEmailBundle\AdminList\ItemAction\MessageSendItemListAction;
 use Hgabka\KunstmaanEmailBundle\AdminList\ItemAction\MessageUnprepareItemListAction;
 use Hgabka\KunstmaanEmailBundle\Entity\Message;
-use Hgabka\KunstmaanEmailBundle\Enum\MessageStatusEnum;
 use Hgabka\KunstmaanEmailBundle\Form\MessageAdminType;
 use Hgabka\KunstmaanEmailBundle\Helper\MailBuilder;
 use Hgabka\KunstmaanEmailBundle\Security\EmailVoter;
 use Kunstmaan\AdminBundle\Helper\Security\Acl\AclHelper;
 use Kunstmaan\AdminListBundle\AdminList\Configurator\AbstractDoctrineORMAdminListConfigurator;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
 
@@ -25,18 +23,18 @@ class MessageAdminListConfigurator extends AbstractDoctrineORMAdminListConfigura
     /** @var AuthorizationChecker */
     private $authChecker;
 
-    /** @var  string */
+    /** @var string */
     private $editorRole;
 
-    /** @var  MailBuilder */
+    /** @var MailBuilder */
     private $mailBuilder;
 
-    /** @var  RequestStack */
+    /** @var RequestStack */
     private $requestStack;
 
     /**
-     * @param EntityManager $em The entity manager
-     * @param AclHelper $aclHelper The acl helper
+     * @param EntityManager $em        The entity manager
+     * @param AclHelper     $aclHelper The acl helper
      */
     public function __construct(EntityManager $em, AuthorizationChecker $authChecker, MailBuilder $mailBuilder, RequestStack $requestStack, string $editorRole, AclHelper $aclHelper = null)
     {
@@ -105,6 +103,8 @@ class MessageAdminListConfigurator extends AbstractDoctrineORMAdminListConfigura
     }
 
     /**
+     * @param mixed $item
+     *
      * @return bool
      */
     public function canEdit($item)
@@ -113,6 +113,8 @@ class MessageAdminListConfigurator extends AbstractDoctrineORMAdminListConfigura
     }
 
     /**
+     * @param mixed $item
+     *
      * @return bool
      */
     public function canPrepare($item)
@@ -121,6 +123,8 @@ class MessageAdminListConfigurator extends AbstractDoctrineORMAdminListConfigura
     }
 
     /**
+     * @param mixed $item
+     *
      * @return bool
      */
     public function canUnprepare($item)
@@ -172,7 +176,7 @@ class MessageAdminListConfigurator extends AbstractDoctrineORMAdminListConfigura
     {
         return [
             'hgabka_kuma_email.tabs.recipients' => ['fromName', 'fromEmail'],
-            'hgabka_kuma_email.tabs.content'    => ['layout', 'translations'],
+            'hgabka_kuma_email.tabs.content' => ['layout', 'translations'],
         ];
     }
 
@@ -180,7 +184,6 @@ class MessageAdminListConfigurator extends AbstractDoctrineORMAdminListConfigura
     {
         return 'HgabkaKunstmaanEmailBundle:AdminList:Message\edit.html.twig';
     }
-
 
     public function getAddTemplate()
     {

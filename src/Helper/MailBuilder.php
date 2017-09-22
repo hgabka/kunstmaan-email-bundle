@@ -256,15 +256,6 @@ class MailBuilder
         }
     }
 
-    protected function createSwiftAttachment(Media $media)
-    {
-        $content = $this->getMediaContent($media);
-        $mime = \Swift_Attachment::newInstance($content, $media->getOriginalFilename(), $media->getContentType());
-        $mime->setSize($this->kumaUtils->getMediaSize($media));
-
-        return $mime;
-    }
-
     /**
      * @param string $name
      *
@@ -468,6 +459,15 @@ class MailBuilder
         ];
 
         return $this->paramSubstituter->addVarChars($params);
+    }
+
+    protected function createSwiftAttachment(Media $media)
+    {
+        $content = $this->getMediaContent($media);
+        $mime = \Swift_Attachment::newInstance($content, $media->getOriginalFilename(), $media->getContentType());
+        $mime->setSize($this->kumaUtils->getMediaSize($media));
+
+        return $mime;
     }
 
     /**
