@@ -55,7 +55,7 @@ class MessageAdminListConfigurator extends AbstractDoctrineORMAdminListConfigura
     {
         $this->addField('subject', 'hgabka_kuma_email.labels.subject', true);
         $this->addField('fromEmail', 'hgabka_kuma_email.labels.from_email', false);
-        $this->addField('status', 'hgabka_kuma_email.labels.status', false);
+        $this->addField('status', 'hgabka_kuma_email.labels.status', false, 'HgabkaKunstmaanEmailBundle:AdminList:Message\_status.html.twig');
     }
 
     public function buildItemActions()
@@ -178,13 +178,13 @@ class MessageAdminListConfigurator extends AbstractDoctrineORMAdminListConfigura
 
     public function getEditTemplate()
     {
-        return 'HgabkaKunstmaanEmailBundle:Message:edit.html.twig';
+        return 'HgabkaKunstmaanEmailBundle:AdminList:Message\edit.html.twig';
     }
 
 
     public function getAddTemplate()
     {
-        return 'HgabkaKunstmaanEmailBundle:Message:edit.html.twig';
+        return 'HgabkaKunstmaanEmailBundle:AdminList:Message\edit.html.twig';
     }
 
     public function getItemActions()

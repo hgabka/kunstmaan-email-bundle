@@ -7,6 +7,7 @@ use Hgabka\KunstmaanEmailBundle\Entity\Attachment;
 use Hgabka\KunstmaanEmailBundle\Entity\EmailTemplate;
 use Hgabka\KunstmaanEmailBundle\Entity\Message;
 use Hgabka\KunstmaanExtensionBundle\Helper\KumaUtils;
+use Kunstmaan\MediaBundle\Entity\Media;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
@@ -200,9 +201,7 @@ class MailBuilder
             $media = $attachment->getMedia();
 
             if ($media) {
-                $mail->attach(
-                    \Swift_Attachment::newInstance($this->getMediaContent($media), $media->getOriginalFilename(), $media->getContentType())
-                );
+                $mail->attach($this->createSwiftAttachment($media));
             }
         }
 
@@ -255,6 +254,15 @@ class MailBuilder
         } catch (\Exception $e) {
             return false;
         }
+    }
+
+    protected function createSwiftAttachment(Media $media)
+    {
+        $content = $this->getMediaContent($media);
+        $mime = \Swift_Attachment::newInstance($content, $media->getOriginalFilename(), $media->getContentType());
+        $mime->setSize($this->kumaUtils->getMediaSize($media));
+
+        return $mime;
     }
 
     /**
@@ -315,11 +323,11 @@ class MailBuilder
         $culture = $this->kumaUtils->getCurrentLocale($culture);
 
         $params = is_array($to) ? ['nev' => current($to), 'email' => key($to)] : ['email' => $to];
-        $params['webversion'] = $this->router->generate('hgabka_kunstmaan_email_message_webversion', ['id' => $message->getId(), 'culture' => $culture], UrlGeneratorInterface::ABSOLUTE_URL);
+        $params['webversion'] = $this->router->generate('hgabka_kunstmaan_email_message_webversion', ['id' => $message->getId(), '_locale' => $culture], UrlGeneratorInterface::ABSOLUTE_URL);
 
         $subscriber = $this->getSubscriberRepository()->findOneBy(['email' => $params['email']]);
 
-        $unsubscribeUrl = $subscriber ? $this->router->generate('hgabka_kunstmaan_email_message_unsubscribe', ['token' => $subscriber->getToken()], UrlGeneratorInterface::ABSOLUTE_URL) : '';
+        $unsubscribeUrl = $subscriber ? $this->router->generate('hgabka_kunstmaan_email_message_unsubscribe', ['token' => $subscriber->getToken(), '_locale' => $culture], UrlGeneratorInterface::ABSOLUTE_URL) : '';
         $unsubscribeLink = $subscriber ? '<a href="'.$unsubscribeUrl.'">'.$this->translator->trans('hgabka_kunstmaan_email.message_unsubscribe_default_text').'</a>' : '';
         $params['unsubscribe'] = $unsubscribeUrl;
         $params['unsubscribe_link'] = $unsubscribeLink;
@@ -333,8 +341,8 @@ class MailBuilder
         $subject = $this->paramSubstituter->substituteParams($message->translate($culture)->getSubject(), $params);
         $mail = new \Swift_Message($subject);
 
-        $bodyText = $this->paramSubstituter->substituteParams($message->translate($culture)->getTextBody(), $params);
-        $bodyHtml = $this->paramSubstituter->substituteParams($this->paramSubstituter->embedImages($message->translate($culture)->getHtmlBody(), $mail), $params);
+        $bodyText = $this->paramSubstituter->substituteParams($message->translate($culture)->getContentText(), $params);
+        $bodyHtml = $this->paramSubstituter->substituteParams($this->paramSubstituter->embedImages($message->translate($culture)->getContentHtml(), $mail), $params);
 
         if ($this->config['auto_append_unsubscribe_link'] && !empty($unsubscribeLink)) {
             $bodyHtml .= '<br /><br />'.$unsubscribeLink;
@@ -359,15 +367,18 @@ class MailBuilder
             $mail->addPart($bodyHtml, 'text/html');
         }
 
-        $attachments = $this->doctrine->getRepository('HgabkaKunstmaanEmailBundle:Attachment')->getByMessage($message, $culture);
+        $attachments = $this
+            ->doctrine
+            ->getRepository('HgabkaKunstmaanEmailBundle:Attachment')
+            ->getByMessage($message, $culture)
+        ;
 
         foreach ($attachments as $attachment) {
+            /** @var Attachment $attachment */
             $media = $attachment->getMedia();
 
             if ($media) {
-                $mail->attach(
-                    \Swift_Attachment::newInstance($this->getMediaContent($media), $media->getOriginalFilename(), $media->getContentType())
-                );
+                $mail->attach($this->createSwiftAttachment($media));
             }
         }
 

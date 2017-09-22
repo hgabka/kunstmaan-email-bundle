@@ -40,13 +40,12 @@ class MessageSender
     /**
      * MailBuilder constructor.
      *
-     * @param Registry            $doctrine
-     * @param \Swift_Mailer       $mailer
-     * @param QueueManager        $queueManager
-     * @param ParamSubstituter    $paramSubstituter
+     * @param Registry $doctrine
+     * @param \Swift_Mailer $mailer
+     * @param QueueManager $queueManager
      * @param TranslatorInterface $translator
-     * @param KumaUtils           $kumaUtils,
-     * @param MailBuilder         $mailBuilder
+     * @param KumaUtils $kumaUtils ,
+     * @param MailBuilder $mailBuilder
      */
     public function __construct(
         Registry $doctrine,
@@ -119,7 +118,7 @@ class MessageSender
         }
 
         $this->queueManager->addMessageToQueue($message, $this->getRecipientsForMessage($message));
-        $message->setStatus(MessageStatusEnum::STATUS_KULDENDO);
+        $message->setStatus(MessageStatusEnum::STATUS_FOLYAMATBAN);
         $this->updateMessageSendData($message);
     }
 
@@ -238,7 +237,10 @@ class MessageSender
 
                 if (!in_array($subscriber->getEmail(), $emails, true)) {
                     $ar = $this->kumaUtils->entityToArray($subscriber, 0);
-                    $recs[] = array_merge($ar, ['to' => [$subscriber->getEmail() => $subscriber->getName()], 'culture' => $subscriber->getLocale()]);
+                    $recs[] = array_merge($ar, [
+                        'to'      => [$subscriber->getEmail() => $subscriber->getName()],
+                        'culture' => $subscriber->getLocale() ? $subscriber->getLocale() : $this->kumaUtils->getDefaultLocale(),
+                    ]);
                     $emails[] = $subscriber->getEmail();
                 }
             }
@@ -271,18 +273,18 @@ class MessageSender
             $email = is_array($to) ? key($to) : $to;
 
             try {
-                $mail = $this->createMessageMail($message, $to, $culture, true, $rec);
+                $mail = $this->mailBuilder->createMessageMail($message, $to, $culture, true, $rec);
                 if ($mailer->send($mail)) {
-                    $this->log('Email kuldese sikeres. Email: '.$email);
+                    $this->log('Email kuldese sikeres. Email: ' . $email);
 
-                    $message->setSentAt(date('Y-m-d H:i:s'));
+                    $message->setSentAt(new \DateTime());
                     ++$sent;
                 } else {
-                    $this->log('Email kuldes sikertelen. Email: '.$email);
+                    $this->log('Email kuldes sikertelen. Email: ' . $email);
                     ++$fail;
                 }
-            } catch (Exception $e) {
-                $this->log('Email kuldes sikertelen. Email: '.$email.' Hiba: '.$e->getMessage());
+            } catch (\Exception $e) {
+                $this->log('Email kuldes sikertelen. Email: ' . $email . ' Hiba: ' . $e->getMessage());
 
                 ++$fail;
             }
@@ -317,12 +319,13 @@ class MessageSender
             return;
         }
 
-        $sendData = $this->getQueueRepository()->getSendDataForMessage($message);
+        $sendData = $this->getSendDataForMessage($message);
 
         $message
             ->setSentMail($sendData['sum'])
             ->setSentSuccess($sendData[QueueStatusEnum::STATUS_ELKULDVE])
-            ->setSentFail($sendData[QueueStatusEnum::STATUS_SIKERTELEN]);
+            ->setSentFail($sendData[QueueStatusEnum::STATUS_SIKERTELEN])
+        ;
 
         if ($sendData[QueueStatusEnum::STATUS_ELKULDVE] + $sendData[QueueStatusEnum::STATUS_SIKERTELEN] + $sendData[QueueStatusEnum::STATUS_VISSZAPATTANT] === $sendData['sum']) {
             $message->setStatus(MessageStatusEnum::STATUS_ELKULDVE);
@@ -373,7 +376,7 @@ class MessageSender
     public function sendMessageQueue($limit = null)
     {
         $this->prepareMessages();
-
+        
         $result = $this->queueManager->sendMessages($limit);
 
         $this->updateMessages();
@@ -443,7 +446,7 @@ class MessageSender
             $limit = $this->config['send_limit'];
         }
 
-        $this->log('Uzenetek kuldese (limit: '.$limit.')');
+        $this->log('Uzenetek kuldese (limit: ' . $limit . ')');
         $messages = $this->getMessageRepository()->getMessagesToSend();
 
         $sent = 0;
@@ -485,10 +488,10 @@ class MessageSender
 
     /**
      * @param EmailTemplate $template
-     * @param array         $params
-     * @param null          $culture
-     * @param null          $sendAt
-     * @param bool          $campaign
+     * @param array $params
+     * @param null $culture
+     * @param null $sendAt
+     * @param bool $campaign
      *
      * @return bool|mixed
      */
@@ -507,8 +510,8 @@ class MessageSender
 
     /**
      * @param EmailTemplate $template
-     * @param array         $params
-     * @param null          $culture
+     * @param array $params
+     * @param null $culture
      *
      * @return bool|int|mixed
      */
@@ -551,5 +554,31 @@ class MessageSender
     protected function getMessageRepository()
     {
         return $this->doctrine->getRepository('HgabkaKunstmaanEmailBundle:Message');
+    }
+
+    public function getSendDataForMessage(Message $message)
+    {
+        $data = $this->doctrine
+            ->getRepository('HgabkaKunstmaanEmailBundle:MessageQueue')
+            ->getSendDataForMessage($message);
+
+        $sum = 0;
+        $res = array(
+            QueueStatusEnum::STATUS_INIT => 0,
+            QueueStatusEnum::STATUS_ELKULDVE => 0,
+            QueueStatusEnum::STATUS_HIBA => 0,
+            QueueStatusEnum::STATUS_SIKERTELEN => 0,
+            QueueStatusEnum::STATUS_VISSZAPATTANT => 0,
+        );
+
+        foreach ($data as $row)
+        {
+            $res[$row['status']] = $row['num'];
+            $sum+= $row['num'];
+        }
+
+        $res['sum'] = $sum;
+
+        return $res;
     }
 }

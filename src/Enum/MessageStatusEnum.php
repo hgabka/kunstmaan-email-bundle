@@ -11,10 +11,10 @@ abstract class MessageStatusEnum
 
     /** @var array user friendly named type */
     protected static $statusName = [
-        self::STATUS_INIT => 'Létrehozva',
-        self::STATUS_KULDENDO => 'Küldésre megjelölve',
-        self::STATUS_FOLYAMATBAN => 'Küldés alatt',
-        self::STATUS_ELKULDVE => 'Elküldve',
+        self::STATUS_INIT => 'hgabka_kuma_email.statuses.init',
+        self::STATUS_KULDENDO => 'hgabka_kuma_email.statuses.kuldendo',
+        self::STATUS_FOLYAMATBAN => 'hgabka_kuma_email.statuses.folyamatban',
+        self::STATUS_ELKULDVE => 'hgabka_kuma_email.statuses.elkuldve',
     ];
 
     /**
@@ -24,6 +24,10 @@ abstract class MessageStatusEnum
      */
     public static function getStatusName($statusShortName)
     {
+        if (empty($statusShortName)) {
+            return '';
+        }
+
         if (!isset(static::$statusName[$statusShortName])) {
             return "Unknown type ($statusShortName)";
         }
@@ -42,5 +46,16 @@ abstract class MessageStatusEnum
             self::STATUS_FOLYAMATBAN,
             self::STATUS_ELKULDVE,
         ];
+    }
+
+    public static function getStatusTextChoices()
+    {
+        $res = [];
+
+        foreach (self::getAvailableStatuses() as $status) {
+            $res[$status] = 'hgabka_kuma_email.statuses.'.$status;
+        }
+
+        return $res;
     }
 }

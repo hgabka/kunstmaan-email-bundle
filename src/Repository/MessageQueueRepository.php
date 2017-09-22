@@ -3,11 +3,16 @@
 namespace Hgabka\KunstmaanEmailBundle\Repository;
 
 use Doctrine\ORM\EntityRepository;
+use Hgabka\KunstmaanEmailBundle\Entity\Message;
 use Hgabka\KunstmaanEmailBundle\Enum\QueueStatusEnum;
 
 class MessageQueueRepository extends EntityRepository
 {
-    public function deleteMessageFromQueue($message)
+    /**
+     * @param Message $message
+     * @return mixed
+     */
+    public function deleteMessageFromQueue(Message $message)
     {
         return $this
             ->createQueryBuilder('q')
@@ -16,9 +21,13 @@ class MessageQueueRepository extends EntityRepository
             ->setParameter('message', $message)
             ->getQuery()
             ->execute()
-            ;
+        ;
     }
 
+    /**
+     * @param $email
+     * @return mixed
+     */
     public function deleteEmailFromQueue($email)
     {
         return $this
@@ -28,53 +37,84 @@ class MessageQueueRepository extends EntityRepository
             ->setParameter('email', $email)
             ->getQuery()
             ->execute()
-            ;
+        ;
     }
 
+    /**
+     * @param $days
+     * @return mixed
+     */
     public function clearQueue($days)
     {
         $q = $this
             ->createQueryBuilder('q')
             ->delete()
-            ->where('q.Status = :st', QueueStatusEnum::STATUS_ELKULDVE)
+            ->where('q.status = :st')
+            ->setParameter('st', QueueStatusEnum::STATUS_ELKULDVE)
         ;
 
         if (!empty($days)) {
             $q
-                ->andWhere('q.updated_at <= :date')
-                ->setParameter('date', date('Y-m-d 00:00:00', strtotime('-'.$days.'days')));
+                ->andWhere('q.updatedAt <= :date')
+                ->setParameter('date', new \DateTime('-' . $days . 'days'))
+            ;
         }
 
         return $q->getQuery()->execute();
     }
 
+    /**
+     * @param Message $message
+     * @return array
+     */
     public function getSendDataForMessage(Message $message)
     {
-        $data = $this->createQueryBuilder('q')
-                     ->select(['q.status AS status', 'COUNT(q.id) AS num'])
-                     ->where('q.message = :message')
-                     ->groupBy('q.status')
-                     ->setParameter('message', $message)
-                     ->getQuery()
-                     ->getArrayResult()
+        return $this->createQueryBuilder('q')
+                    ->select('q.status AS status', 'COUNT(q.id) AS num')
+                    ->where('q.message = :message')
+                    ->groupBy('q.status')
+                    ->setParameter('message', $message)
+                    ->getQuery()
+                    ->getArrayResult()
+        ;
+    }
+
+    /**
+     * @param $limit
+     * @return array
+     */
+    public function getErrorQueuesForSend($limit)
+    {
+        $q = $this
+            ->createQueryBuilder('q')
+            ->where('q.status = :status')
+            ->setParameter('status', QueueStatusEnum::STATUS_HIBA)
+            ->orderBy('q.createdAt', 'DESC')
         ;
 
-        $sum = 0;
-        $res = [
-            QueueStatusEnum::STATUS_INIT => 0,
-            QueueStatusEnum::STATUS_ELKULDVE => 0,
-            QueueStatusEnum::STATUS_HIBA => 0,
-            QueueStatusEnum::STATUS_SIKERTELEN => 0,
-            QueueStatusEnum::STATUS_VISSZAPATTANT => 0,
-        ];
-
-        foreach ($data as $row) {
-            $res[$row['status']] = $row['num'];
-            $sum += $row['num'];
+        if (!empty($limit)) {
+            $q->setMaxResults($limit);
         }
 
-        $res['sum'] = $sum;
+        return $q->getQuery()->getResult();
+    }
 
-        return $res;
+    /**
+     * @param $limit
+     * @return array
+     */
+    public function getNotSentQueuesForSend($limit)
+    {
+        $q = $this->createQueryBuilder('q')
+                  ->where('q.status = :status')
+                  ->setParameter('status', QueueStatusEnum::STATUS_INIT)
+                  ->orderBy('q.createdAt', 'DESC')
+        ;
+
+        if (!empty($limit)) {
+            $q->setMaxResults($limit);
+        }
+
+        return $q->getQuery()->getResult();
     }
 }

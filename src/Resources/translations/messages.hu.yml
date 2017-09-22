@@ -20,6 +20,8 @@ hgabka_kuma_email:
         send_later: Későbbi időpontban
         send_at: Küldés ideje
         send_time: Küldési időpont
+        unprepare: Küldés visszavonása
+
     tabs:
         general: Általános adatok
         content: Tárgy, tartalom
@@ -31,8 +33,23 @@ hgabka_kuma_email:
         webversion: Webes változat
         unsubscribe: Leiratkozó URL
         unsubscribe_link: Leiratkozó link
+
     fixtures:
         folder_name: Csatolmányok
         base_list: Alapértelmezett levelezőlista
+
     titles:
         send: Körlevél küldése
+    messages:
+        prepare_success: A körlevél sikeresen küldésre jelölve
+        prepare_error: A körlevél küldésre jelölése sikertelen volt, mert az űrlap hibákat tartalmaz
+        unprepare_success: A körlevél küldése sikeresen visszavonva
+
+    statuses:
+        init: Szerkesztés alatt
+        kuldendo: Kiküldésre előjegyezve
+        folyamatban: Kiküldés alatt
+        elkuldve: Kiküldve
+        send_data: '( %recipient% címzett, %success% üzenet kiküldve, %fail% sikertelen )'
+        immidiately: Azonnal
+        send_date: 'Küldés ideje: %date%'

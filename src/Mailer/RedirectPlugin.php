@@ -181,7 +181,7 @@ class RedirectPlugin extends \Swift_Plugins_RedirectingPlugin
         $redirectConfig = $this->redirectConfig;
         $hosts = isset($redirectConfig['hosts']) ? (!is_array($redirectConfig['hosts']) ? [$redirectConfig['hosts']] : $redirectConfig['hosts']) : [];
 
-        $ch = $this->requestStack->getCurrentRequest()->getHost();
+        $ch = $this->requestStack->getCurrentRequest() ? $this->requestStack->getCurrentRequest()->getHost() : '';
 
         $currentHost = strtolower($ch);
 

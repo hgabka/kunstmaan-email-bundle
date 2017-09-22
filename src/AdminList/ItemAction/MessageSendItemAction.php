@@ -44,6 +44,6 @@ class MessageSendItemAction implements ItemActionInterface
      */
     public function getTemplate()
     {
-        return 'HgabkaKunstmaanEmailBundle:Message:send_item_action.html.twig';
+        return 'HgabkaKunstmaanEmailBundle:AdminList:Message\_send_item_action.html.twig';
     }
 }

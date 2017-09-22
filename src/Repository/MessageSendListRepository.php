@@ -3,6 +3,7 @@
 namespace Hgabka\KunstmaanEmailBundle\Repository;
 
 use Doctrine\ORM\EntityRepository;
+use Hgabka\KunstmaanEmailBundle\Entity\Message;
 use Hgabka\KunstmaanEmailBundle\Entity\MessageList;
 
 class MessageSendListRepository extends EntityRepository

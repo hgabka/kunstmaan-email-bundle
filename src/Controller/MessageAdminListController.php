@@ -248,12 +248,15 @@ class MessageAdminListController extends AdminListController
                 $em->flush();
 
                 $this->get('hgabka_kunstmaan_email.message_sender')->prepareMessage($helper);
+                $this->get('session')->getFlashBag()->add('success', 'hgabka_kuma_email.messages.prepare_success');
 
                 return $this->redirectToRoute('hgabkakunstmaanemailbundle_admin_message');
+            } else {
+                $this->get('session')->getFlashBag()->add('error', 'hgabka_kuma_email.messages.prepare_error');
             }
         }
 
-        return $this->render('HgabkaKunstmaanEmailBundle:Message:send.html.twig', [
+        return $this->render('HgabkaKunstmaanEmailBundle:AdminList:Message/send.html.twig', [
             'form' => $form->createView(), 'entity' => $helper, 'adminlistconfigurator' => $configurator
             ]);
     }
@@ -281,6 +284,11 @@ class MessageAdminListController extends AdminListController
         if (!$configurator->canUnprepare($helper)) {
             throw new AccessDeniedHttpException('You do not have sufficient rights to access this page.');
         }
+
+        $this->get('hgabka_kunstmaan_email.message_sender')->unPrepareMessage($helper);
+        $this->get('session')->getFlashBag()->add('success', 'hgabka_kuma_email.messages.unprepare_success');
+
+        return $this->redirectToRoute('hgabkakunstmaanemailbundle_admin_message');
     }
 
 

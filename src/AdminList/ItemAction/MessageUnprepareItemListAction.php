@@ -44,6 +44,6 @@ class MessageUnprepareItemListAction implements ItemActionInterface
      */
     public function getTemplate()
     {
-        return 'HgabkaKunstmaanEmailBundle:Message:unprepare_item_list_action.html.twig';
+        return 'HgabkaKunstmaanEmailBundle:AdminList:Message\_unprepare_item_list_action.html.twig';
     }
 }

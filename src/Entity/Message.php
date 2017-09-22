@@ -70,6 +70,7 @@ class Message extends AbstractEntity implements TranslatableInterface
     /**
      * @var \DateTime
      * @ORM\Column(name="send_at", type="datetime", nullable=true)
+     *
      */
     protected $sendAt;
 
@@ -499,7 +500,7 @@ class Message extends AbstractEntity implements TranslatableInterface
     /**
      * @return \DateTime
      */
-    public function getSentAt(): \DateTime
+    public function getSentAt()
     {
         return $this->sentAt;
     }
@@ -522,6 +523,16 @@ class Message extends AbstractEntity implements TranslatableInterface
     }
 
     public function isUnprepareable()
+    {
+        return in_array($this->getStatus(), [MessageStatusEnum::STATUS_KULDENDO, MessageStatusEnum::STATUS_FOLYAMATBAN]);
+    }
+
+    public function isBeingSent()
+    {
+        return in_array($this->getStatus(), [MessageStatusEnum::STATUS_ELKULDVE, MessageStatusEnum::STATUS_FOLYAMATBAN]);
+    }
+
+    public function isPrepared()
     {
         return $this->getStatus() == MessageStatusEnum::STATUS_KULDENDO;
     }
@@ -566,5 +577,12 @@ class Message extends AbstractEntity implements TranslatableInterface
         $this->status = $status;
 
         return $this;
+    }
+
+    public function getStatusDisplay()
+    {
+        $choices = MessageStatusEnum::getStatusTextChoices();
+
+        return $choices[$this->getStatus()] ?? '';
     }
 }

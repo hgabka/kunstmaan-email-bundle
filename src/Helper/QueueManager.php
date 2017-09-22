@@ -202,14 +202,13 @@ class QueueManager
         $fromEmail = $message->getFromEmail();
 
         $from = empty($fromName) ? $fromEmail : [$fromEmail => $fromName];
-
+        $bounceConfig = $this->bounceConfig;
         try {
             $params = $queue->getParameters();
             $message = $this->mailBuilder->createMessageMail($message, $to, $queue->getLocale(), true, unserialize($params));
             $headers = $message->getHeaders();
             $headers->addTextHeader('Hg-Message-Id', $message->getId());
 
-            $bounceConfig = $this->config['bounce_checking'];
             if (isset($bounceConfig['account']['address'])) {
                 $message->setReturnPath($bounceConfig['account']['address']);
             }
@@ -224,8 +223,8 @@ class QueueManager
             $this->doctrine->getManager()->flush();
 
             return true;
-        } catch (Exception $e) {
-            $queue->setError($e->getMessage());
+        } catch (\Exception $e) {
+            $this->setError($e->getMessage(), $queue);
             $this->doctrine->getManager()->flush();
 
             return false;
@@ -443,7 +442,7 @@ class QueueManager
                 $this->log('Sikertelen kuldes ujra. Email kuldese sikeres. Email: '.$email);
                 ++$sent;
             } else {
-                $this->log('Sikertelen kuldes ujra. Email kuldes sikertelen. Email: '.$email.' Hiba: '.$queue->getLastError());
+                $this->log('Sikertelen kuldes ujra. Email kuldes sikertelen. Email: '.$email.' Hiba: '.$this->getLastError());
                 ++$fail;
             }
         }
@@ -459,7 +458,7 @@ class QueueManager
         foreach ($queues as $queue) {
             ++$count;
             $email = $queue->getToEmail();
-            if ($queue->send()) {
+            if ($this->sendMessageQueue($queue)) {
                 $this->log('Email kuldese sikeres. Email: '.$email);
                 ++$sent;
             } else {

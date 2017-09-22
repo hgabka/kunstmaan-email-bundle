@@ -135,6 +135,6 @@ class EmailTemplateAdminListConfigurator extends AbstractDoctrineORMAdminListCon
 
     public function getEditTemplate()
     {
-        return 'HgabkaKunstmaanEmailBundle:EmailTemplate:edit.html.twig';
+        return 'HgabkaKunstmaanEmailBundle:AdminList:EmailTemplate\edit.html.twig';
     }
 }

@@ -7,6 +7,9 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\Callback;
+use Symfony\Component\Validator\Constraints\Range;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 class SendType extends AbstractType
 {
@@ -22,6 +25,9 @@ class SendType extends AbstractType
             ])
             ->add('time', DateTimepickerType::class, [
                 'label' => 'hgabka_kuma_email.labels.send_time',
+                'constraints' => [
+                    new Range(['min' => 'now', 'minMessage' => 'hgabka_kuma_email.messages.send_at_error'])
+                ],
             ])
         ;
     }
@@ -30,6 +36,17 @@ class SendType extends AbstractType
     {
         $resolver->setDefaults([
             'compound' => true,
+            'constraints' => [
+                new Callback([
+                    'callback' => function($data, ExecutionContextInterface $context) {
+                         if ($data['type'] == 'later' && empty($data['time'])) {
+                             $context->buildViolation('hgabka_kuma_email.messages.send_time_required')
+                                     ->atPath('[time]')
+                                     ->addViolation();
+                         }
+                    }
+                ]),
+            ]
         ]);
     }
 }

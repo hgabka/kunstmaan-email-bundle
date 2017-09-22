@@ -16,7 +16,7 @@ class MessageRepository extends EntityRepository
             ->createQueryBuilder('m')
             ->where('m.sendAt IS NULL OR m.sendAt <= :date')
             ->andWhere('m.sentAt IS NULL')
-            ->setParameter('date', date('Y-m-d H:i:s'))
+            ->setParameter('date', new \DateTime())
             ->getQuery()
             ->getResult()
             ;
@@ -31,7 +31,7 @@ class MessageRepository extends EntityRepository
             ->createQueryBuilder('n')
             ->where('n.status = :status')
             ->andWhere('n.sendAt IS NULL OR n.sendAt <= :date')
-            ->setParameters(['date' => date('Y-m-d H:i:s'), 'status' => MessageStatusEnum::STATUS_KULDENDO])
+            ->setParameters(['date' => new \DateTime(), 'status' => MessageStatusEnum::STATUS_KULDENDO])
             ->getQuery()
             ->getResult()
             ;
@@ -48,6 +48,6 @@ class MessageRepository extends EntityRepository
             ->setParameter('status', MessageStatusEnum::STATUS_FOLYAMATBAN)
             ->getQuery()
             ->getResult()
-            ;
+        ;
     }
 }
