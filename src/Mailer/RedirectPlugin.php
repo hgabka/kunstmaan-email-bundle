@@ -3,6 +3,7 @@
 namespace Hgabka\KunstmaanEmailBundle\Mailer;
 
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\Routing\RouterInterface;
 
 class RedirectPlugin extends \Swift_Plugins_RedirectingPlugin
 {
@@ -11,6 +12,9 @@ class RedirectPlugin extends \Swift_Plugins_RedirectingPlugin
 
     /** @var RequestStack */
     protected $requestStack;
+
+    /** @var RouterInterface */
+    protected $router;
 
     /** @var bool */
     protected $debug;
@@ -87,6 +91,25 @@ class RedirectPlugin extends \Swift_Plugins_RedirectingPlugin
     public function isDebug(): bool
     {
         return $this->debug;
+    }
+
+    /**
+     * @return RouterInterface
+     */
+    public function getRouter(): RouterInterface
+    {
+        return $this->router;
+    }
+
+    /**
+     * @param RouterInterface $router
+     * @return RedirectPlugin
+     */
+    public function setRouter($router)
+    {
+        $this->router = $router;
+
+        return $this;
     }
 
     /**
@@ -181,7 +204,7 @@ class RedirectPlugin extends \Swift_Plugins_RedirectingPlugin
         $redirectConfig = $this->redirectConfig;
         $hosts = isset($redirectConfig['hosts']) ? (!is_array($redirectConfig['hosts']) ? [$redirectConfig['hosts']] : $redirectConfig['hosts']) : [];
 
-        $ch = $this->requestStack->getCurrentRequest() ? $this->requestStack->getCurrentRequest()->getHost() : '';
+        $ch = $this->requestStack->getCurrentRequest() ? $this->requestStack->getCurrentRequest()->getHost() : $this->router->getContext()->getHost();
 
         $currentHost = strtolower($ch);
 

@@ -8,6 +8,7 @@ use Kunstmaan\AdminBundle\Entity\AbstractEntity;
 use Prezent\Doctrine\Translatable\Annotation as Prezent;
 use Prezent\Doctrine\Translatable\Entity\TranslationTrait;
 use Prezent\Doctrine\Translatable\TranslationInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Table(name="hg_kuma_email_message_translation")
@@ -28,21 +29,22 @@ class MessageTranslation extends AbstractEntity implements TranslationInterface
     /**
      * @var string
      *
-     * @ORM\Column(name="subject", type="string", length=255)
+     * @ORM\Column(name="subject", type="string", length=255, nullable=true)
+     * @Assert\NotBlank()
      */
     protected $subject;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="content_text", type="text")
+     * @ORM\Column(name="content_text", type="text", nullable=true)
      */
     protected $contentText = '';
 
     /**
      * @var string
      *
-     * @ORM\Column(name="content_html", type="text")
+     * @ORM\Column(name="content_html", type="text", nullable=true)
      */
     protected $contentHtml = '';
 

@@ -3,16 +3,16 @@
 namespace Hgabka\KunstmaanEmailBundle\AdminList;
 
 use Doctrine\ORM\EntityManager;
-use Hgabka\KunstmaanEmailBundle\Form\EmailTemplateAdminType;
 use Hgabka\KunstmaanEmailBundle\Security\EmailVoter;
 use Kunstmaan\AdminBundle\Helper\Security\Acl\AclHelper;
 use Kunstmaan\AdminListBundle\AdminList\Configurator\AbstractDoctrineORMAdminListConfigurator;
 use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
+use Kunstmaan\AdminListBundle\AdminList\FilterType\ORM;
 
 /**
  * The admin list configurator for Setting.
  */
-class EmailTemplateAdminListConfigurator extends AbstractDoctrineORMAdminListConfigurator
+class MessageSubscriberAdminListConfigurator extends AbstractDoctrineORMAdminListConfigurator
 {
     /** @var AuthorizationChecker */
     private $authChecker;
@@ -29,7 +29,7 @@ class EmailTemplateAdminListConfigurator extends AbstractDoctrineORMAdminListCon
     public function __construct(EntityManager $em, AuthorizationChecker $authChecker, string $editorRole, AclHelper $aclHelper = null)
     {
         parent::__construct($em, $aclHelper);
-        $this->setAdminType(new EmailTemplateAdminType($em, $authChecker));
+        $this->setAdminType(new MessageSubscriberAdminType($em, $authChecker));
         $this->authChecker = $authChecker;
         $this->editorRole = $editorRole;
     }
@@ -40,14 +40,17 @@ class EmailTemplateAdminListConfigurator extends AbstractDoctrineORMAdminListCon
     public function buildFields()
     {
         $this->addField('name', 'hgabka_kuma_email.labels.name', true);
-        $this->addField('comment', 'hgabka_kuma_email.labels.comment', false);
+        $this->addField('email', 'hgabka_kuma_email.labels.email', false);
     }
+
 
     /**
      * Build filters for admin list.
      */
     public function buildFilters()
     {
+        $this->addFilter('name', new ORM\StringFilterType('name', 't'), 'Név');
+        $this->addFilter('email', new ORM\StringFilterType('name', 't'), 'Név');
     }
 
     /**
@@ -67,7 +70,7 @@ class EmailTemplateAdminListConfigurator extends AbstractDoctrineORMAdminListCon
      */
     public function getEntityName()
     {
-        return 'EmailTemplate';
+        return 'MessageSubscriber';
     }
 
     /**
@@ -128,16 +131,4 @@ class EmailTemplateAdminListConfigurator extends AbstractDoctrineORMAdminListCon
         return 'Új email sablon';
     }
 
-    public function getTabFields()
-    {
-        return [
-            'hgabka_kuma_email.tabs.general' => ['name', 'comment', 'slug', 'isSystem'],
-            'hgabka_kuma_email.tabs.content' => ['layout', 'translations'],
-        ];
-    }
-
-    public function getEditTemplate()
-    {
-        return 'HgabkaKunstmaanEmailBundle:AdminList:EmailTemplate\edit.html.twig';
-    }
 }

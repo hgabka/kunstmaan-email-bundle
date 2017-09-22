@@ -20,6 +20,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
+use Symfony\Component\Validator\Constraints\NotBlank;
 
 class MessageAdminType extends AbstractType
 {
@@ -70,6 +71,7 @@ class MessageAdminType extends AbstractType
                     'subject' => [
                         'field_type' => TextType::class,
                         'label' => 'hgabka_kuma_email.labels.subject',
+                        'required' => true,
                     ],
                     'contentText' => [
                         'field_type' => TextareaType::class,

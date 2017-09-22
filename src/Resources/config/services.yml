@@ -54,6 +54,10 @@ services:
               arguments:
                   - "@request_stack"
 
+            - method: setRouter
+              arguments:
+                  - "@router"
+
             - method: setDebug
               arguments:
                   - "%kernel.debug%"
