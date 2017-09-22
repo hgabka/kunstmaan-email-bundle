@@ -165,7 +165,7 @@ class MailBuilder
                 '%%tartalom%%' => $bodyHtml,
                 '%%nev%%' => $name,
                 '%%email%%' => $email,
-                '%%host%%' => $this->requestStack->getMasterRequest()->getSchemeAndHttpHost(),
+                '%%host%%' => $this->kumaUtils->getSchemeAndHttpHost(),
             ]);
         } elseif (strlen($bodyHtml) > 0 && (false !== $this->config['layout_file'] || !empty($parameters['layout_file']))) {
             $layoutFile = !empty($parameters['layout_file']) || (isset($parameters['layout_file']) && false === $parameters['layout_file']) ? $parameters['layout_file'] : $this->config['layout_file'];
@@ -346,7 +346,7 @@ class MailBuilder
                 '%%tartalom%%' => $bodyHtml,
                 '%%nev%%' => isset($params['nev']) ? $params['nev'] : '',
                 '%%email%%' => isset($params['email']) ? $params['email'] : '',
-                '%%host%%' => $this->requestStack->getMasterRequest()->getSchemeAndHttpHost(),
+                '%%host%%' => $this->kumaUtils->getSchemeAndHttpHost(),
             ]);
         }
 
@@ -486,7 +486,7 @@ class MailBuilder
         }
 
         return strtr($layout, [
-            '%%host%%' => $this->requestStack->getCurrentRequest()->getHost(),
+            '%%host%%' => $this->kumaUtils->getSchemeAndHttpHost(),
             '%%styles%%' => '',
             '%%title%%' => $subject,
             '%%content%%' => $bodyHtml,

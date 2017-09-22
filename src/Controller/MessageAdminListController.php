@@ -225,7 +225,7 @@ class MessageAdminListController extends AdminListController
      * @Route("/{id}/prepare", requirements={"id" = "\d+"}, name="hgabkakunstmaanemailbundle_admin_message_prepare")
      * @Method({"GET", "POST"})
      *
-     * @return array
+     * @return Response
      */
     public function prepareAction(Request $request, $id)
     {
