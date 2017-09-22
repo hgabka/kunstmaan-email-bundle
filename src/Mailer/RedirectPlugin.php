@@ -103,6 +103,7 @@ class RedirectPlugin extends \Swift_Plugins_RedirectingPlugin
 
     /**
      * @param RouterInterface $router
+     *
      * @return RedirectPlugin
      */
     public function setRouter($router)

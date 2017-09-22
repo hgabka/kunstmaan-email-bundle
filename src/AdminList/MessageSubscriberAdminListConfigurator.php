@@ -6,8 +6,8 @@ use Doctrine\ORM\EntityManager;
 use Hgabka\KunstmaanEmailBundle\Security\EmailVoter;
 use Kunstmaan\AdminBundle\Helper\Security\Acl\AclHelper;
 use Kunstmaan\AdminListBundle\AdminList\Configurator\AbstractDoctrineORMAdminListConfigurator;
-use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
 use Kunstmaan\AdminListBundle\AdminList\FilterType\ORM;
+use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
 
 /**
  * The admin list configurator for Setting.
@@ -21,10 +21,10 @@ class MessageSubscriberAdminListConfigurator extends AbstractDoctrineORMAdminLis
     private $editorRole;
 
     /**
-     * @param EntityManager $em The entity manager
+     * @param EntityManager        $em          The entity manager
      * @param AuthorizationChecker $authChecker
-     * @param string $editorRole
-     * @param AclHelper $aclHelper The acl helper
+     * @param string               $editorRole
+     * @param AclHelper            $aclHelper   The acl helper
      */
     public function __construct(EntityManager $em, AuthorizationChecker $authChecker, string $editorRole, AclHelper $aclHelper = null)
     {
@@ -42,7 +42,6 @@ class MessageSubscriberAdminListConfigurator extends AbstractDoctrineORMAdminLis
         $this->addField('name', 'hgabka_kuma_email.labels.name', true);
         $this->addField('email', 'hgabka_kuma_email.labels.email', false);
     }
-
 
     /**
      * Build filters for admin list.
@@ -130,5 +129,4 @@ class MessageSubscriberAdminListConfigurator extends AbstractDoctrineORMAdminLis
     {
         return 'Új email sablon';
     }
-
 }

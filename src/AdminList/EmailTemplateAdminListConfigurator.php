@@ -21,10 +21,10 @@ class EmailTemplateAdminListConfigurator extends AbstractDoctrineORMAdminListCon
     private $editorRole;
 
     /**
-     * @param EntityManager $em The entity manager
+     * @param EntityManager        $em          The entity manager
      * @param AuthorizationChecker $authChecker
-     * @param string $editorRole
-     * @param AclHelper $aclHelper The acl helper
+     * @param string               $editorRole
+     * @param AclHelper            $aclHelper   The acl helper
      */
     public function __construct(EntityManager $em, AuthorizationChecker $authChecker, string $editorRole, AclHelper $aclHelper = null)
     {
