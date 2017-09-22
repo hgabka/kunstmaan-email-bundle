@@ -14,6 +14,12 @@ hgabka_kuma_email:
         from_name: Sender name
         from_email: Sender email
         status: Status
+        send: Send
+        save_and_send: Save and send
+        send_now: Send immidiately
+        send_later: Send later
+        send_at: Send time
+        send_time: Time
     tabs:
         general: General data
         content: 'Subject, content'
@@ -26,3 +32,6 @@ hgabka_kuma_email:
         unsubscribe_link: Unsubscribe link
     fixtures:
         folder_name: Attachments
+        base_list: Basic mailing list
+    titles:
+        send: Körlevél küldése

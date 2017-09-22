@@ -230,15 +230,15 @@ class MessageSender
             /** @var MessageSendList $sendList */
             foreach ($sendList->getList()->getListSubscriptions() as $listSubscription) {
                 $subscriber = $listSubscription->getSubscriber();
-                if ($subscriber) {
-                    $listSubscription->delete();
-
+                if (!$subscriber) {
+                    $this->doctrine->getManager()->remove($listSubscription);
+                    $this->doctrine->getManager()->flush();
                     continue;
                 }
 
                 if (!in_array($subscriber->getEmail(), $emails, true)) {
-                    $ar = get_object_vars($subscriber);
-                    $recs[] = array_merge($ar, ['to' => [$subscriber->getEmail() => $subscriber->getName()], 'culture' => $subscriber->getCulture()]);
+                    $ar = $this->kumaUtils->entityToArray($subscriber, 0);
+                    $recs[] = array_merge($ar, ['to' => [$subscriber->getEmail() => $subscriber->getName()], 'culture' => $subscriber->getLocale()]);
                     $emails[] = $subscriber->getEmail();
                 }
             }
@@ -304,7 +304,7 @@ class MessageSender
         $sendAt = $message->getSendAt();
         $message->setStatus(MessageStatusEnum::STATUS_KULDENDO);
 
-        if (empty($sendAt) || $sendAt < date('Y-m-d H:i:s')) {
+        if (empty($sendAt) || $sendAt < new \DateTime()) {
             $this->addMessageToQueue($message);
         } else {
             $this->doctrine->getManager()->flush();

@@ -269,8 +269,8 @@ class QueueManager
             $to = $recipient['to'];
             $culture = isset($recipient['culture']) ? $recipient['culture'] : sfConfig::get('sf_default_culture');
 
-            $queue = new hgMessageQueue();
-            $queue->setSmgId($message_id);
+            $queue = new MessageQueue();
+            $queue->setMessage($message);
             if (is_array($to)) {
                 $queue->setToEmail(key($to));
                 $queue->setToName(current($to));
@@ -278,12 +278,15 @@ class QueueManager
                 $queue->setToEmail($to);
             }
 
-            $queue->setCulture($culture);
+            $queue->setLocale($culture);
             $queue->setParameters(serialize($recipient));
             $queue->setRetries(0);
-            $queue->setStatus(self::QUEUE_STATUS_INIT);
+            $queue->setStatus(QueueStatusEnum::STATUS_INIT);
 
-            $queue->save();
+            $em = $this->doctrine->getManager();
+            $em->persist($queue);
+            $em->flush();
+
         }
     }
 

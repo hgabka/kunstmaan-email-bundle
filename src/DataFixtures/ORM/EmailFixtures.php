@@ -5,6 +5,7 @@ namespace Hgabka\KunstmaanEmailBundle\DataFixtures\ORM;
 use Doctrine\Common\DataFixtures\AbstractFixture;
 use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
+use Hgabka\KunstmaanEmailBundle\Entity\MessageList;
 use Kunstmaan\MediaBundle\Entity\Folder;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -36,6 +37,7 @@ class EmailFixtures extends AbstractFixture implements OrderedFixtureInterface, 
         $this->manager = $manager;
 
         $this->createAttachmentFolder();
+        $this->createBaseRecipientList();
     }
 
     /**
@@ -62,6 +64,19 @@ class EmailFixtures extends AbstractFixture implements OrderedFixtureInterface, 
             $this->manager->persist($attFolder);
             $this->manager->flush();
         }
+    }
+
+    public function createBaseRecipientList()
+    {
+        $list = new MessageList();
+        $list
+            ->setName($translator->trans('hgabka_kuma_email.fictures.base_list', [], null, $this->container->getParameter('defaultlocale')))
+            ->setIsDefault(true)
+            ->setIsPublic(true)
+        ;
+
+        $this->manager->persist($list);
+        $this->manager->flush();
     }
 
     /**

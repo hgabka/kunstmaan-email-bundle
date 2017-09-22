@@ -515,4 +515,56 @@ class Message extends AbstractEntity implements TranslatableInterface
 
         return $this;
     }
+
+    public function isPrepareable()
+    {
+        return $this->getStatus() == MessageStatusEnum::STATUS_INIT;
+    }
+
+    public function isUnprepareable()
+    {
+        return $this->getStatus() == MessageStatusEnum::STATUS_KULDENDO;
+    }
+
+    public function getSendTime()
+    {
+        if (null === $this->sendAt) {
+            return [
+                'type' => 'now',
+                'time' => null,
+            ];
+        } else {
+            return [
+                'type' => 'later',
+                'time' => $this->sendAt,
+            ];
+        }
+    }
+
+    public function setSendTime($data)
+    {
+        if (!isset($data['type']) || $data['type'] == 'now') {
+            $this->setSendAt(null);
+        } else {
+            $this->setSendAt($data['time']);
+        }
+
+        return $this;
+    }
+
+    public function getSubject($locale = null)
+    {
+        return $this->translate($locale)->getSubject();
+    }
+
+    /**
+     * @param string $status
+     * @return Message
+     */
+    public function setStatus($status)
+    {
+        $this->status = $status;
+
+        return $this;
+    }
 }

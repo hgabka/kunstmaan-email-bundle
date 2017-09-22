@@ -3,6 +3,7 @@
 namespace Hgabka\KunstmaanEmailBundle\Repository;
 
 use Doctrine\ORM\EntityRepository;
+use Hgabka\KunstmaanEmailBundle\Entity\MessageList;
 
 class MessageSendListRepository extends EntityRepository
 {
@@ -15,6 +16,22 @@ class MessageSendListRepository extends EntityRepository
             ->setParameter('message', $message)
             ->getQuery()
             ->execute()
+        ;
+    }
+
+    public function findForMessageAndList(Message $message, MessageList $list)
+    {
+        return $this
+            ->createQueryBuilder('l')
+            ->where('l.list = :list')
+            ->andWhere('l.message = :message')
+            ->setParameters([
+                'list' => $list,
+                'message' => $message
+            ])
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult()
         ;
     }
 }

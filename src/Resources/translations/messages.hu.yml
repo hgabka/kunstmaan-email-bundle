@@ -14,6 +14,12 @@ hgabka_kuma_email:
         from_name: Feladó neve
         from_email: Feladó email címe
         status: Állapot
+        send: Küldés
+        save_and_send: Mentés és küldés
+        send_now: Azonnal
+        send_later: Későbbi időpontban
+        send_at: Küldés ideje
+        send_time: Küldési időpont
     tabs:
         general: Általános adatok
         content: Tárgy, tartalom
@@ -27,3 +33,6 @@ hgabka_kuma_email:
         unsubscribe_link: Leiratkozó link
     fixtures:
         folder_name: Csatolmányok
+        base_list: Alapértelmezett levelezőlista
+    titles:
+        send: Körlevél küldése

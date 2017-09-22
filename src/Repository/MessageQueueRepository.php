@@ -7,12 +7,12 @@ use Hgabka\KunstmaanEmailBundle\Enum\QueueStatusEnum;
 
 class MessageQueueRepository extends EntityRepository
 {
-    public function deleteMessageFromQueue($message_id)
+    public function deleteMessageFromQueue($message)
     {
         return $this
             ->createQueryBuilder('q')
             ->delete()
-            ->where('q.Message = :message')
+            ->where('q.message = :message')
             ->setParameter('message', $message)
             ->getQuery()
             ->execute()
@@ -24,7 +24,7 @@ class MessageQueueRepository extends EntityRepository
         return $this
             ->createQueryBuilder('q')
             ->delete()
-            ->where('q.ToEmail = :email')
+            ->where('q.toEmail = :email')
             ->setParameter('email', $email)
             ->getQuery()
             ->execute()

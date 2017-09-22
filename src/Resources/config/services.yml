@@ -102,7 +102,7 @@ services:
 
     hgabka_kunstmaan_email.message_type:
         class: Hgabka\KunstmaanEmailBundle\Form\MessageAdminType
-        arguments: ["@doctrine.orm.entity_manager", "@security.authorization_checker"]
+        arguments: ["@doctrine.orm.entity_manager", "@hgabka_kunstmaan_email.mail_builder", "@security.authorization_checker"]
         tags:
             - { name: form.type }
 
