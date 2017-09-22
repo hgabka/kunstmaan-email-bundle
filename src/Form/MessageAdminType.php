@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Hgabka\KunstmaanEmailBundle\Form;
 
 use A2lix\TranslationFormBundle\Form\Type\TranslationsType;
@@ -116,12 +115,14 @@ class MessageAdminType extends AbstractType
                     ->getRepository('HgabkaKunstmaanEmailBundle:MessageList')
                     ->getDefaultList()
                 ;
-                $messageList = $this->manager
-                    ->getRepository('HgabkaKunstmaanEmailBundle:MessageSendList')
-                    ->findForMessageAndList($message, $list)
-                ;
+                if ($message->getId()) {
+                    $messageList = $this->manager
+                        ->getRepository('HgabkaKunstmaanEmailBundle:MessageSendList')
+                        ->findForMessageAndList($message, $list)
+                    ;
+                }
 
-                if (!$messageList) {
+                if (empty($messageList)) {
                     $messageList = new MessageSendList();
                     $this->manager->persist($messageList);
                 }
