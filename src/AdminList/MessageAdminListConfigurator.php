@@ -3,11 +3,12 @@
 namespace Hgabka\KunstmaanEmailBundle\AdminList;
 
 use Doctrine\ORM\EntityManager;
+use Hgabka\KunstmaanEmailBundle\AdminList\ItemAction\MessageCopyItemListAction;
 use Hgabka\KunstmaanEmailBundle\AdminList\ItemAction\MessageSendItemAction;
 use Hgabka\KunstmaanEmailBundle\AdminList\ItemAction\MessageSendItemListAction;
 use Hgabka\KunstmaanEmailBundle\AdminList\ItemAction\MessageTestmailItemListAction;
 use Hgabka\KunstmaanEmailBundle\AdminList\ItemAction\MessageUnprepareItemListAction;
-use Hgabka\KunstmaanEmailBundle\Entity\Message;
+use Hgabka\KunstmaanEmailBundle\AdminList\ItemAction\MessageWebItemListAction;
 use Hgabka\KunstmaanEmailBundle\Form\MessageAdminType;
 use Hgabka\KunstmaanEmailBundle\Helper\MailBuilder;
 use Hgabka\KunstmaanEmailBundle\Security\EmailVoter;
@@ -64,6 +65,8 @@ class MessageAdminListConfigurator extends AbstractDoctrineORMAdminListConfigura
             $this->addItemAction(new MessageSendItemListAction());
             $this->addItemAction(new MessageUnprepareItemListAction());
             $this->addItemAction(new MessageTestmailItemListAction());
+            $this->addItemAction(new MessageWebItemListAction());
+            $this->addItemAction(new MessageCopyItemListAction());
         } else {
             $this->addItemAction(new MessageSendItemAction());
         }

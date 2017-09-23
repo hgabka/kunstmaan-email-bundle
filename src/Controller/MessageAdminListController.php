@@ -3,6 +3,10 @@
 namespace Hgabka\KunstmaanEmailBundle\Controller;
 
 use Hgabka\KunstmaanEmailBundle\AdminList\MessageAdminListConfigurator;
+use Hgabka\KunstmaanEmailBundle\Entity\Attachment;
+use Hgabka\KunstmaanEmailBundle\Entity\Message;
+use Hgabka\KunstmaanEmailBundle\Entity\MessageSendList;
+use Hgabka\KunstmaanEmailBundle\Enum\MessageStatusEnum;
 use Hgabka\KunstmaanEmailBundle\Form\MessageMailType;
 use Hgabka\KunstmaanEmailBundle\Form\MessageSendType;
 use Kunstmaan\AdminBundle\Event\AdaptSimpleFormEvent;
@@ -17,6 +21,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * The admin list controller for Setting.
@@ -333,5 +338,79 @@ class MessageAdminListController extends AdminListController
         return $this->render('HgabkaKunstmaanEmailBundle:AdminList:Message/testmail.html.twig', [
             'form' => $form->createView(), 'entity' => $helper, 'adminlistconfigurator' => $configurator,
         ]);
+    }
+
+    /**
+     * The testmail action.
+     *
+     * @param int $id
+     *
+     * @Route("/{id}/copy", requirements={"id" = "\d+"}, name="hgabkakunstmaanemailbundle_admin_message_copy")
+     * @Method({"GET"})
+     *
+     * @return Response
+     */
+    public function copyAction(Request $request, $id)
+    {
+        $this->denyAccessUnlessGranted($this->container->getParameter('hgabka_kunstmaan_banner.editor_role'));
+        // @var $em EntityManager
+        $em = $this->getEntityManager();
+        $configurator = $this->getAdminListConfigurator();
+
+        $helper = $em->getRepository($configurator->getRepositoryName())->findOneById($id);
+        if (null === $helper) {
+            throw new NotFoundHttpException('Entity not found.');
+        }
+        $utils = $this->get('hgabka_kunstmaan_extension.kuma_utils');
+
+        $arr = $utils->entityToArray($helper, 0);
+        unset($arr['id'], $arr['createdAt'], $arr['updatedAt']);
+        $arr['sendAt'] = null;
+        $arr['status'] = MessageStatusEnum::STATUS_INIT;
+
+        $message = new Message();
+        $utils->entityFromArray($message, $arr);
+        $message
+            ->setSentMail(0)
+            ->setSentFail(0)
+            ->setSentSuccess(0)
+        ;
+
+        foreach ($utils->getAvailableLocales() as $locale) {
+            $message->translate($locale)->setSubject($helper->translate($locale)->getSubject());
+            $message->translate($locale)->setContentText($helper->translate($locale)->getContentText());
+            $message->translate($locale)->setContentHtml($helper->translate($locale)->getContentHtml());
+        }
+
+        $em = $this->getDoctrine()->getManager();
+        $em->persist($message);
+        $em->flush();
+
+        $attachments = $em->getRepository('HgabkaKunstmaanEmailBundle:Attachment')->getByMessage($helper);
+        foreach ($attachments as $attachment) {
+            $attArr = $utils->entityToArray($attachment, 0);
+            unset($attArr['id'], $attArr['ownerId'], $attArr['createdAt'], $attArr['updatedAt']);
+
+            $newAttachment = new Attachment();
+            $utils->entityFromArray($newAttachment, $attArr);
+
+            $newAttachment
+                ->setOwnerId($message->getId())
+                ->setMedia($attachment->getMedia())
+            ;
+
+            $em->persist($newAttachment);
+        }
+        foreach ($helper->getSendLists() as $sendList) {
+            $newList = new MessageSendList();
+            $newList->setList($sendList->getList());
+            $newList->setMessage($message);
+            $em->persist($newList);
+        }
+
+        $em->flush();
+        $this->get('session')->getFlashBag()->add('success', 'hgabka_kuma_email.messages.copy_success');
+
+        return $this->redirectToRoute('hgabkakunstmaanemailbundle_admin_message');
     }
 }

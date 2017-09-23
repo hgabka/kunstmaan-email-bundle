@@ -24,6 +24,8 @@ hgabka_kuma_email:
         email: Email
         locale: Language
         testmail: Test mail
+        webversion: Web version
+        copy: Duplicate
 
     tabs:
         general: General data
@@ -64,6 +66,7 @@ hgabka_kuma_email:
         unprepare_success: The message has been unprepared
         testmail_success: Mail has been sent successfully
         testmail_error: The mail has not been sent as the form contains errors
+        copy_success: Message has been copied successfully
 
     statuses:
         init: Being edited

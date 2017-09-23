@@ -76,6 +76,27 @@ class SubscriptionManager
 
     public function deleteSubscription($email, $lists = null)
     {
+        $em = $this->doctrine->getManager();
+        $existing = $em->getRepository('HgabkaKunstmaanEmailBundle:MessageSubscriber')->findOneByEmail($email);
+
+        if (!$existing) {
+            return;
+        }
+
+        if (null === $lists) {
+            $em->remove($existing);
+            $em->flush();
+
+            return;
+        }
+        $subscrRepo = $em->getRepository('HgabkaKunstmaanEmailBundle:MessageListSubscription');
+
+        foreach ($this->getListsFromParams($lists) as $list) {
+            $subscr = $subscrRepo->findForSubscriberAndList($existing, $list);
+            $em->remove($subscr);
+        }
+
+        $em->flush();
     }
 
     public function generateSubscriberToken(MessageSubscriber $subscriber)

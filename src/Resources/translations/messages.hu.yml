@@ -24,6 +24,8 @@ hgabka_kuma_email:
         email: Email cím
         locale: Nyelv
         testmail: Tesztüzenet
+        webversion: Webes változat
+        copy: Duplikálás
 
     tabs:
         general: Általános adatok
@@ -43,6 +45,7 @@ hgabka_kuma_email:
 
     titles:
         menu: Emailek
+        unsubscribe: Hírlevél leiratkozás
         message:
             send: Körlevél küldése
             list: Körlevelek
@@ -64,6 +67,8 @@ hgabka_kuma_email:
         unprepare_success: A körlevél küldése sikeresen visszavonva
         testmail_success: A levél sikeresen elküldve
         testmail_error: A levelet nem sikerült elküldeni, mert az űrlap hibákat tartalmaz
+        unsubscribe_success: Sikeresen leiratkozott hírlevelünkről
+        copy_success: Az üzenet sikeresen lemásolva
 
     statuses:
         init: Szerkesztés alatt

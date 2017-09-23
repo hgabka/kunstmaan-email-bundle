@@ -348,6 +348,22 @@ class MailBuilder
                 '%%email%%' => isset($params['email']) ? $params['email'] : '',
                 '%%host%%' => $this->kumaUtils->getSchemeAndHttpHost(),
             ]);
+        } elseif (strlen($bodyHtml) > 0 && (false !== $this->config['layout_file'] || !empty($parameters['layout_file']))) {
+            $layoutFile = !empty($parameters['layout_file']) || (isset($parameters['layout_file']) && false === $parameters['layout_file']) ? $parameters['layout_file'] : $this->config['layout_file'];
+
+            if (false !== $layoutFile && !is_file($layoutFile)) {
+                $layoutFile = $this->paramSubstituter->getDefaultLayoutPath();
+            }
+
+            if (!empty($layoutFile)) {
+                $layoutFile = strtr($layoutFile, ['%culture%' => $culture]);
+                $html = @file_get_contents($layoutFile);
+            } else {
+                $html = null;
+            }
+            if (!empty($html)) {
+                $bodyHtml = $this->applyLayout($html, $subject, $bodyHtml, isset($params['nev']) ? $params['nev'] : '', isset($params['email']) ? $params['email'] : '');
+            }
         }
 
         if (strlen($bodyText) > 0) {
