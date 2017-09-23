@@ -8,6 +8,11 @@ KunstmaanEmailBundle_message_admin_routes:
     type:     annotation
     prefix:   /admin/messages
 
+KunstmaanEmailBundle_message_subscriber_admin_routes:
+    resource: '@HgabkaKunstmaanEmailBundle/Controller/MessageSubscriberAdminListController.php'
+    type:     annotation
+    prefix:   /admin/subscribers
+
 KunstmaanEmailBundle_message_routes:
     resource: '@HgabkaKunstmaanEmailBundle/Controller/MessageController.php'
     type:     annotation

@@ -50,7 +50,7 @@ class EmailMenuAdaptor implements MenuAdaptorInterface
             $menuItem = new TopMenuItem($menu);
             $menuItem->setRoute('hgabkakunstmaanemailbundle_admin_emailtemplate');
             $menuItem->setUniqueId('email');
-            $menuItem->setLabel('Emailek');
+            $menuItem->setLabel('hgabka_kuma_email.titles.menu');
             $menuItem->setParent($parent);
 
             $newChildren = [];
@@ -77,7 +77,7 @@ class EmailMenuAdaptor implements MenuAdaptorInterface
                 $menuItem
                     ->setRoute('hgabkakunstmaanemailbundle_admin_emailtemplate')
                     ->setUniqueId('email_template')
-                    ->setLabel('Email sablonok')
+                    ->setLabel('hgabka_kuma_email.titles.email_template.list')
                     ->setParent($parent)
                 ;
                 if (0 === stripos($request->attributes->get('_route'), $menuItem->getRoute())) {
@@ -91,7 +91,7 @@ class EmailMenuAdaptor implements MenuAdaptorInterface
                 $menuItem
                     ->setRoute('hgabkakunstmaanemailbundle_admin_emailtemplate')
                     ->setUniqueId('email_template')
-                    ->setLabel('Email sablonok')
+                    ->setLabel('hgabka_kuma_email.titles.email_template.list')
                     ->setParent($parent)
                     ->setAppearInNavigation(false)
                 ;
@@ -107,7 +107,41 @@ class EmailMenuAdaptor implements MenuAdaptorInterface
                 $menuItem
                     ->setRoute('hgabkakunstmaanemailbundle_admin_message')
                     ->setUniqueId('message')
-                    ->setLabel('Körlevelek')
+                    ->setLabel('hgabka_kuma_email.titles.message.list')
+                    ->setParent($parent)
+                ;
+                if (0 === stripos($request->attributes->get('_route'), $menuItem->getRoute()) &&
+                    false === stripos($request->attributes->get('_route'), 'hgabkakunstmaanemailbundle_admin_messagesubscriber')
+                ) {
+                    $menuItem->setActive(true);
+                    $parent->setActive(true);
+                }
+
+                $children[] = $menuItem;
+
+                $menuItem = new TopMenuItem($menu);
+                $menuItem
+                    ->setRoute('hgabkakunstmaanemailbundle_admin_message')
+                    ->setUniqueId('message')
+                    ->setLabel('hgabka_kuma_email.titles.message.list')
+                    ->setParent($parent)
+                    ->setAppearInNavigation(false)
+                ;
+
+                if (0 === stripos($request->attributes->get('_route'), $menuItem->getRoute()) &&
+                    false === stripos($request->attributes->get('_route'), 'hgabkakunstmaanemailbundle_admin_messagesubscriber')
+                ) {
+                    $menuItem->setActive(true);
+                    $parent->setActive(true);
+                }
+                $children[] = $menuItem;
+            }
+            if ($this->config['subscribers_enabled']) {
+                $menuItem = new MenuItem($menu);
+                $menuItem
+                    ->setRoute('hgabkakunstmaanemailbundle_admin_messagesubscriber')
+                    ->setUniqueId('subscriber')
+                    ->setLabel('hgabka_kuma_email.titles.subscriber.list')
                     ->setParent($parent)
                 ;
                 if (0 === stripos($request->attributes->get('_route'), $menuItem->getRoute())) {
@@ -119,9 +153,9 @@ class EmailMenuAdaptor implements MenuAdaptorInterface
 
                 $menuItem = new TopMenuItem($menu);
                 $menuItem
-                    ->setRoute('hgabkakunstmaanemailbundle_admin_message')
-                    ->setUniqueId('message')
-                    ->setLabel('Körlevelek')
+                    ->setRoute('hgabkakunstmaanemailbundle_admin_messagesubscriber')
+                    ->setUniqueId('subscriber')
+                    ->setLabel('hgabka_kuma_email.titles.subscriber.list')
                     ->setParent($parent)
                     ->setAppearInNavigation(false)
                 ;

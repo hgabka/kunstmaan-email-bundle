@@ -5,6 +5,7 @@ namespace Hgabka\KunstmaanEmailBundle\AdminList;
 use Doctrine\ORM\EntityManager;
 use Hgabka\KunstmaanEmailBundle\AdminList\ItemAction\MessageSendItemAction;
 use Hgabka\KunstmaanEmailBundle\AdminList\ItemAction\MessageSendItemListAction;
+use Hgabka\KunstmaanEmailBundle\AdminList\ItemAction\MessageTestmailItemListAction;
 use Hgabka\KunstmaanEmailBundle\AdminList\ItemAction\MessageUnprepareItemListAction;
 use Hgabka\KunstmaanEmailBundle\Entity\Message;
 use Hgabka\KunstmaanEmailBundle\Form\MessageAdminType;
@@ -62,6 +63,7 @@ class MessageAdminListConfigurator extends AbstractDoctrineORMAdminListConfigura
         if ('hgabkakunstmaanemailbundle_admin_message' === $request->get('_route')) {
             $this->addItemAction(new MessageSendItemListAction());
             $this->addItemAction(new MessageUnprepareItemListAction());
+            $this->addItemAction(new MessageTestmailItemListAction());
         } else {
             $this->addItemAction(new MessageSendItemAction());
         }
@@ -149,7 +151,7 @@ class MessageAdminListConfigurator extends AbstractDoctrineORMAdminListConfigura
 
     public function getListTitle()
     {
-        return 'Körlevelek';
+        return 'hgabka_kuma_email.titles.message.list';
     }
 
     /**
@@ -159,7 +161,7 @@ class MessageAdminListConfigurator extends AbstractDoctrineORMAdminListConfigura
      */
     public function getEditTitle()
     {
-        return 'Körlevél szerkesztése';
+        return 'hgabka_kuma_email.titles.message.edit';
     }
 
     /**
@@ -169,7 +171,7 @@ class MessageAdminListConfigurator extends AbstractDoctrineORMAdminListConfigura
      */
     public function getNewTitle()
     {
-        return 'Új körlevél';
+        return 'hgabka_kuma_email.titles.message.new';
     }
 
     public function getTabFields()

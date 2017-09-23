@@ -105,7 +105,7 @@ class EmailTemplateAdminListConfigurator extends AbstractDoctrineORMAdminListCon
 
     public function getListTitle()
     {
-        return 'Email sablonok';
+        return 'hgabka_kuma_email.titles.email_template.list';
     }
 
     /**
@@ -115,7 +115,7 @@ class EmailTemplateAdminListConfigurator extends AbstractDoctrineORMAdminListCon
      */
     public function getEditTitle()
     {
-        return 'Email sablon szerkesztése';
+        return 'hgabka_kuma_email.titles.email_template.edit';
     }
 
     /**
@@ -125,7 +125,7 @@ class EmailTemplateAdminListConfigurator extends AbstractDoctrineORMAdminListCon
      */
     public function getNewTitle()
     {
-        return 'Új email sablon';
+        return 'hgabka_kuma_email.titles.email_template.new';
     }
 
     public function getTabFields()

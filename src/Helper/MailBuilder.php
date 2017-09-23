@@ -318,8 +318,8 @@ class MailBuilder
 
         $subscriber = $this->getSubscriberRepository()->findOneBy(['email' => $params['email']]);
 
-        $unsubscribeUrl = $subscriber ? $this->router->generate('hgabka_kunstmaan_email_message_unsubscribe', ['token' => $subscriber->getToken(), '_locale' => $culture], UrlGeneratorInterface::ABSOLUTE_URL) : '';
-        $unsubscribeLink = $subscriber ? '<a href="'.$unsubscribeUrl.'">'.$this->translator->trans('hgabka_kunstmaan_email.message_unsubscribe_default_text').'</a>' : '';
+        $unsubscribeUrl = $this->router->generate('hgabka_kunstmaan_email_message_unsubscribe', ['token' => $subscriber ? $subscriber->getToken() : 'XXX', '_locale' => $culture], UrlGeneratorInterface::ABSOLUTE_URL);
+        $unsubscribeLink = '<a href="'.$unsubscribeUrl.'">'.$this->translator->trans('hgabka_kunstmaan_email.message_unsubscribe_default_text').'</a>';
         $params['unsubscribe'] = $unsubscribeUrl;
         $params['unsubscribe_link'] = $unsubscribeLink;
 

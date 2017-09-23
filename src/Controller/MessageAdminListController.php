@@ -3,6 +3,7 @@
 namespace Hgabka\KunstmaanEmailBundle\Controller;
 
 use Hgabka\KunstmaanEmailBundle\AdminList\MessageAdminListConfigurator;
+use Hgabka\KunstmaanEmailBundle\Form\MessageMailType;
 use Hgabka\KunstmaanEmailBundle\Form\MessageSendType;
 use Kunstmaan\AdminBundle\Event\AdaptSimpleFormEvent;
 use Kunstmaan\AdminBundle\Event\Events;
@@ -268,7 +269,7 @@ class MessageAdminListController extends AdminListController
      * @Route("/{id}/unprepare", requirements={"id" = "\d+"}, name="hgabkakunstmaanemailbundle_admin_message_unprepare")
      * @Method({"GET"})
      *
-     * @return array
+     * @return Response
      */
     public function unprepareAction(Request $request, $id)
     {
@@ -288,5 +289,49 @@ class MessageAdminListController extends AdminListController
         $this->get('session')->getFlashBag()->add('success', 'hgabka_kuma_email.messages.unprepare_success');
 
         return $this->redirectToRoute('hgabkakunstmaanemailbundle_admin_message');
+    }
+
+    /**
+     * The testmail action.
+     *
+     * @param int $id
+     *
+     * @Route("/{id}/testmail", requirements={"id" = "\d+"}, name="hgabkakunstmaanemailbundle_admin_message_testmail")
+     * @Method({"GET"})
+     *
+     * @return Response
+     */
+    public function testmailAction(Request $request, $id)
+    {
+        $this->denyAccessUnlessGranted($this->container->getParameter('hgabka_kunstmaan_banner.editor_role'));
+        // @var $em EntityManager
+        $em = $this->getEntityManager();
+        $configurator = $this->getAdminListConfigurator();
+
+        $helper = $em->getRepository($configurator->getRepositoryName())->findOneById($id);
+        if (null === $helper) {
+            throw new NotFoundHttpException('Entity not found.');
+        }
+
+        $form = $this->createForm(MessageMailType::class);
+        if ($request->isMethod('POST')) {
+            $form->handleRequest($request);
+            if ($form->isValid()) {
+                $email = $form->getData()['email'];
+
+                $message = $this->get('hgabka_kunstmaan_email.mail_builder')
+                                ->createMessageMail($helper, [$email => 'XXX'], $form->getData()['locale'], false);
+
+                $this->get('mailer')->send($message);
+                $this->get('session')->getFlashBag()->add('success', 'hgabka_kuma_email.messages.testmail_success');
+
+                return $this->redirectToRoute('hgabkakunstmaanemailbundle_admin_message');
+            }
+            $this->get('session')->getFlashBag()->add('error', 'hgabka_kuma_email.messages.testmail_error');
+        }
+
+        return $this->render('HgabkaKunstmaanEmailBundle:AdminList:Message/testmail.html.twig', [
+            'form' => $form->createView(), 'entity' => $helper, 'adminlistconfigurator' => $configurator,
+        ]);
     }
 }

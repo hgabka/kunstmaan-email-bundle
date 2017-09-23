@@ -21,6 +21,9 @@ hgabka_kuma_email:
         send_at: Küldés ideje
         send_time: Küldési időpont
         unprepare: Küldés visszavonása
+        email: Email cím
+        locale: Nyelv
+        testmail: Tesztüzenet
 
     tabs:
         general: Általános adatok
@@ -39,11 +42,28 @@ hgabka_kuma_email:
         base_list: Alapértelmezett levelezőlista
 
     titles:
-        send: Körlevél küldése
+        menu: Emailek
+        message:
+            send: Körlevél küldése
+            list: Körlevelek
+            new: Új körlevél
+            edit: Körlevél szerkesztése
+            testmail: Tesztüzenet küldése
+        email_template:
+            list: Email sablonok
+            new: Új email sablon
+            edit: Email sablon szerkesztése
+        subscriber:
+            list: Feliratkozottak
+            new: Új feliratkozott
+            edit: Feliratkozott szerkesztése
+
     messages:
         prepare_success: A körlevél sikeresen küldésre jelölve
         prepare_error: A körlevél küldésre jelölése sikertelen volt, mert az űrlap hibákat tartalmaz
         unprepare_success: A körlevél küldése sikeresen visszavonva
+        testmail_success: A levél sikeresen elküldve
+        testmail_error: A levelet nem sikerült elküldeni, mert az űrlap hibákat tartalmaz
 
     statuses:
         init: Szerkesztés alatt

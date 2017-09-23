@@ -3,6 +3,7 @@
 namespace Hgabka\KunstmaanEmailBundle\Repository;
 
 use Doctrine\ORM\EntityRepository;
+use Hgabka\KunstmaanEmailBundle\Entity\EmailCampaign;
 use Hgabka\KunstmaanEmailBundle\Enum\QueueStatusEnum;
 
 class EmailQueueRepository extends EntityRepository
@@ -53,5 +54,25 @@ class EmailQueueRepository extends EntityRepository
     public function getNotSentQueuesForSend($limit = null)
     {
         return $this->getQueuesByStatus(QueueStatusEnum::STATUS_INIT);
+    }
+
+    /**
+     * @param null|EmailCampaign $campaign
+     *
+     * @return mixed
+     */
+    public function getQueues(EmailCampaign $campaign = null)
+    {
+        $qb = $this
+            ->createQueryBuilder('q')
+        ;
+        if ($campaign) {
+            $qb
+                ->where('q.campaign = :campaign')
+                ->setParameter('campaign', $campaign)
+            ;
+        }
+
+        return $qb->getQuery()->getResult();
     }
 }

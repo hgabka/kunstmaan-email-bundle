@@ -44,7 +44,7 @@ class QueueManager
     /** @var MailBuilder */
     protected $mailBuilder;
 
-    public function __construct(Registry $doctrine, \Swift_Mailer $mailer, MessageLogger $logger, MailBuilder $mailBuilder, array $bounceConfig, int $maxRetries, int $sendLimit, bool $loggingEnabled, int $deleteSentMessagesAfter)
+    public function __construct(Registry $doctrine, \Swift_Mailer $mailer, MessageLogger $logger, array $bounceConfig, int $maxRetries, int $sendLimit, bool $loggingEnabled, int $deleteSentMessagesAfter)
     {
         $this->doctrine = $doctrine;
         $this->mailer = $mailer;
@@ -54,7 +54,6 @@ class QueueManager
         $this->logger = $logger;
         $this->loggingEnabled = $loggingEnabled;
         $this->deleteSentMessagesAfter = $deleteSentMessagesAfter;
-        $this->mailBuilder = $mailBuilder;
     }
 
     /**
@@ -488,6 +487,22 @@ class QueueManager
     public function deleteEmailFromQueue($email)
     {
         $this->doctrine->getRepository('HgabkaKunstmaanEmailBundle:MessageQueue')->deleteEmailFromQueue($email);
+    }
+
+    public function deleteEmailFromEmailQueue($email, EmailCampaign $campaign = null, $withFlush = true)
+    {
+        $em = $this->doctrine->getManager();
+
+        $queues = $this->doctrine->getRepository('HgabkaKunstmaanEmailBundle:EmailQueue')->getQueues($campaign);
+        foreach ($queues as $queue) {
+            if ($queue->isForEmail($email)) {
+                $em->remove($queue);
+            }
+        }
+
+        if ($withFlush) {
+            $em->flush();
+        }
     }
 
     public function clearMessageQueue()

@@ -30,11 +30,11 @@ class HgabkaKunstmaanEmailExtension extends Extension
         $loggerDefinition->replaceArgument(1, $config['log_path']);
 
         $queueDefinition = $container->getDefinition('hgabka_kunstmaan_email.queue_manager');
-        $queueDefinition->replaceArgument(4, $config['bounce_checking']);
-        $queueDefinition->replaceArgument(5, $config['max_retries']);
-        $queueDefinition->replaceArgument(6, $config['send_limit']);
-        $queueDefinition->replaceArgument(7, $config['message_logging']);
-        $queueDefinition->replaceArgument(8, $config['delete_sent_messages_after']);
+        $queueDefinition->replaceArgument(3, $config['bounce_checking']);
+        $queueDefinition->replaceArgument(4, $config['max_retries']);
+        $queueDefinition->replaceArgument(5, $config['send_limit']);
+        $queueDefinition->replaceArgument(6, $config['message_logging']);
+        $queueDefinition->replaceArgument(7, $config['delete_sent_messages_after']);
 
         $substituterDefinition = $container->getDefinition('hgabka_kunstmaan_email.param_substituter');
         $substituterDefinition->replaceArgument(3, $config['template_var_chars']);
@@ -70,6 +70,9 @@ class HgabkaKunstmaanEmailExtension extends Extension
 
         $menuAdaptorDefinition = $container->getDefinition('hgabka_kunstmaan_email.menu.adaptor.email');
         $menuAdaptorDefinition->replaceArgument(1, $config);
+
+        $subscriptionManagerDefinition = $container->getDefinition('hgabka_kunstmaan_email.subscription_manager');
+        $subscriptionManagerDefinition->replaceArgument(2, $config['editable_lists']);
 
         $container->setParameter('hgabka_kunstmaan_email.editor_role', $config['editor_role']);
     }

@@ -3,7 +3,10 @@
 namespace Hgabka\KunstmaanEmailBundle\AdminList;
 
 use Doctrine\ORM\EntityManager;
+use Hgabka\KunstmaanEmailBundle\Form\MessageSubscriberAdminType;
+use Hgabka\KunstmaanEmailBundle\Helper\SubscriptionManager;
 use Hgabka\KunstmaanEmailBundle\Security\EmailVoter;
+use Hgabka\KunstmaanExtensionBundle\Helper\KumaUtils;
 use Kunstmaan\AdminBundle\Helper\Security\Acl\AclHelper;
 use Kunstmaan\AdminListBundle\AdminList\Configurator\AbstractDoctrineORMAdminListConfigurator;
 use Kunstmaan\AdminListBundle\AdminList\FilterType\ORM;
@@ -26,10 +29,10 @@ class MessageSubscriberAdminListConfigurator extends AbstractDoctrineORMAdminLis
      * @param string               $editorRole
      * @param AclHelper            $aclHelper   The acl helper
      */
-    public function __construct(EntityManager $em, AuthorizationChecker $authChecker, string $editorRole, AclHelper $aclHelper = null)
+    public function __construct(EntityManager $em, KumaUtils $kumaUtils, SubscriptionManager $subscriptionManager, AuthorizationChecker $authChecker, string $editorRole, AclHelper $aclHelper = null)
     {
         parent::__construct($em, $aclHelper);
-        $this->setAdminType(new MessageSubscriberAdminType($em, $authChecker));
+        $this->setAdminType(new MessageSubscriberAdminType($em, $kumaUtils, $subscriptionManager, $authChecker));
         $this->authChecker = $authChecker;
         $this->editorRole = $editorRole;
     }
@@ -48,8 +51,8 @@ class MessageSubscriberAdminListConfigurator extends AbstractDoctrineORMAdminLis
      */
     public function buildFilters()
     {
-        $this->addFilter('name', new ORM\StringFilterType('name', 't'), 'Név');
-        $this->addFilter('email', new ORM\StringFilterType('name', 't'), 'Név');
+        $this->addFilter('name', new ORM\StringFilterType('name'), 'hgabka_kuma_email.labels.name');
+        $this->addFilter('email', new ORM\StringFilterType('email'), 'hgabka_kuma_email.labels.email');
     }
 
     /**
@@ -77,7 +80,7 @@ class MessageSubscriberAdminListConfigurator extends AbstractDoctrineORMAdminLis
      */
     public function canAdd()
     {
-        return $this->authChecker->isGranted('ROLE_SUPER_ADMIN');
+        return $this->authChecker->isGranted($this->editorRole);
     }
 
     /**
@@ -92,7 +95,7 @@ class MessageSubscriberAdminListConfigurator extends AbstractDoctrineORMAdminLis
 
     public function canExport()
     {
-        return false;
+        return $this->authChecker->isGranted($this->editorRole);
     }
 
     /**
@@ -102,12 +105,12 @@ class MessageSubscriberAdminListConfigurator extends AbstractDoctrineORMAdminLis
      */
     public function canDelete($item)
     {
-        return $this->authChecker->isGranted('ROLE_SUPER_ADMIN');
+        return $this->authChecker->isGranted(EmailVoter::EDIT, $item);
     }
 
     public function getListTitle()
     {
-        return 'Email sablonok';
+        return 'hgabka_kuma_email.titles.subscriber.list';
     }
 
     /**
@@ -117,7 +120,7 @@ class MessageSubscriberAdminListConfigurator extends AbstractDoctrineORMAdminLis
      */
     public function getEditTitle()
     {
-        return 'Email sablon szerkesztése';
+        return 'hgabka_kuma_email.titles.subscriber.edit';
     }
 
     /**
@@ -127,6 +130,6 @@ class MessageSubscriberAdminListConfigurator extends AbstractDoctrineORMAdminLis
      */
     public function getNewTitle()
     {
-        return 'Új email sablon';
+        return 'hgabka_kuma_email.titles.subscriber.new';
     }
 }

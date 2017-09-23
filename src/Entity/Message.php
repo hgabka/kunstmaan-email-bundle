@@ -44,6 +44,7 @@ class Message extends AbstractEntity implements TranslatableInterface
 
     /**
      * @ORM\Column(name="from_email", type="string", length=255, nullable=true)
+     * @Assert\Email()
      */
     protected $fromEmail;
 
@@ -54,6 +55,7 @@ class Message extends AbstractEntity implements TranslatableInterface
 
     /**
      * @ORM\Column(name="mail_to", type="text", nullable=true)
+     * @Assert\Email()
      */
     protected $to;
 
@@ -92,14 +94,6 @@ class Message extends AbstractEntity implements TranslatableInterface
      * @ORM\JoinColumn(name="email_layout_id", referencedColumnName="id", onDelete="SET NULL")
      */
     protected $layout;
-
-    /**
-     * @var MessageQueue
-     *
-     * @ORM\OneToOne(targetEntity="Hgabka\KunstmaanEmailBundle\Entity\MessageQueue", inversedBy="message")
-     * @ORM\JoinColumn(name="message_queue_id", referencedColumnName="id", onDelete="SET NULL")
-     */
-    protected $queue;
 
     /**
      * @var int
@@ -419,26 +413,6 @@ class Message extends AbstractEntity implements TranslatableInterface
     public function setLocale($locale)
     {
         $this->locale = $locale;
-
-        return $this;
-    }
-
-    /**
-     * @return MessageQueue
-     */
-    public function getQueue()
-    {
-        return $this->queue;
-    }
-
-    /**
-     * @param MessageQueue $queue
-     *
-     * @return Message
-     */
-    public function setQueue($queue)
-    {
-        $this->queue = $queue;
 
         return $this;
     }

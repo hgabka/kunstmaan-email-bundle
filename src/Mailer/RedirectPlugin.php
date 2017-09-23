@@ -2,19 +2,13 @@
 
 namespace Hgabka\KunstmaanEmailBundle\Mailer;
 
-use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\Routing\RouterInterface;
-
 class RedirectPlugin extends \Swift_Plugins_RedirectingPlugin
 {
     /** @var array $redirectConfig */
     protected $redirectConfig;
 
-    /** @var RequestStack */
-    protected $requestStack;
-
-    /** @var RouterInterface */
-    protected $router;
+    /** @var KumaUtils */
+    protected $kumaUtils;
 
     /** @var bool */
     protected $debug;
@@ -46,6 +40,26 @@ class RedirectPlugin extends \Swift_Plugins_RedirectingPlugin
     }
 
     /**
+     * @return KumaUtils
+     */
+    public function getKumaUtils(): KumaUtils
+    {
+        return $this->kumaUtils;
+    }
+
+    /**
+     * @param KumaUtils $kumaUtils
+     *
+     * @return RedirectPlugin
+     */
+    public function setKumaUtils($kumaUtils)
+    {
+        $this->kumaUtils = $kumaUtils;
+
+        return $this;
+    }
+
+    /**
      * Set the recipient of all messages.
      *
      * @param mixed $recipient
@@ -66,51 +80,11 @@ class RedirectPlugin extends \Swift_Plugins_RedirectingPlugin
     }
 
     /**
-     * @return RequestStack
-     */
-    public function getRequestStack(): RequestStack
-    {
-        return $this->requestStack;
-    }
-
-    /**
-     * @param RequestStack $requestStack
-     *
-     * @return RedirectPlugin
-     */
-    public function setRequestStack($requestStack): RedirectPlugin
-    {
-        $this->requestStack = $requestStack;
-
-        return $this;
-    }
-
-    /**
      * @return bool
      */
     public function isDebug(): bool
     {
         return $this->debug;
-    }
-
-    /**
-     * @return RouterInterface
-     */
-    public function getRouter(): RouterInterface
-    {
-        return $this->router;
-    }
-
-    /**
-     * @param RouterInterface $router
-     *
-     * @return RedirectPlugin
-     */
-    public function setRouter($router)
-    {
-        $this->router = $router;
-
-        return $this;
     }
 
     /**
@@ -205,7 +179,7 @@ class RedirectPlugin extends \Swift_Plugins_RedirectingPlugin
         $redirectConfig = $this->redirectConfig;
         $hosts = isset($redirectConfig['hosts']) ? (!is_array($redirectConfig['hosts']) ? [$redirectConfig['hosts']] : $redirectConfig['hosts']) : [];
 
-        $ch = $this->requestStack->getCurrentRequest() ? $this->requestStack->getCurrentRequest()->getHost() : $this->router->getContext()->getHost();
+        $ch = $this->kumaUtils->getHost();
 
         $currentHost = strtolower($ch);
 

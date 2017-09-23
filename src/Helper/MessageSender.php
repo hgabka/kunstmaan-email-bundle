@@ -542,11 +542,6 @@ class MessageSender
         return $this->sendTemplateMessage($template, $params, $culture);
     }
 
-    public function deleteEmailFromQueue($email)
-    {
-        return $this->getQueueRepository()->deleteEmailFromQueue($email);
-    }
-
     public function getSendDataForMessage(Message $message)
     {
         $data = $this->doctrine
@@ -575,6 +570,11 @@ class MessageSender
     protected function getQueueRepository()
     {
         return $this->doctrine->getRepository('HgabkaKunstmaanEmailBundle:MessageQueue');
+    }
+
+    protected function getEmailQueueRepository()
+    {
+        return $this->doctrine->getRepository('HgabkaKunstmaanEmailBundle:EmailQueue');
     }
 
     protected function getMessageRepository()

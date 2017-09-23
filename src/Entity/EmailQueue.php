@@ -80,6 +80,166 @@ class EmailQueue extends AbstractQueue
     protected $campaign;
 
     /**
+     * @return string
+     */
+    public function getFrom(): string
+    {
+        return $this->from;
+    }
+
+    /**
+     * @param string $from
+     *
+     * @return EmailQueue
+     */
+    public function setFrom($from)
+    {
+        $this->from = $from;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTo(): string
+    {
+        return $this->to;
+    }
+
+    /**
+     * @param string $to
+     *
+     * @return EmailQueue
+     */
+    public function setTo($to)
+    {
+        $this->to = $to;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCc(): string
+    {
+        return $this->cc;
+    }
+
+    /**
+     * @param string $cc
+     *
+     * @return EmailQueue
+     */
+    public function setCc($cc)
+    {
+        $this->cc = $cc;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getBcc(): string
+    {
+        return $this->bcc;
+    }
+
+    /**
+     * @param string $bcc
+     *
+     * @return EmailQueue
+     */
+    public function setBcc($bcc)
+    {
+        $this->bcc = $bcc;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSubject(): string
+    {
+        return $this->subject;
+    }
+
+    /**
+     * @param string $subject
+     *
+     * @return EmailQueue
+     */
+    public function setSubject($subject)
+    {
+        $this->subject = $subject;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getContentText(): string
+    {
+        return $this->contentText;
+    }
+
+    /**
+     * @param string $contentText
+     *
+     * @return EmailQueue
+     */
+    public function setContentText($contentText)
+    {
+        $this->contentText = $contentText;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getContentHtml(): string
+    {
+        return $this->contentHtml;
+    }
+
+    /**
+     * @param string $contentHtml
+     *
+     * @return EmailQueue
+     */
+    public function setContentHtml($contentHtml)
+    {
+        $this->contentHtml = $contentHtml;
+
+        return $this;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getSendAt(): \DateTime
+    {
+        return $this->sendAt;
+    }
+
+    /**
+     * @param \DateTime $sendAt
+     *
+     * @return EmailQueue
+     */
+    public function setSendAt($sendAt)
+    {
+        $this->sendAt = $sendAt;
+
+        return $this;
+    }
+
+    /**
      * @return EmailCampaign
      */
     public function getCampaign()

@@ -21,6 +21,9 @@ hgabka_kuma_email:
         send_at: Send time
         send_time: Time
         unprepare: Undo sending
+        email: Email
+        locale: Language
+        testmail: Test mail
 
     tabs:
         general: General data
@@ -39,12 +42,28 @@ hgabka_kuma_email:
         base_list: Basic mailing list
 
     titles:
-        send: Send messages
+        menu: Emails
+        message:
+            send: Send messages
+            list: Mass messages
+            new:  New mass message
+            edit: Edit mass message
+            testmail: Sending test mail
+        email_template:
+            list: Email templates
+            new: New email template
+            edit: Edit email template
+        subscriber:
+            list: Subscribers
+            new: New subscriber
+            edit: Edit subscriber
 
     messages:
         prepare_success: The message has been prepared for send successfully
         prepare_error: The preparation for send has not been undone as the form contains errors
         unprepare_success: The message has been unprepared
+        testmail_success: Mail has been sent successfully
+        testmail_error: The mail has not been sent as the form contains errors
 
     statuses:
         init: Being edited

@@ -2,7 +2,7 @@
 {% block admin_page_title %}
     <div class="col-sm-6 col-md-8">
         <h1 class="app__content__header__title">
-                {{ 'hgabka_kuma_email.titles.message.send' | trans }}
+            {{ 'hgabka_kuma_email.titles.message.testmail' | trans }}
         </h1>
     </div>
 {% endblock %}
@@ -17,12 +17,5 @@
 {% endblock %}
 
 {% block form_content %}
-    {{ form_row(form.sendTime.type) }}
-    {{ form_row(form.sendTime.time) }}
     {{ form_rest(form) }}
-{% endblock %}
-
-{% block extrajavascript %}
-    {{ parent() }}
-    <script src="{{ asset('/bundles/hgabkakunstmaanemail/js/message_send.js') }}"></script>
 {% endblock %}
