@@ -52,7 +52,7 @@ class EmailFixtures extends AbstractFixture implements OrderedFixtureInterface, 
     {
         $list = new MessageList();
         $list
-            ->setName($this->container->get('translator')->trans('hgabka_kuma_email.fictures.base_list', [], null, $this->container->getParameter('defaultlocale')))
+            ->setName($this->container->get('translator')->trans('hgabka_kuma_email.fixtures.base_list', [], null, $this->container->getParameter('defaultlocale')))
             ->setIsDefault(true)
             ->setIsPublic(true)
         ;
