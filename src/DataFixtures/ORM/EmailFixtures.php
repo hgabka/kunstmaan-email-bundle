@@ -39,12 +39,12 @@ class EmailFixtures extends AbstractFixture implements OrderedFixtureInterface, 
         $this->createAttachmentFolder();
         $output = new ConsoleOutput();
         $output->writeln([
-            "<comment>  > Attachment folder created</comment>",
+            '<comment>  > Attachment folder created</comment>',
         ]);
 
         $this->createBaseRecipientList();
         $output->writeln([
-            "<comment>  > Default recipient list created</comment>",
+            '<comment>  > Default recipient list created</comment>',
         ]);
     }
 
