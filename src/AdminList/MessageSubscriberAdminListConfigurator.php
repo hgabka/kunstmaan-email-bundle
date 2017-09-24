@@ -132,4 +132,9 @@ class MessageSubscriberAdminListConfigurator extends AbstractDoctrineORMAdminLis
     {
         return 'hgabka_kuma_email.titles.subscriber.new';
     }
+
+    public function getDefaultSort()
+    {
+        return 'name';
+    }
 }

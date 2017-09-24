@@ -7,6 +7,7 @@ use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
 use Hgabka\KunstmaanEmailBundle\Entity\MessageList;
 use Kunstmaan\MediaBundle\Entity\Folder;
+use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Translation\TranslatorInterface;
@@ -36,14 +37,22 @@ class EmailFixtures extends AbstractFixture implements OrderedFixtureInterface, 
         $this->manager = $manager;
 
         $this->createAttachmentFolder();
+        $output = new ConsoleOutput();
+        $output->writeln([
+            "<comment>  > Attachment folder created</comment>",
+        ]);
+
         $this->createBaseRecipientList();
+        $output->writeln([
+            "<comment>  > Default recipient list created</comment>",
+        ]);
     }
 
     public function createBaseRecipientList()
     {
         $list = new MessageList();
         $list
-            ->setName($translator->trans('hgabka_kuma_email.fictures.base_list', [], null, $this->container->getParameter('defaultlocale')))
+            ->setName($this->container->get('translator')->trans('hgabka_kuma_email.fictures.base_list', [], null, $this->container->getParameter('defaultlocale')))
             ->setIsDefault(true)
             ->setIsPublic(true)
         ;
