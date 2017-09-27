@@ -99,6 +99,7 @@ class Configuration implements ConfigurationInterface
                 ->end()
 
                 ->arrayNode('add_recipients')
+                  ->addDefaultsIfNotSet()
                   ->children()
                       ->arrayNode('cc')
                         ->prototype('scalar')->end()
