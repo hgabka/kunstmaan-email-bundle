@@ -166,6 +166,28 @@ class EmailMenuAdaptor implements MenuAdaptorInterface
                 }
                 $children[] = $menuItem;
             }
+        } elseif ('email_template' === $parent->getUniqueId()) {
+            $this->addMenuForSubRoute($menu, $parent, 'Email sablon szerkesztése', 'hgabkakunstmaanemailbundle_admin_emailtemplate_edit', $children, $request);
+            $this->addMenuForSubRoute($menu, $parent, 'Új email sablon', 'hgabkakunstmaanemailbundle_admin_emailtemplate_add', $children, $request);
+        } elseif ('message' === $parent->getUniqueId()) {
+            $this->addMenuForSubRoute($menu, $parent, 'Körlevél szerkesztése', 'hgabkakunstmaanemailbundle_admin_message_edit', $children, $request);
+            $this->addMenuForSubRoute($menu, $parent, 'Új körlevél', 'hgabkakunstmaanemailbundle_admin_message_add', $children, $request);
+        } elseif ('subscriber' === $parent->getUniqueId()) {
+            $this->addMenuForSubRoute($menu, $parent, 'Feliratkozott szerkesztése', 'hgabkakunstmaanemailbundle_admin_messagesubscriber_edit', $children, $request);
+            $this->addMenuForSubRoute($menu, $parent, 'Új feliratkozott', 'hgabkakunstmaanemailbundle_admin_messagesubscriber_add', $children, $request);
         }
     }
+
+    protected function addMenuForSubRoute($menu, $parent, $label, $route, &$children, $request) {
+        $menuItem = new MenuItem($menu);
+        $menuItem->setUniqueId($route);
+        $menuItem->setRoute($route);
+        $menuItem->setLabel($label)->setAppearInNavigation(false)->setParent($parent);
+        if (0 === stripos($request->attributes->get('_route'), $menuItem->getRoute())) {
+            $menuItem->setActive(true);
+        }
+
+        $children[] = $menuItem;
+    }
+
 }
