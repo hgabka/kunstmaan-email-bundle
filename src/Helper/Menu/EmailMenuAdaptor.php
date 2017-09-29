@@ -178,7 +178,8 @@ class EmailMenuAdaptor implements MenuAdaptorInterface
         }
     }
 
-    protected function addMenuForSubRoute($menu, $parent, $label, $route, &$children, $request) {
+    protected function addMenuForSubRoute($menu, $parent, $label, $route, &$children, $request)
+    {
         $menuItem = new MenuItem($menu);
         $menuItem->setUniqueId($route);
         $menuItem->setRoute($route);
@@ -189,5 +190,4 @@ class EmailMenuAdaptor implements MenuAdaptorInterface
 
         $children[] = $menuItem;
     }
-
 }
