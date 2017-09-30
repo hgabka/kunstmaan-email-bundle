@@ -150,3 +150,5 @@ services:
         arguments: ['@hgabka_kunstmaan_email.subscription_manager']
         tags:
             - { name: doctrine.event_subscriber, connection: default }
+
+    Hgabka\KunstmaanEmailBundle\Helper\MessageSender: "@hgabka_kunstmaan_email.message_sender"
