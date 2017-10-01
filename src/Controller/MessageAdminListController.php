@@ -95,7 +95,6 @@ class MessageAdminListController extends AdminListController
         $helper = new $classname();
         $helper = $configurator->decorateNewEntity($helper);
 
-
         $event = new AdaptSimpleFormEvent($request, $configurator->getAdminType($helper), $helper, $configurator->getAdminTypeOptions());
         $event = $this->container->get('event_dispatcher')->dispatch(Events::ADAPT_SIMPLE_FORM, $event);
         $tabPane = $event->getTabPane();
