@@ -2,7 +2,7 @@
 
 namespace Hgabka\KunstmaanEmailBundle\Helper;
 
-use Doctrine\Bundle\DoctrineBundle\Registry;
+use Doctrine\Common\Persistence\ManagerRegistry;
 use Hgabka\KunstmaanEmailBundle\Entity\EmailTemplate;
 use Hgabka\KunstmaanEmailBundle\Entity\Message;
 use Hgabka\KunstmaanEmailBundle\Entity\MessageSendList;
@@ -13,7 +13,7 @@ use Symfony\Component\Translation\TranslatorInterface;
 
 class MessageSender
 {
-    /** @var Registry */
+    /** @var ManagerRegistry */
     protected $doctrine;
 
     /** @var array */
@@ -40,7 +40,7 @@ class MessageSender
     /**
      * MailBuilder constructor.
      *
-     * @param Registry            $doctrine
+     * @param ManagerRegistry            $doctrine
      * @param \Swift_Mailer       $mailer
      * @param QueueManager        $queueManager
      * @param TranslatorInterface $translator
@@ -48,7 +48,7 @@ class MessageSender
      * @param MailBuilder         $mailBuilder
      */
     public function __construct(
-        Registry $doctrine,
+        ManagerRegistry $doctrine,
         \Swift_Mailer $mailer,
         QueueManager $queueManager,
         TranslatorInterface $translator,

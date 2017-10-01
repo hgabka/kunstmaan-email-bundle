@@ -152,3 +152,5 @@ services:
             - { name: doctrine.event_subscriber, connection: default }
 
     Hgabka\KunstmaanEmailBundle\Helper\MessageSender: "@hgabka_kunstmaan_email.message_sender"
+    Hgabka\KunstmaanEmailBundle\Helper\ParamSubstituter: "@hgabka_kunstmaan_email.param_substituter"
+    Hgabka\KunstmaanEmailBundle\Helper\MailBuilder: "@hgabka_kunstmaan_email.mail_builder"
