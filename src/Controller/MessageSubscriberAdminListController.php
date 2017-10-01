@@ -121,4 +121,15 @@ class MessageSubscriberAdminListController extends AdminListController
     {
         return parent::doExportAction($this->getAdminListConfigurator(), $_format, $request);
     }
+
+
+    /**
+     * The pagesize action.
+     *
+     * @Route("/set-pagesize", name="hgabkakunstmaanemailbundle_admin_messagesubscriber_set_pagesize")
+     */
+    public function setPagesizeAction(Request $request)
+    {
+        return parent::doSetPagesizeAction($this->getAdminListConfigurator(), $request);
+    }
 }

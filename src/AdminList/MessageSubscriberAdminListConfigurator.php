@@ -139,4 +139,14 @@ class MessageSubscriberAdminListConfigurator extends AbstractDoctrineORMAdminLis
     {
         return 'name';
     }
+
+    public function getLimit()
+    {
+        return 20;
+    }
+
+    public function getPagesizeOptions()
+    {
+        return [20, 50, 100];
+    }
 }
