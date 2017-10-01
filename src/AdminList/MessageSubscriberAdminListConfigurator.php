@@ -24,15 +24,17 @@ class MessageSubscriberAdminListConfigurator extends AbstractDoctrineORMAdminLis
     private $editorRole;
 
     /**
-     * @param EntityManager        $em          The entity manager
+     * @param EntityManager $em The entity manager
+     * @param KumaUtils $kumaUtils
+     * @param SubscriptionManager $subscriptionManager
      * @param AuthorizationChecker $authChecker
-     * @param string               $editorRole
-     * @param AclHelper            $aclHelper   The acl helper
+     * @param string $editorRole
+     * @param AclHelper $aclHelper The acl helper
      */
     public function __construct(EntityManager $em, KumaUtils $kumaUtils, SubscriptionManager $subscriptionManager, AuthorizationChecker $authChecker, string $editorRole, AclHelper $aclHelper = null)
     {
         parent::__construct($em, $aclHelper);
-        $this->setAdminType(new MessageSubscriberAdminType($em, $kumaUtils, $subscriptionManager, $authChecker));
+        $this->setAdminType(MessageSubscriberAdminType::class);
         $this->authChecker = $authChecker;
         $this->editorRole = $editorRole;
     }

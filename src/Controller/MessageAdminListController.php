@@ -81,7 +81,7 @@ class MessageAdminListController extends AdminListController
 
         // @var EntityManager $em
         $em = $this->getEntityManager();
-        $repo = $em->getRepository($configurator->getRepositoryName());
+
         $entityName = null;
         if (isset($type)) {
             $entityName = $type;
@@ -95,17 +95,12 @@ class MessageAdminListController extends AdminListController
         $helper = new $classname();
         $helper = $configurator->decorateNewEntity($helper);
 
-        $formType = $configurator->getAdminType($helper);
-        if (!is_object($formType) && is_string($formType)) {
-            $formType = $this->container->get($formType);
-        }
-        $formFqn = get_class($formType);
 
-        $event = new AdaptSimpleFormEvent($request, $formFqn, $helper, $configurator->getAdminTypeOptions());
+        $event = new AdaptSimpleFormEvent($request, $configurator->getAdminType($helper), $helper, $configurator->getAdminTypeOptions());
         $event = $this->container->get('event_dispatcher')->dispatch(Events::ADAPT_SIMPLE_FORM, $event);
         $tabPane = $event->getTabPane();
 
-        $form = $this->createForm($formFqn, $helper, $configurator->getAdminTypeOptions());
+        $form = $this->createForm($configurator->getAdminType($helper), $helper, $configurator->getAdminTypeOptions());
 
         if ($request->isMethod('POST')) {
             if ($tabPane) {

@@ -29,7 +29,7 @@ class EmailTemplateAdminListConfigurator extends AbstractDoctrineORMAdminListCon
     public function __construct(EntityManager $em, AuthorizationChecker $authChecker, string $editorRole, AclHelper $aclHelper = null)
     {
         parent::__construct($em, $aclHelper);
-        $this->setAdminType(new EmailTemplateAdminType($em, $authChecker));
+        $this->setAdminType(EmailTemplateAdminType::class);
         $this->authChecker = $authChecker;
         $this->editorRole = $editorRole;
     }

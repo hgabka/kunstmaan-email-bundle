@@ -35,13 +35,17 @@ class MessageAdminListConfigurator extends AbstractDoctrineORMAdminListConfigura
     private $requestStack;
 
     /**
-     * @param EntityManager $em        The entity manager
-     * @param AclHelper     $aclHelper The acl helper
+     * @param EntityManager $em The entity manager
+     * @param AuthorizationChecker $authChecker
+     * @param MailBuilder $mailBuilder
+     * @param RequestStack $requestStack
+     * @param string $editorRole
+     * @param AclHelper $aclHelper The acl helper
      */
     public function __construct(EntityManager $em, AuthorizationChecker $authChecker, MailBuilder $mailBuilder, RequestStack $requestStack, string $editorRole, AclHelper $aclHelper = null)
     {
         parent::__construct($em, $aclHelper);
-        $this->setAdminType(new MessageAdminType($em, $mailBuilder, $authChecker));
+        $this->setAdminType(MessageAdminType::class);
         $this->authChecker = $authChecker;
         $this->editorRole = $editorRole;
         $this->mailBuilder = $mailBuilder;
