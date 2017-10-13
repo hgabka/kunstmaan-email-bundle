@@ -42,7 +42,7 @@ class ParamSubstituter
         $params = $this->addVarChars($params);
 
         foreach ($params as $key => $param) {
-            if (is_string($param)) {
+            if (!is_array($param)) {
                 $text = strtr($text, [$key => $param]);
             } else {
                 if (!isset($param['value']) || !is_string($param['value'])) {
@@ -53,7 +53,7 @@ class ParamSubstituter
                     $text = str_replace($key, $param['value'], $text);
                 } else {
                     $value = $param['value'];
-                    $pattern = '/<p*>(.*)'.preg_quote($key, '/').'(.*)<\/p>/i';
+                    $pattern = '/<p*>(\s*)'.preg_quote($key, '/').'(\s*)<\/p>/i';
                     $text = preg_replace($pattern, $value, $text);
                 }
             }
