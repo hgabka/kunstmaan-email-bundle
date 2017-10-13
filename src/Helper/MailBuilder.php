@@ -39,7 +39,7 @@ class MailBuilder
     /**
      * MailBuilder constructor.
      *
-     * @param ManagerRegistry            $doctrine
+     * @param ManagerRegistry     $doctrine
      * @param RequestStack        $requestStack
      * @param ParamSubstituter    $paramSubstituter
      * @param TranslatorInterface $translator

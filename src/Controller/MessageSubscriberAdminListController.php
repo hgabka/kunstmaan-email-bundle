@@ -122,7 +122,6 @@ class MessageSubscriberAdminListController extends AdminListController
         return parent::doExportAction($this->getAdminListConfigurator(), $_format, $request);
     }
 
-
     /**
      * The pagesize action.
      *

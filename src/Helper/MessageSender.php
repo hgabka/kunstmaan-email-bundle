@@ -40,7 +40,7 @@ class MessageSender
     /**
      * MailBuilder constructor.
      *
-     * @param ManagerRegistry            $doctrine
+     * @param ManagerRegistry     $doctrine
      * @param \Swift_Mailer       $mailer
      * @param QueueManager        $queueManager
      * @param TranslatorInterface $translator
