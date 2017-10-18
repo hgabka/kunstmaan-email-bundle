@@ -3,6 +3,7 @@ parameters:
     hgabka_kunstmaan_email.message_logger.class: 'Hgabka\KunstmaanEmailBundle\Logger\MessageLogger'
     hgabka_kunstmaan_email.message_sender.class: 'Hgabka\KunstmaanEmailBundle\Helper\MessageSender'
     hgabka_kunstmaan_email.queue_manager.class: 'Hgabka\KunstmaanEmailBundle\Helper\QueueManager'
+    hgabka_kunstmaan_email.subscription_manager.class: 'Hgabka\KunstmaanEmailBundle\Helper\SubscriptionManager'
 
 services:
     hgabka_kunstmaan_email.mail_builder:
@@ -142,7 +143,7 @@ services:
         public: false
 
     hgabka_kunstmaan_email.subscription_manager:
-        class: 'Hgabka\KunstmaanEmailBundle\Helper\SubscriptionManager'
+        class: '%hgabka_kunstmaan_email.subscription_manager.class%'
         arguments: ["@doctrine", "@hgabka_kunstmaan_extension.kuma_utils", '']
 
     hgabka_kunstmaan_email.subscriber_subscriber:
@@ -154,3 +155,4 @@ services:
     Hgabka\KunstmaanEmailBundle\Helper\MessageSender: "@hgabka_kunstmaan_email.message_sender"
     Hgabka\KunstmaanEmailBundle\Helper\ParamSubstituter: "@hgabka_kunstmaan_email.param_substituter"
     Hgabka\KunstmaanEmailBundle\Helper\MailBuilder: "@hgabka_kunstmaan_email.mail_builder"
+    Hgabka\KunstmaanEmailBundle\Helper\SubscriptionManager: "@hgabka_kunstmaan_email.subscription_manager"

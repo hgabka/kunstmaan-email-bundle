@@ -40,7 +40,9 @@ class SubscriptionManager
 
         foreach ($this->getListsFromParams($lists) as $list) {
             $existing = $subscrRepo->findForSubscriberAndList($subscriber, $list);
+            $exists = true;
             if (!$existing) {
+                $exists = false;
                 $existing = new MessageListSubscription();
                 $existing
                     ->setList($list)
@@ -54,12 +56,15 @@ class SubscriptionManager
         if ($withFlush) {
             $em->flush();
         }
+
+        return $exists;
     }
 
     public function createSubscription($name, $email, $locale = null, $lists = null)
     {
         $em = $this->doctrine->getManager();
         $existing = $em->getRepository('HgabkaKunstmaanEmailBundle:MessageSubscriber')->findOneByEmail($email);
+
         if (!$existing) {
             $existing = new MessageSubscriber();
             $existing
@@ -71,7 +76,7 @@ class SubscriptionManager
             $em->persist($existing);
         }
 
-        $this->addSubscriberToLists($existing, $lists);
+        return $this->addSubscriberToLists($existing, $lists);
     }
 
     public function deleteSubscription($email, $lists = null)
