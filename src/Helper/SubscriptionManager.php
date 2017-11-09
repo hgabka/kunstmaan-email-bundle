@@ -7,6 +7,7 @@ use Hgabka\KunstmaanEmailBundle\Entity\MessageList;
 use Hgabka\KunstmaanEmailBundle\Entity\MessageListSubscription;
 use Hgabka\KunstmaanEmailBundle\Entity\MessageSubscriber;
 use Hgabka\KunstmaanExtensionBundle\Helper\KumaUtils;
+use Symfony\Component\Form\Exception\InvalidArgumentException;
 
 class SubscriptionManager
 {
@@ -62,6 +63,9 @@ class SubscriptionManager
 
     public function createSubscription($name, $email, $locale = null, $lists = null)
     {
+        if (empty($name) || empty($email)) {
+            throw new InvalidArgumentException('Üres név és/vagy email feliratkozásnál');
+        }
         $em = $this->doctrine->getManager();
         $existing = $em->getRepository('HgabkaKunstmaanEmailBundle:MessageSubscriber')->findOneByEmail($email);
 

@@ -41,7 +41,7 @@ class BounceChecker
      *
      * @return BounceChecker
      */
-    public function setConfig(array $config): BounceChecker
+    public function setConfig(array $config): self
     {
         $this->config = $config;
 

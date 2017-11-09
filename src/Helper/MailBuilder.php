@@ -176,10 +176,12 @@ class MailBuilder
 
             if (!empty($layoutFile)) {
                 $layoutFile = strtr($layoutFile, ['%culture%' => $culture]);
+
                 $html = @file_get_contents($layoutFile);
             } else {
                 $html = null;
             }
+
             if (!empty($html)) {
                 $bodyHtml = $this->applyLayout($html, $subject, $bodyHtml, $name, $email);
             }
