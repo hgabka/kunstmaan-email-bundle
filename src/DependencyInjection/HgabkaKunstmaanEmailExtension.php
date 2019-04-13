@@ -37,7 +37,7 @@ class HgabkaKunstmaanEmailExtension extends Extension
         $queueDefinition->replaceArgument(7, $config['delete_sent_messages_after']);
 
         $substituterDefinition = $container->getDefinition('hgabka_kunstmaan_email.param_substituter');
-        $substituterDefinition->replaceArgument(3, $config['template_var_chars']);
+        $substituterDefinition->replaceArgument(4, $config['template_var_chars']);
 
         $mailerSubscriberDefinition = $container->getDefinition('hgabka_kunstmaan_email.mailer_subscriber');
         $mailerSubscriberDefinition->replaceArgument(1, $config['email_logging_strategy']);
