@@ -4,11 +4,15 @@ namespace Hgabka\KunstmaanEmailBundle\Helper;
 
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\Routing\RouterInterface;
 
 class ParamSubstituter
 {
     /** @var RequestStack */
     protected $requestStack;
+
+    /** @var RouterInterface */
+    protected $router;
 
     protected $varChars;
 
@@ -18,12 +22,13 @@ class ParamSubstituter
     /** @var string */
     protected $projectDir;
 
-    public function __construct(RequestStack $requestStack, string $cacheDir, string $projectDir, $varChars)
+    public function __construct(RequestStack $requestStack, RouterInterface $router, string $cacheDir, string $projectDir, $varChars)
     {
         $this->requestStack = $requestStack;
         $this->cacheDir = $cacheDir;
         $this->projectDir = $projectDir;
         $this->varChars = $varChars;
+        $this->router = $router;
     }
 
     /**
@@ -284,5 +289,30 @@ class ParamSubstituter
         }
 
         return $string;
+    }
+    
+
+    protected function getSchemeAndHttpHost()
+    {
+        $request = $this->requestStack->getCurrentRequest();
+        $context = $this->router->getContext();
+
+        return $request ? $request->getSchemeAndHttpHost() : ($context->getScheme().'://'.$context->getHost());
+    }
+
+    /**
+     * Abszolút url-t generál a relatívból.
+     *
+     * @param string $url
+     *
+     * @return string
+     */
+    protected function addHostToUrl($url)
+    {
+        if (0 === strpos($url, 'http://') || 0 === strpos($url, 'https://')) {
+            return $url;
+        }
+
+        return $this->getSchemeAndHttpHost().$url;
     }
 }
