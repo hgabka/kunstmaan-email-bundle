@@ -61,7 +61,7 @@ class ParamSubstituter
 
         return $text;
     }
-
+    
     /**
      * A HTML content-ben lévő relatív image url-ekből abszolútot csinál.
      *
@@ -71,19 +71,15 @@ class ParamSubstituter
      */
     public function setAbsoluteImageUrls($html)
     {
-        $pattern = '/(<img[^>]+src=["\'])([^"\':]+)(["\'])/ie';
-
+        $pattern = '/(<img[^>]+src=["\'])([^"\':]+)(["\'])/i';
         $html = preg_replace_callback($pattern, function ($matches) {
             return $matches[1].$this->addHost(trim($matches[2], " '\"")).$matches[3];
         }, $html);
-
-        $pattern = '/(<input[^>]+src=["\'])([^"\':]+)(["\'])/ie';
-
+        $pattern = '/(<input[^>]+src=["\'])([^"\':]+)(["\'])/i';
         return preg_replace_callback($pattern, function ($matches) {
             return $matches[1].$this->addHost(trim($matches[2], " '\"")).$matches[3];
         }, $html);
     }
-
     /**
      *  Beágyazza a képeket és az src-t a cid-re cseréli.
      *
@@ -93,16 +89,22 @@ class ParamSubstituter
     public function embedImages($html, $email)
     {
         $pattern = '/(<img[^>]+src=["\'])([^"\']+)(["\'])(.*)/i';
-
         $html = preg_replace_callback($pattern, function ($matches) use ($email) {
             return $matches[1].$this->embedImage($matches[2], $email).$matches[3].$matches[4];
         }, $html);
-
         $pattern = '/(url\s*\()([^\)]+)/i';
         $html = preg_replace_callback($pattern, function ($matches) {
             return $matches[1].$this->addHost(trim($matches[2], " '\""));
         }, $html);
-
+        return $html;
+    }
+    
+    public function transferRelativeLinks($html)
+    {
+        $pattern = '/(<a[^>]+href=["\'])([^"\']+)(["\'])(.*)/i';
+        $html = preg_replace_callback($pattern, function ($matches) {
+            return $matches[1].$this->addHostToUrl(trim($matches[2], " '\"")).$matches[3].$matches[4];
+        }, $html);
         return $html;
     }
 
