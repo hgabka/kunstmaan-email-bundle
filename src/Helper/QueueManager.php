@@ -212,7 +212,7 @@ class QueueManager
             if (isset($bounceConfig['account']['address'])) {
                 $message->setReturnPath($bounceConfig['account']['address']);
             } else {
-                $message->setReturnPath($queue->getToEmail());
+                $message->setReturnPath($fromEmail);
             }
 
             if ($mailer->send($message) < 1) {
