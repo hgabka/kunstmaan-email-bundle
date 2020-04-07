@@ -10,7 +10,7 @@ class MessageLogger
 {
     protected $logger;
 
-    public function __construct(LoggerInterface $logger, $path)
+    public function __construct($path)
     {
         $this->logger = new Logger('message_logger');
         $handler = new StreamHandler($path.'/'.date('Ymd').'.log');
