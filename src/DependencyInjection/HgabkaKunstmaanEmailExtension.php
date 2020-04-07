@@ -27,7 +27,7 @@ class HgabkaKunstmaanEmailExtension extends Extension
         $senderDefinition->addMethodCall('setConfig', [$config]);
 
         $loggerDefinition = $container->getDefinition('hgabka_kunstmaan_email.message_logger');
-        $loggerDefinition->replaceArgument(1, $config['log_path']);
+        $loggerDefinition->replaceArgument(0, $config['log_path']);
 
         $queueDefinition = $container->getDefinition('hgabka_kunstmaan_email.queue_manager');
         $queueDefinition->replaceArgument(3, $config['bounce_checking']);
