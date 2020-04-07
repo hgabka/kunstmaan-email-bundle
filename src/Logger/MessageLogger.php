@@ -3,6 +3,7 @@
 namespace Hgabka\KunstmaanEmailBundle\Logger;
 
 use Monolog\Handler\StreamHandler;
+use Monolog\Logger;
 use Psr\Log\LoggerInterface;
 
 class MessageLogger
@@ -11,7 +12,7 @@ class MessageLogger
 
     public function __construct(LoggerInterface $logger, $path)
     {
-        $this->logger = $logger;
+        $this->logger = new Logger('message_logger');
         $handler = new StreamHandler($path.'/'.date('Ymd').'.log');
         $handler->setFormatter(new MessageLogFormatter());
         $this->logger->setHandlers([$handler]);
